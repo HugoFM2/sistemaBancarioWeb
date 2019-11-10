@@ -50,7 +50,7 @@ int main()
     CROW_ROUTE(app, "/")
         .name("hello")
     ([]{
-        return "Hello Cuzao!";
+        return "Hello Cuzão!";
     });
 
     CROW_ROUTE(app, "/about")
