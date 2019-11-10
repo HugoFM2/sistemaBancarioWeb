@@ -21,8 +21,9 @@ COPY ./ ${APP_DIRECTORY}
 
 
 WORKDIR ${APP_DIRECTORY}
+
 RUN ${APP_DIRECTORY}/crow/compile.sh
 
-EXPOSE 8080/tcp
+EXPOSE 9000/tcp
 WORKDIR ${APP_DIRECTORY}
 ENTRYPOINT ["./crow/build/src/example"]
