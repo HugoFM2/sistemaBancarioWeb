@@ -15,15 +15,6 @@ RUN apt-get install -y libmysqlclient-dev libmysql++-dev libmysqlcppconn-dev
 
 
 ENV APP_DIRECTORY /app/
-
-WORKDIR ${APP_DIRECTORY}
-COPY ./ ${APP_DIRECTORY}
-
-
 WORKDIR ${APP_DIRECTORY}
 
-RUN ${APP_DIRECTORY}/crow/compile.sh
-
-EXPOSE 9000/tcp
-WORKDIR ${APP_DIRECTORY}
-ENTRYPOINT ["./crow/build/src/example"]
+ENTRYPOINT [ "/app/compile.sh" ]

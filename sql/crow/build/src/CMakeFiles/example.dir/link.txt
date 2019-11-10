@@ -1,0 +1,1 @@
+/usr/bin/c++   -Wall -std=c++1y -pedantic -Wextra -O3 -DNDEBUG  -rdynamic CMakeFiles/example.dir/example.cpp.o  -o example -lboost_system -lboost_thread -lpthread -lboost_chrono -lboost_date_time -lboost_atomic -lpthread -lmysqlpp -lmysqlclient -lpthread -lboost_system -lboost_thread -lpthread -lboost_chrono -lboost_date_time -lboost_atomic -lmysqlpp -lmysqlclient 

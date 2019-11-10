@@ -6,6 +6,7 @@ services:
       context: ./sql
     volumes:
       - "./sql/crow/src:/crow"
+      - "./sql/crow/:/app"
     ports:
       - "80:9000"
     depends_on:
