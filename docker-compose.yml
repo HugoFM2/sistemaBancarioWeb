@@ -1,6 +1,15 @@
 version: "3" 
 services:
   # Application service layer
+  nginx:
+    image: nginx:1.13
+    volumes:
+      - "./app:/var/www/html"
+      - "./nginx/nginx.conf:/etc/nginx/nginx.conf"
+    ports:
+      - "80:80"
+    depends_on:
+      - sql
   sql:
     build:
       context: ./sql
@@ -8,7 +17,7 @@ services:
       - "./sql/crow/src:/crow"
       - "./sql/crow/:/app"
     ports:
-      - "80:9000"
+      - "800:9000"
     depends_on:
       - bd5
     links:
