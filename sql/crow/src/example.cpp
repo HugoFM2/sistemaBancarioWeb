@@ -46,15 +46,42 @@ int main()
     crow::App<ExampleMiddleware> app;
 
     app.get_middleware<ExampleMiddleware>().setMessage("hello");
-    Connection conn("teste", "bd5", "root", "123.456");
+    //Connection conn("teste", "bd5", "root", "123.456");
     CROW_ROUTE(app, "/")
         .name("hello")
     ([]{
-        return "Hello Cusadasdzão!";
+	std::cout << "asdas" << std::endl;
+	Connection conn(false);
+	if (conn.connect("teste", "bd5", "root", "123.456")) {
+		// Retrieve a subset of the sample stock table set up by resetdb
+		// and display it.
+		mysqlpp::Query query = conn.query("SELECT * FROM `clientes`");
+		if (mysqlpp::StoreQueryResult res = query.store()) {
+			std::cout << "We have:" << std::endl;
+			mysqlpp::StoreQueryResult::const_iterator it;
+			for (it = res.begin(); it != res.end(); ++it) {
+				mysqlpp::Row row = *it;
+				std::cout << '\t' << row[0] << std::endl;
+			}
+		}
+
+/*
+	mysqlpp::Query query = conn.query("SELECT * FROM `clientes` WHERE `nome` LIKE 'Luiz Henrique'");
+	if (mysqlpp::StoreQueryResult res = query.store()) {
+				std::cout << "We have:" << std::endl;
+				mysqlpp::StoreQueryResult::const_iterator it;
+				for (it = res.begin(); it != res.end(); ++it) {
+					mysqlpp::Row row = *it;
+					std::cout << '\t' << row[0] << std::endl;
+					std::cout << "asdas" << std::endl;
+				}
+			}*/
+        return "Hello ASDASDA!";
     });
 
     CROW_ROUTE(app, "/about")
     ([](){
+	
         return "About Crow example.";
     });
 
