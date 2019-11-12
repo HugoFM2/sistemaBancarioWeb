@@ -510,6 +510,18 @@ self["C3_Shaders"] = {};
 
 "use strict";C3.Plugins.TextBox.Exps={Text(){return this._text}};
 
+"use strict";C3.Plugins.Json=class extends C3.SDKPluginBase{constructor(a){super(a)}Release(){super.Release()}};
+
+"use strict";C3.Plugins.Json.Type=class extends C3.SDKTypeBase{constructor(a){super(a)}Release(){super.Release()}OnCreate(){}};
+
+"use strict";C3.Plugins.Json.Instance=class extends C3.SDKInstanceBase{constructor(a){super(a),this._valueCache=[null,null],this._locationCache=[null,null],this._data={},this._path=[],this._currentKey="",this._currentValue=0}Release(){super.Release()}_InvalidateValueCache(){this._valueCache[0]=null,this._valueCache[1]=null}_HasValueCache(a){return null!==a&&null!==this._valueCache[0]&&(this._valueCache[0]===a||C3.arraysEqual(this._valueCache[0],a))}_GetValueCache(){return this._valueCache[1]}_UpdateValueCache(a,b){this._valueCache[0]=a,this._valueCache[1]=b}_InvalidateLocationCache(){this._locationCache[0]=null,this._locationCache[1]=null}_HasLocationCache(a){return this._locationCache[0]===a}_GetLocationCache(){return this._locationCache[1]}_UpdateLocationCache(a,b){this._locationCache[0]=a,this._locationCache[1]=b}_SetData(a){this._data=a,this._InvalidateValueCache()}_SetPath(a){this._path=this._ParsePathUnsafe(a),this._InvalidateLocationCache()}_ParsePath(a){return C3.cloneArray(this._ParsePathUnsafe(a))}_ParsePathUnsafe(a){const b=[];let d,e=!1;if(this._HasLocationCache(a))return this._GetLocationCache();"."===a[0]?(d=C3.cloneArray(this._path),a=a.slice(1)):d=[];for(const f of a)e?(b.push(f),e=!1):"\\"===f?e=!0:"."===f?(d.push(b.join("")),C3.clearArray(b)):b.push(f);return 0!==b.length&&d.push(b.join("")),this._UpdateLocationCache(a,d),d}_GetValueAtFullPath(a,b){if(this._HasValueCache(a))return this._GetValueCache();let c=this._data;for(const d of a)if(Array.isArray(c)){const a=parseInt(d,10);if(0>a||a>=c.length||!isFinite(a)){c=null;break}c=c[a]}else if("object"!=typeof c||null===c){c=null;break}else if(c.hasOwnProperty(d))c=c[d];else if(b){const a={};c[d]=a,c=a}else{c=null;break}return this._UpdateValueCache(a,c),c}_GetValue(a){const b=this._ParsePath(a);if(!b.length)return this._data;const c=b.pop(),d=this._GetValueAtFullPath(b,!1);if(Array.isArray(d)){const a=parseInt(c,10);return 0<=a&&a<d.length?d[a]:null}return"object"==typeof d&&null!==d?d.hasOwnProperty(c)?d[c]:null:null}_JSONTypeOf(a){return null===a?"null":Array.isArray(a)?"array":typeof a}_GetTypeOf(a){const b=this._GetValue(a);return this._JSONTypeOf(b)}_ToSafeValue(a){const b=typeof a;return"number"==b||"string"==b?a:"boolean"==b?a?1:0:0}_GetSafeValue(a){return this._ToSafeValue(this._GetValue(a))}_HasKey(a){const b=this._ParsePath(a);if(!b.length)return!1;const c=b.pop(),d=this._GetValueAtFullPath(b,!1);if(Array.isArray(d)){const a=parseInt(c,10);return 0<=a&&a<d.length}return"object"==typeof d&&null!==d&&d.hasOwnProperty(c)}_SetValue(a,b){const c=this._ParsePath(a);if(!c.length)return!1;this._HasValueCache(c)&&this._InvalidateValueCache();const d=c.pop(),e=this._GetValueAtFullPath(c,!0);if(Array.isArray(e)){const a=parseInt(d,10);return!(!isFinite(a)||0>a||a>=e.length)&&(e[a]=b,!0)}return"object"==typeof e&&null!==e&&(e[d]=b,!0)}_DeleteKey(a){const b=this._ParsePath(a);if(!b.length)return!1;this._HasValueCache(b)&&this._InvalidateValueCache();const c=b.pop(),d=this._GetValueAtFullPath(b,!1);return!Array.isArray(d)&&"object"==typeof d&&null!==d&&(delete d[c],!0)}_SanitizeValue(a){return"number"==typeof a?isFinite(a)?a:0:"object"==typeof a?JSON.stringify(a):a+""}GetDebuggerProperties(){let a;try{a=this._SanitizeValue(this._data)}catch(b){a="\"invalid\""}return[{title:"plugins.json.debugger.title",properties:[{name:"plugins.json.debugger.data",value:a,onedit:(a)=>{try{const b=JSON.parse(a);this._SetData(b)}catch(a){}}},{name:"plugins.json.debugger.path",value:this._path.map((a)=>a.replace(/\./g,"\\.")).join(".")}]}]}};
+
+"use strict";{const a=["null","boolean","number","string","object","array"];C3.Plugins.Json.Cnds={HasKey(a){return this._HasKey(a)},CompareType(b,c){return this._GetTypeOf(b)===a[c]},CompareValue(a,b,c){return C3.compare(this._GetSafeValue(a),b,c)},ForEach(a){const b=this._GetValue(a);if("object"!=typeof b||null===b)return!1;const c=this._runtime,d=c.GetEventSheetManager(),e=c.GetCurrentEvent(),f=e.GetSolModifiers(),g=c.GetEventStack(),h=g.GetCurrentStackFrame(),i=g.Push(e),j=this._path,k=this._currentKey,l=this._currentValue,m=this._ParsePathUnsafe(a);c.SetDebuggingEnabled(!1);for(const[c,g]of Object.entries(b))this._path=C3.cloneArray(m),this._path.push(c),this._currentKey=c,this._currentValue=g,d.PushCopySol(f),e.Retrigger(h,i),d.PopSol(f);return c.SetDebuggingEnabled(!0),this._path=j,this._currentKey=k,this._currentValue=l,g.Pop(),!1},OnParseError(){return!0}}}
+
+"use strict";C3.Plugins.Json.Acts={Parse(a){try{this._SetData(JSON.parse(a))}catch(a){console.warn("[JSON plugin] Failed to parse JSON data: ",a),this._SetData({}),this.Trigger(C3.Plugins.Json.Cnds.OnParseError)}},SetPath(a){this._SetPath(a)},SetValue(a,b){this._SetValue(a,b)},SetArray(a,b){let c=this._GetValue(a);Array.isArray(c)?C3.resizeArray(c,b,0):(c=[],C3.extendArray(c,b,0),this._SetValue(a,c))},SetObject(a){this._SetValue(a,{})},SetJSON(a,b){let c=null;try{c=JSON.parse(b)}catch(a){console.warn("[JSON plugin] Failed to parse JSON data: ",a),this.Trigger(C3.Plugins.Json.Cnds.OnParseError)}this._SetValue(a,c)},SetNull(a){this._SetValue(a,null)},SetBoolean(a,b){this._SetValue(a,0!==b)},DeleteKey(a){this._DeleteKey(a)},PushValue(a,b,c){const d=this._GetValue(b);Array.isArray(d)&&(0===a?d.push(c):d.unshift(c))},PopValue(a,b){const c=this._GetValue(b);Array.isArray(c)&&(0===a?c.pop():c.shift())}};
+
+"use strict";C3.Plugins.Json.Exps={ToCompactString(){try{return JSON.stringify(this._data)}catch(a){return""}},ToBeautifiedString(){try{return JSON.stringify(this._data,null,4)}catch(a){return""}},Get(a){return this._GetSafeValue(a)},Front(a){const b=this._GetValue(a);if(Array.isArray(b)){const a=b[0];return this._ToSafeValue(a)}return-1},Back(a){const b=this._GetValue(a);if(Array.isArray(b)){const a=b[b.length-1];return this._ToSafeValue(a)}return-1},Type(a){return this._GetTypeOf(a)},ArraySize(a){const b=this._GetValue(a);return Array.isArray(b)?b.length:-1},Path(){return this._path.map((a)=>a.replace(/\./g,"\\.")).join(".")},CurrentKey(){return this._currentKey},CurrentValue(){return this._ToSafeValue(this._currentValue)},CurrentType(){return this._JSONTypeOf(this._currentValue)}};
+
 "use strict"
 self.C3_GetObjectRefTable = function () {
 	return [
@@ -517,19 +529,23 @@ self.C3_GetObjectRefTable = function () {
 		C3.Plugins.Text,
 		C3.Plugins.AJAX,
 		C3.Plugins.TextBox,
+		C3.Plugins.Json,
 		C3.Plugins.Button.Cnds.OnClicked,
 		C3.Plugins.AJAX.Acts.Request,
 		C3.Plugins.TextBox.Exps.Text,
 		C3.Plugins.AJAX.Cnds.OnComplete,
+		C3.Plugins.Json.Acts.Parse,
+		C3.Plugins.AJAX.Exps.LastData,
 		C3.Plugins.Text.Acts.SetText,
-		C3.Plugins.AJAX.Exps.LastData
+		C3.Plugins.Json.Exps.Get
 	];
 };
 self.C3_JsPropNameTable = [
 	{Botão: 0},
 	{Texto: 0},
 	{AJAX: 0},
-	{EntradaDeTexto: 0}
+	{EntradaDeTexto: 0},
+	{JSON: 0}
 ];
 
 "use strict";
@@ -636,6 +652,10 @@ self.C3_JsPropNameTable = [
 		p => {
 			const f0 = p._GetNode(0).GetBoundMethod();
 			return () => f0();
+		},
+		p => {
+			const n0 = p._GetNode(0);
+			return () => n0.ExpObject("dados.0");
 		}
 	];
 }
