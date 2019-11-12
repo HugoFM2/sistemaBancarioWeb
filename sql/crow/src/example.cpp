@@ -85,6 +85,13 @@ int main()
         return "Trailing slash test case..";
     });
 
+    CROW_ROUTE(app, "/criarBanco")
+    ([](const crow::request& req){
+        if(req.url_params.get("nomeBanco") != nullptr) {
+            std::cout << "The value of 'nomeBanco' is " << std::string(req.url_params.get("nomeBanco")) << std::endl;
+        }
+        return "";
+    });
 
     // simple json response
     // To see it in action enter {ip}:18080/json
