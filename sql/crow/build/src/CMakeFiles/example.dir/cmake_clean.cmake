@@ -1,4 +1,10 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/example.dir/TP1/Banco.cpp.o"
+  "CMakeFiles/example.dir/TP1/Cliente.cpp.o"
+  "CMakeFiles/example.dir/TP1/Conta.cpp.o"
+  "CMakeFiles/example.dir/TP1/Date.cpp.o"
+  "CMakeFiles/example.dir/TP1/Movimentacao.cpp.o"
+  "CMakeFiles/example.dir/TP1/WebInterface.cpp.o"
   "CMakeFiles/example.dir/example.cpp.o"
   "example"
   "example.pdb"

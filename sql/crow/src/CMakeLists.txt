@@ -3,7 +3,7 @@ project (crow_template)
 
 
 
-add_executable(example example.cpp)
+add_executable(example "TP1/Banco.cpp" "TP1/Cliente.cpp" "TP1/Conta.cpp" "TP1/Date.cpp" "TP1/Movimentacao.cpp" "TP1/WebInterface.cpp"  "example.cpp")
 include_directories(example /usr/include/mysql++)
 include_directories(example /usr/include/mysql)
 

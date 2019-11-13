@@ -57,9 +57,87 @@ include src/CMakeFiles/example.dir/progress.make
 # Include the compile flags for this target's objects.
 include src/CMakeFiles/example.dir/flags.make
 
+src/CMakeFiles/example.dir/TP1/Banco.cpp.o: src/CMakeFiles/example.dir/flags.make
+src/CMakeFiles/example.dir/TP1/Banco.cpp.o: ../src/TP1/Banco.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object src/CMakeFiles/example.dir/TP1/Banco.cpp.o"
+	cd /app/build/src && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/example.dir/TP1/Banco.cpp.o -c /app/src/TP1/Banco.cpp
+
+src/CMakeFiles/example.dir/TP1/Banco.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/example.dir/TP1/Banco.cpp.i"
+	cd /app/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /app/src/TP1/Banco.cpp > CMakeFiles/example.dir/TP1/Banco.cpp.i
+
+src/CMakeFiles/example.dir/TP1/Banco.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/example.dir/TP1/Banco.cpp.s"
+	cd /app/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /app/src/TP1/Banco.cpp -o CMakeFiles/example.dir/TP1/Banco.cpp.s
+
+src/CMakeFiles/example.dir/TP1/Cliente.cpp.o: src/CMakeFiles/example.dir/flags.make
+src/CMakeFiles/example.dir/TP1/Cliente.cpp.o: ../src/TP1/Cliente.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object src/CMakeFiles/example.dir/TP1/Cliente.cpp.o"
+	cd /app/build/src && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/example.dir/TP1/Cliente.cpp.o -c /app/src/TP1/Cliente.cpp
+
+src/CMakeFiles/example.dir/TP1/Cliente.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/example.dir/TP1/Cliente.cpp.i"
+	cd /app/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /app/src/TP1/Cliente.cpp > CMakeFiles/example.dir/TP1/Cliente.cpp.i
+
+src/CMakeFiles/example.dir/TP1/Cliente.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/example.dir/TP1/Cliente.cpp.s"
+	cd /app/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /app/src/TP1/Cliente.cpp -o CMakeFiles/example.dir/TP1/Cliente.cpp.s
+
+src/CMakeFiles/example.dir/TP1/Conta.cpp.o: src/CMakeFiles/example.dir/flags.make
+src/CMakeFiles/example.dir/TP1/Conta.cpp.o: ../src/TP1/Conta.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object src/CMakeFiles/example.dir/TP1/Conta.cpp.o"
+	cd /app/build/src && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/example.dir/TP1/Conta.cpp.o -c /app/src/TP1/Conta.cpp
+
+src/CMakeFiles/example.dir/TP1/Conta.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/example.dir/TP1/Conta.cpp.i"
+	cd /app/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /app/src/TP1/Conta.cpp > CMakeFiles/example.dir/TP1/Conta.cpp.i
+
+src/CMakeFiles/example.dir/TP1/Conta.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/example.dir/TP1/Conta.cpp.s"
+	cd /app/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /app/src/TP1/Conta.cpp -o CMakeFiles/example.dir/TP1/Conta.cpp.s
+
+src/CMakeFiles/example.dir/TP1/Date.cpp.o: src/CMakeFiles/example.dir/flags.make
+src/CMakeFiles/example.dir/TP1/Date.cpp.o: ../src/TP1/Date.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object src/CMakeFiles/example.dir/TP1/Date.cpp.o"
+	cd /app/build/src && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/example.dir/TP1/Date.cpp.o -c /app/src/TP1/Date.cpp
+
+src/CMakeFiles/example.dir/TP1/Date.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/example.dir/TP1/Date.cpp.i"
+	cd /app/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /app/src/TP1/Date.cpp > CMakeFiles/example.dir/TP1/Date.cpp.i
+
+src/CMakeFiles/example.dir/TP1/Date.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/example.dir/TP1/Date.cpp.s"
+	cd /app/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /app/src/TP1/Date.cpp -o CMakeFiles/example.dir/TP1/Date.cpp.s
+
+src/CMakeFiles/example.dir/TP1/Movimentacao.cpp.o: src/CMakeFiles/example.dir/flags.make
+src/CMakeFiles/example.dir/TP1/Movimentacao.cpp.o: ../src/TP1/Movimentacao.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object src/CMakeFiles/example.dir/TP1/Movimentacao.cpp.o"
+	cd /app/build/src && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/example.dir/TP1/Movimentacao.cpp.o -c /app/src/TP1/Movimentacao.cpp
+
+src/CMakeFiles/example.dir/TP1/Movimentacao.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/example.dir/TP1/Movimentacao.cpp.i"
+	cd /app/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /app/src/TP1/Movimentacao.cpp > CMakeFiles/example.dir/TP1/Movimentacao.cpp.i
+
+src/CMakeFiles/example.dir/TP1/Movimentacao.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/example.dir/TP1/Movimentacao.cpp.s"
+	cd /app/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /app/src/TP1/Movimentacao.cpp -o CMakeFiles/example.dir/TP1/Movimentacao.cpp.s
+
+src/CMakeFiles/example.dir/TP1/WebInterface.cpp.o: src/CMakeFiles/example.dir/flags.make
+src/CMakeFiles/example.dir/TP1/WebInterface.cpp.o: ../src/TP1/WebInterface.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object src/CMakeFiles/example.dir/TP1/WebInterface.cpp.o"
+	cd /app/build/src && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/example.dir/TP1/WebInterface.cpp.o -c /app/src/TP1/WebInterface.cpp
+
+src/CMakeFiles/example.dir/TP1/WebInterface.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/example.dir/TP1/WebInterface.cpp.i"
+	cd /app/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /app/src/TP1/WebInterface.cpp > CMakeFiles/example.dir/TP1/WebInterface.cpp.i
+
+src/CMakeFiles/example.dir/TP1/WebInterface.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/example.dir/TP1/WebInterface.cpp.s"
+	cd /app/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /app/src/TP1/WebInterface.cpp -o CMakeFiles/example.dir/TP1/WebInterface.cpp.s
+
 src/CMakeFiles/example.dir/example.cpp.o: src/CMakeFiles/example.dir/flags.make
 src/CMakeFiles/example.dir/example.cpp.o: ../src/example.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object src/CMakeFiles/example.dir/example.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object src/CMakeFiles/example.dir/example.cpp.o"
 	cd /app/build/src && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/example.dir/example.cpp.o -c /app/src/example.cpp
 
 src/CMakeFiles/example.dir/example.cpp.i: cmake_force
@@ -72,11 +150,23 @@ src/CMakeFiles/example.dir/example.cpp.s: cmake_force
 
 # Object files for target example
 example_OBJECTS = \
+"CMakeFiles/example.dir/TP1/Banco.cpp.o" \
+"CMakeFiles/example.dir/TP1/Cliente.cpp.o" \
+"CMakeFiles/example.dir/TP1/Conta.cpp.o" \
+"CMakeFiles/example.dir/TP1/Date.cpp.o" \
+"CMakeFiles/example.dir/TP1/Movimentacao.cpp.o" \
+"CMakeFiles/example.dir/TP1/WebInterface.cpp.o" \
 "CMakeFiles/example.dir/example.cpp.o"
 
 # External object files for target example
 example_EXTERNAL_OBJECTS =
 
+src/example: src/CMakeFiles/example.dir/TP1/Banco.cpp.o
+src/example: src/CMakeFiles/example.dir/TP1/Cliente.cpp.o
+src/example: src/CMakeFiles/example.dir/TP1/Conta.cpp.o
+src/example: src/CMakeFiles/example.dir/TP1/Date.cpp.o
+src/example: src/CMakeFiles/example.dir/TP1/Movimentacao.cpp.o
+src/example: src/CMakeFiles/example.dir/TP1/WebInterface.cpp.o
 src/example: src/CMakeFiles/example.dir/example.cpp.o
 src/example: src/CMakeFiles/example.dir/build.make
 src/example: /usr/lib/x86_64-linux-gnu/libboost_system.so
@@ -90,7 +180,7 @@ src/example: /usr/lib/x86_64-linux-gnu/libboost_chrono.so
 src/example: /usr/lib/x86_64-linux-gnu/libboost_date_time.so
 src/example: /usr/lib/x86_64-linux-gnu/libboost_atomic.so
 src/example: src/CMakeFiles/example.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable example"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable example"
 	cd /app/build/src && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/example.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

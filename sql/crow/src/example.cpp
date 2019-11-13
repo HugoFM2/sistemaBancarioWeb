@@ -1,5 +1,6 @@
 #include "crow.h"
 #include "stock.h"
+#include "TP1/WebInterface.h"
 
 #include <sstream>
 #include <mysql++.h>
@@ -7,6 +8,9 @@
 // #include <mysql.h>
 
 using namespace mysqlpp;
+
+int WebInterface::contador = 0; // inicializa valor static
+int Conta::counter = 0; // inicializa valor static
 class ExampleLogHandler : public crow::ILogHandler {
     public:
         void log(std::string /*message*/, crow::LogLevel /*level*/) override {
@@ -46,6 +50,7 @@ struct ExampleMiddleware
 int main()
 {
     crow::App<ExampleMiddleware> app;
+    WebInterface WebTeste;
 
     app.get_middleware<ExampleMiddleware>().setMessage("hello");
 
@@ -102,9 +107,13 @@ int main()
     });
 
     CROW_ROUTE(app, "/criarBanco")
-    ([](const crow::request& req){
+    ([&WebTeste](const crow::request& req){
+
+
         if(req.url_params.get("nomeBanco") != nullptr) {
-            std::cout << "The value of 'nomeBanco' is " << std::string(req.url_params.get("nomeBanco")) << std::endl;
+          std::string nomeBanco = std::string(req.url_params.get("nomeBanco"));
+            std::cout << "The value of 'nomeBanco' is " << nomeBanco << std::endl;
+            WebTeste.CadastrarBanco(nomeBanco);
         }
         return "";
     });

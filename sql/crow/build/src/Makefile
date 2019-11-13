@@ -136,6 +136,168 @@ example/fast:
 	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/build
 .PHONY : example/fast
 
+TP1/Banco.o: TP1/Banco.cpp.o
+
+.PHONY : TP1/Banco.o
+
+# target to build an object file
+TP1/Banco.cpp.o:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP1/Banco.cpp.o
+.PHONY : TP1/Banco.cpp.o
+
+TP1/Banco.i: TP1/Banco.cpp.i
+
+.PHONY : TP1/Banco.i
+
+# target to preprocess a source file
+TP1/Banco.cpp.i:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP1/Banco.cpp.i
+.PHONY : TP1/Banco.cpp.i
+
+TP1/Banco.s: TP1/Banco.cpp.s
+
+.PHONY : TP1/Banco.s
+
+# target to generate assembly for a file
+TP1/Banco.cpp.s:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP1/Banco.cpp.s
+.PHONY : TP1/Banco.cpp.s
+
+TP1/Cliente.o: TP1/Cliente.cpp.o
+
+.PHONY : TP1/Cliente.o
+
+# target to build an object file
+TP1/Cliente.cpp.o:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP1/Cliente.cpp.o
+.PHONY : TP1/Cliente.cpp.o
+
+TP1/Cliente.i: TP1/Cliente.cpp.i
+
+.PHONY : TP1/Cliente.i
+
+# target to preprocess a source file
+TP1/Cliente.cpp.i:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP1/Cliente.cpp.i
+.PHONY : TP1/Cliente.cpp.i
+
+TP1/Cliente.s: TP1/Cliente.cpp.s
+
+.PHONY : TP1/Cliente.s
+
+# target to generate assembly for a file
+TP1/Cliente.cpp.s:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP1/Cliente.cpp.s
+.PHONY : TP1/Cliente.cpp.s
+
+TP1/Conta.o: TP1/Conta.cpp.o
+
+.PHONY : TP1/Conta.o
+
+# target to build an object file
+TP1/Conta.cpp.o:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP1/Conta.cpp.o
+.PHONY : TP1/Conta.cpp.o
+
+TP1/Conta.i: TP1/Conta.cpp.i
+
+.PHONY : TP1/Conta.i
+
+# target to preprocess a source file
+TP1/Conta.cpp.i:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP1/Conta.cpp.i
+.PHONY : TP1/Conta.cpp.i
+
+TP1/Conta.s: TP1/Conta.cpp.s
+
+.PHONY : TP1/Conta.s
+
+# target to generate assembly for a file
+TP1/Conta.cpp.s:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP1/Conta.cpp.s
+.PHONY : TP1/Conta.cpp.s
+
+TP1/Date.o: TP1/Date.cpp.o
+
+.PHONY : TP1/Date.o
+
+# target to build an object file
+TP1/Date.cpp.o:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP1/Date.cpp.o
+.PHONY : TP1/Date.cpp.o
+
+TP1/Date.i: TP1/Date.cpp.i
+
+.PHONY : TP1/Date.i
+
+# target to preprocess a source file
+TP1/Date.cpp.i:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP1/Date.cpp.i
+.PHONY : TP1/Date.cpp.i
+
+TP1/Date.s: TP1/Date.cpp.s
+
+.PHONY : TP1/Date.s
+
+# target to generate assembly for a file
+TP1/Date.cpp.s:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP1/Date.cpp.s
+.PHONY : TP1/Date.cpp.s
+
+TP1/Movimentacao.o: TP1/Movimentacao.cpp.o
+
+.PHONY : TP1/Movimentacao.o
+
+# target to build an object file
+TP1/Movimentacao.cpp.o:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP1/Movimentacao.cpp.o
+.PHONY : TP1/Movimentacao.cpp.o
+
+TP1/Movimentacao.i: TP1/Movimentacao.cpp.i
+
+.PHONY : TP1/Movimentacao.i
+
+# target to preprocess a source file
+TP1/Movimentacao.cpp.i:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP1/Movimentacao.cpp.i
+.PHONY : TP1/Movimentacao.cpp.i
+
+TP1/Movimentacao.s: TP1/Movimentacao.cpp.s
+
+.PHONY : TP1/Movimentacao.s
+
+# target to generate assembly for a file
+TP1/Movimentacao.cpp.s:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP1/Movimentacao.cpp.s
+.PHONY : TP1/Movimentacao.cpp.s
+
+TP1/WebInterface.o: TP1/WebInterface.cpp.o
+
+.PHONY : TP1/WebInterface.o
+
+# target to build an object file
+TP1/WebInterface.cpp.o:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP1/WebInterface.cpp.o
+.PHONY : TP1/WebInterface.cpp.o
+
+TP1/WebInterface.i: TP1/WebInterface.cpp.i
+
+.PHONY : TP1/WebInterface.i
+
+# target to preprocess a source file
+TP1/WebInterface.cpp.i:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP1/WebInterface.cpp.i
+.PHONY : TP1/WebInterface.cpp.i
+
+TP1/WebInterface.s: TP1/WebInterface.cpp.s
+
+.PHONY : TP1/WebInterface.s
+
+# target to generate assembly for a file
+TP1/WebInterface.cpp.s:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP1/WebInterface.cpp.s
+.PHONY : TP1/WebInterface.cpp.s
+
 example.o: example.cpp.o
 
 .PHONY : example.o
@@ -173,6 +335,24 @@ help:
 	@echo "... edit_cache"
 	@echo "... example"
 	@echo "... test"
+	@echo "... TP1/Banco.o"
+	@echo "... TP1/Banco.i"
+	@echo "... TP1/Banco.s"
+	@echo "... TP1/Cliente.o"
+	@echo "... TP1/Cliente.i"
+	@echo "... TP1/Cliente.s"
+	@echo "... TP1/Conta.o"
+	@echo "... TP1/Conta.i"
+	@echo "... TP1/Conta.s"
+	@echo "... TP1/Date.o"
+	@echo "... TP1/Date.i"
+	@echo "... TP1/Date.s"
+	@echo "... TP1/Movimentacao.o"
+	@echo "... TP1/Movimentacao.i"
+	@echo "... TP1/Movimentacao.s"
+	@echo "... TP1/WebInterface.o"
+	@echo "... TP1/WebInterface.i"
+	@echo "... TP1/WebInterface.s"
 	@echo "... example.o"
 	@echo "... example.i"
 	@echo "... example.s"
