@@ -399,9 +399,19 @@ crow/TinySHA1.hpp
 /app/src/example.cpp
 crow.h
 /app/src/crow.h
+stock.h
+/app/src/stock.h
 sstream
 -
 mysql++.h
+-
+limits
+-
+
+/app/src/stock.h
+mysql++.h
+-
+ssqls.h
 -
 
 /usr/include/mysql++/beemutex.h
@@ -684,6 +694,16 @@ stdint.h
 common.h
 /usr/include/mysql++/common.h
 sstream
+-
+
+/usr/include/mysql++/ssqls.h
+noexceptions.h
+/usr/include/mysql++/noexceptions.h
+sql_types.h
+/usr/include/mysql++/sql_types.h
+string
+-
+math.h
 -
 
 /usr/include/mysql++/stadapter.h

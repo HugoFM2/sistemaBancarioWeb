@@ -26,6 +26,7 @@ src/CMakeFiles/example.dir/example.cpp.o
  ../include/crow/utility.h
  ../include/crow/websocket.h
  /app/src/example.cpp
+ /app/src/stock.h
  /usr/include/mysql++/beemutex.h
  /usr/include/mysql++/common.h
  /usr/include/mysql++/comparable.h
@@ -54,6 +55,7 @@ src/CMakeFiles/example.dir/example.cpp.o
  /usr/include/mysql++/sql_buffer.h
  /usr/include/mysql++/sql_types.h
  /usr/include/mysql++/sqlstream.h
+ /usr/include/mysql++/ssqls.h
  /usr/include/mysql++/stadapter.h
  /usr/include/mysql++/stream2string.h
  /usr/include/mysql++/tcp_connection.h

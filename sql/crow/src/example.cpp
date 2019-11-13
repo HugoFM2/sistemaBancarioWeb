@@ -1,7 +1,9 @@
 #include "crow.h"
+#include "stock.h"
 
 #include <sstream>
 #include <mysql++.h>
+#include <limits>
 // #include <mysql.h>
 
 using namespace mysqlpp;
@@ -47,6 +49,9 @@ int main()
 
     app.get_middleware<ExampleMiddleware>().setMessage("hello");  
 
+    // Connection conn(false);
+    // conn.connect("teste", "bd5", "root", "123.456");
+
     CROW_ROUTE(app, "/about")
     ([](){
         std::cout << "asdas" << std::endl;
@@ -55,7 +60,8 @@ int main()
         
     
 
-      
+        // Connection conn(false);
+        // conn.connect("teste", "bd5", "root", "123.456");
 
         Connection conn(false);
         if (conn.connect("teste", "bd5", "root", "123.456")) {
@@ -75,14 +81,25 @@ int main()
                 }
             }
         }
-	
+    
         return x;
     });
 
     // a request to /path should be forwarded to /path/
     CROW_ROUTE(app, "/path/")
     ([](){
-        return "Trailing slash test case..";
+
+        mysqlpp::Connection conn(false); 
+        if (conn.connect("teste", "bd5", "root", "123.456")) {
+            std::cout << "ENTROU NA CONEXAO DO PATH" << std::endl;
+            mysqlpp::Query query = conn.query();
+            query << "INSERT INTO `stock` (`id`, `Teste`) VALUES ('', 'InitTeste');";
+            query.execute();
+            query.reset();
+        }
+        std::cout <<  "TESTEEE";
+
+        return "Path2";
     });
 
     CROW_ROUTE(app, "/criarBanco")

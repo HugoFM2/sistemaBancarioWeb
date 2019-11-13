@@ -25,6 +25,7 @@ src/CMakeFiles/example.dir/example.cpp.o: ../include/crow/socket_adaptors.h
 src/CMakeFiles/example.dir/example.cpp.o: ../include/crow/utility.h
 src/CMakeFiles/example.dir/example.cpp.o: ../include/crow/websocket.h
 src/CMakeFiles/example.dir/example.cpp.o: ../src/example.cpp
+src/CMakeFiles/example.dir/example.cpp.o: ../src/stock.h
 src/CMakeFiles/example.dir/example.cpp.o: /usr/include/mysql++/beemutex.h
 src/CMakeFiles/example.dir/example.cpp.o: /usr/include/mysql++/common.h
 src/CMakeFiles/example.dir/example.cpp.o: /usr/include/mysql++/comparable.h
@@ -53,6 +54,7 @@ src/CMakeFiles/example.dir/example.cpp.o: /usr/include/mysql++/scopedconnection.
 src/CMakeFiles/example.dir/example.cpp.o: /usr/include/mysql++/sql_buffer.h
 src/CMakeFiles/example.dir/example.cpp.o: /usr/include/mysql++/sql_types.h
 src/CMakeFiles/example.dir/example.cpp.o: /usr/include/mysql++/sqlstream.h
+src/CMakeFiles/example.dir/example.cpp.o: /usr/include/mysql++/ssqls.h
 src/CMakeFiles/example.dir/example.cpp.o: /usr/include/mysql++/stadapter.h
 src/CMakeFiles/example.dir/example.cpp.o: /usr/include/mysql++/stream2string.h
 src/CMakeFiles/example.dir/example.cpp.o: /usr/include/mysql++/tcp_connection.h
