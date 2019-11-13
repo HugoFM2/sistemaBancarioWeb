@@ -7,6 +7,7 @@
   }
 
   Banco::~Banco(){}
+  
   std::string &Banco::getNome(){
     return nomeBanco;
   }

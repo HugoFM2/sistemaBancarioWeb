@@ -7,8 +7,10 @@
 class BancoTP3 : public Banco{
 private:
   std::string nomeBanco;
-  static int idBanco;
+  static int ID;
+  int idBanco;
 public:
+  std::string &getNome();
   BancoTP3(std::string nB);
   int getBancoid();
 };

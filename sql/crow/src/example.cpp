@@ -9,7 +9,7 @@
 
 using namespace mysqlpp;
 
-int BancoTP3::idBanco = -1; // inicializa valor static
+int BancoTP3::ID = -1; // inicializa valor static
 int Conta::counter = 0; // inicializa valor static
 class ExampleLogHandler : public crow::ILogHandler {
     public:
@@ -116,6 +116,17 @@ int main()
             WebTeste.CadastrarBanco(nomeBanco);
         }
         return "";
+    });
+
+    CROW_ROUTE(app, "/listarBancos")
+    ([&WebTeste](const crow::request& req){
+      crow::json::wvalue x;
+      for(int i = 0;i < WebTeste.getBancos().size(); i++){
+        std::cout << i << ". " << WebTeste.getBancos()[i]->getNome() << ",  " << WebTeste.getBancos()[i]->getBancoid() << std::endl;
+        x["Nome"][i] = WebTeste.getBancos()[i]->getNome();
+        x["id"][i] = WebTeste.getBancos()[i]->getBancoid();
+      }
+        return x;
     });
 
     // simple json response
