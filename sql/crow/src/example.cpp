@@ -14,11 +14,11 @@ class ExampleLogHandler : public crow::ILogHandler {
         }
 };
 
-struct ExampleMiddleware 
+struct ExampleMiddleware
 {
     std::string message;
 
-    ExampleMiddleware() 
+    ExampleMiddleware()
     {
         message = "foo";
     }
@@ -47,7 +47,7 @@ int main()
 {
     crow::App<ExampleMiddleware> app;
 
-    app.get_middleware<ExampleMiddleware>().setMessage("hello");  
+    app.get_middleware<ExampleMiddleware>().setMessage("hello");
 
     // Connection conn(false);
     // conn.connect("teste", "bd5", "root", "123.456");
@@ -56,9 +56,9 @@ int main()
     ([](){
         std::cout << "asdas" << std::endl;
         crow::json::wvalue x;
-      
-        
-    
+
+
+
 
         // Connection conn(false);
         // conn.connect("teste", "bd5", "root", "123.456");
@@ -72,7 +72,7 @@ int main()
                 std::cout << "We have:" << std::endl;
                 mysqlpp::StoreQueryResult::const_iterator it;
                 int linha = 0;
-                for (it = res.begin(); it != res.end(); ++it) {                   
+                for (it = res.begin(); it != res.end(); ++it) {
                     mysqlpp::Row row = *it;
                     x["dados"][linha] = std::string(row[1]);
                     std::cout << '\t' << row[1] << std::endl;
@@ -81,7 +81,7 @@ int main()
                 }
             }
         }
-    
+
         return x;
     });
 
@@ -89,15 +89,14 @@ int main()
     CROW_ROUTE(app, "/path/")
     ([](){
 
-        mysqlpp::Connection conn(false); 
+        mysqlpp::Connection conn(false);
         if (conn.connect("teste", "bd5", "root", "123.456")) {
             std::cout << "ENTROU NA CONEXAO DO PATH" << std::endl;
             mysqlpp::Query query = conn.query();
-            query << "INSERT INTO `stock` (`id`, `Teste`) VALUES ('', 'InitTeste');";
+            query << "INSERT INTO `stock`" << "(`id`, `Teste`) VALUES ('', 'InitTeste');";
             query.execute();
             query.reset();
         }
-        std::cout <<  "TESTEEE";
 
         return "Path2";
     });
@@ -177,7 +176,7 @@ int main()
 
         // To get a simple string from the url params
         // To see it in action /params?foo='blabla'
-        os << "Params: " << req.url_params << "\n\n"; 
+        os << "Params: " << req.url_params << "\n\n";
         os << "The key 'foo' was " << (req.url_params.get("foo") == nullptr ? "not " : "") << "found.\n";
 
         // To get a double from the request
@@ -204,7 +203,7 @@ int main()
         }
 
         return crow::response{os.str()};
-    });    
+    });
 
     CROW_ROUTE(app, "/large")
     ([]{

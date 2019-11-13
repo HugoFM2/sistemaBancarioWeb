@@ -1,10 +1,12 @@
 #include "WebInterface.h"
+#include <mysql++.h>
 
 std::vector<Banco*> &WebInterface::getBancos(){
   return Bancos;
 }
 void WebInterface::CadastrarBanco(std::string nomeBanco, Banco* banco){
-
+  
+  query << "INSERT INTO `Bancos` (`id`, `nomebanco`) VALUES ('', 'InitTeste');";
   Bancos.push_back(new Banco(nomeBanco));
 }
 
