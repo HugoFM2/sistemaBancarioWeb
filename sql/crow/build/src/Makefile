@@ -271,32 +271,59 @@ TP1/Movimentacao.cpp.s:
 	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP1/Movimentacao.cpp.s
 .PHONY : TP1/Movimentacao.cpp.s
 
-TP1/WebInterface.o: TP1/WebInterface.cpp.o
+TP3/BancoTP3.o: TP3/BancoTP3.cpp.o
 
-.PHONY : TP1/WebInterface.o
+.PHONY : TP3/BancoTP3.o
 
 # target to build an object file
-TP1/WebInterface.cpp.o:
-	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP1/WebInterface.cpp.o
-.PHONY : TP1/WebInterface.cpp.o
+TP3/BancoTP3.cpp.o:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP3/BancoTP3.cpp.o
+.PHONY : TP3/BancoTP3.cpp.o
 
-TP1/WebInterface.i: TP1/WebInterface.cpp.i
+TP3/BancoTP3.i: TP3/BancoTP3.cpp.i
 
-.PHONY : TP1/WebInterface.i
+.PHONY : TP3/BancoTP3.i
 
 # target to preprocess a source file
-TP1/WebInterface.cpp.i:
-	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP1/WebInterface.cpp.i
-.PHONY : TP1/WebInterface.cpp.i
+TP3/BancoTP3.cpp.i:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP3/BancoTP3.cpp.i
+.PHONY : TP3/BancoTP3.cpp.i
 
-TP1/WebInterface.s: TP1/WebInterface.cpp.s
+TP3/BancoTP3.s: TP3/BancoTP3.cpp.s
 
-.PHONY : TP1/WebInterface.s
+.PHONY : TP3/BancoTP3.s
 
 # target to generate assembly for a file
-TP1/WebInterface.cpp.s:
-	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP1/WebInterface.cpp.s
-.PHONY : TP1/WebInterface.cpp.s
+TP3/BancoTP3.cpp.s:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP3/BancoTP3.cpp.s
+.PHONY : TP3/BancoTP3.cpp.s
+
+TP3/WebInterface.o: TP3/WebInterface.cpp.o
+
+.PHONY : TP3/WebInterface.o
+
+# target to build an object file
+TP3/WebInterface.cpp.o:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP3/WebInterface.cpp.o
+.PHONY : TP3/WebInterface.cpp.o
+
+TP3/WebInterface.i: TP3/WebInterface.cpp.i
+
+.PHONY : TP3/WebInterface.i
+
+# target to preprocess a source file
+TP3/WebInterface.cpp.i:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP3/WebInterface.cpp.i
+.PHONY : TP3/WebInterface.cpp.i
+
+TP3/WebInterface.s: TP3/WebInterface.cpp.s
+
+.PHONY : TP3/WebInterface.s
+
+# target to generate assembly for a file
+TP3/WebInterface.cpp.s:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP3/WebInterface.cpp.s
+.PHONY : TP3/WebInterface.cpp.s
 
 example.o: example.cpp.o
 
@@ -350,9 +377,12 @@ help:
 	@echo "... TP1/Movimentacao.o"
 	@echo "... TP1/Movimentacao.i"
 	@echo "... TP1/Movimentacao.s"
-	@echo "... TP1/WebInterface.o"
-	@echo "... TP1/WebInterface.i"
-	@echo "... TP1/WebInterface.s"
+	@echo "... TP3/BancoTP3.o"
+	@echo "... TP3/BancoTP3.i"
+	@echo "... TP3/BancoTP3.s"
+	@echo "... TP3/WebInterface.o"
+	@echo "... TP3/WebInterface.i"
+	@echo "... TP3/WebInterface.s"
 	@echo "... example.o"
 	@echo "... example.i"
 	@echo "... example.s"

@@ -24,15 +24,24 @@ src/CMakeFiles/example.dir/TP1/Movimentacao.cpp.o
  /app/src/TP1/Date.h
  /app/src/TP1/Movimentacao.cpp
  /app/src/TP1/Movimentacao.h
-src/CMakeFiles/example.dir/TP1/WebInterface.cpp.o
+src/CMakeFiles/example.dir/TP3/BancoTP3.cpp.o
+ /app/src/TP1/Banco.h
+ /app/src/TP1/Cliente.h
+ /app/src/TP1/Conta.h
+ /app/src/TP1/Date.h
+ /app/src/TP1/Movimentacao.h
+ /app/src/TP3/BancoTP3.cpp
+ /app/src/TP3/BancoTP3.h
+src/CMakeFiles/example.dir/TP3/WebInterface.cpp.o
  /app/src/TP1/Banco.h
  /app/src/TP1/Cliente.h
  /app/src/TP1/Conta.h
  /app/src/TP1/Date.h
  /app/src/TP1/Interface.h
  /app/src/TP1/Movimentacao.h
- /app/src/TP1/WebInterface.cpp
- /app/src/TP1/WebInterface.h
+ /app/src/TP3/BancoTP3.h
+ /app/src/TP3/WebInterface.cpp
+ /app/src/TP3/WebInterface.h
  /usr/include/mysql++/beemutex.h
  /usr/include/mysql++/common.h
  /usr/include/mysql++/comparable.h
@@ -113,7 +122,8 @@ src/CMakeFiles/example.dir/example.cpp.o
  /app/src/TP1/Date.h
  /app/src/TP1/Interface.h
  /app/src/TP1/Movimentacao.h
- /app/src/TP1/WebInterface.h
+ /app/src/TP3/BancoTP3.h
+ /app/src/TP3/WebInterface.h
  /app/src/example.cpp
  /app/src/stock.h
  /usr/include/mysql++/beemutex.h

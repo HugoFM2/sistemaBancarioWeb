@@ -440,12 +440,18 @@ iostream
 Date.h
 /app/src/TP1/Date.h
 
-/app/src/TP1/WebInterface.h
-Banco.h
+/app/src/TP3/BancoTP3.h
+bits/stdc++.h
+-
+../TP1/Banco.h
 /app/src/TP1/Banco.h
-Cliente.h
+
+/app/src/TP3/WebInterface.h
+BancoTP3.h
+/app/src/TP3/BancoTP3.h
+../TP1/Cliente.h
 /app/src/TP1/Cliente.h
-Interface.h
+../TP1/Interface.h
 /app/src/TP1/Interface.h
 bits/stdc++.h
 -
@@ -455,8 +461,8 @@ crow.h
 /app/src/crow.h
 stock.h
 /app/src/stock.h
-TP1/WebInterface.h
-/app/src/TP1/WebInterface.h
+TP3/WebInterface.h
+/app/src/TP3/WebInterface.h
 sstream
 -
 mysql++.h

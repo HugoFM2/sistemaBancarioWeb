@@ -1,6 +1,6 @@
 #include "crow.h"
 #include "stock.h"
-#include "TP1/WebInterface.h"
+#include "TP3/WebInterface.h"
 
 #include <sstream>
 #include <mysql++.h>
@@ -9,7 +9,7 @@
 
 using namespace mysqlpp;
 
-int WebInterface::contador = 0; // inicializa valor static
+int BancoTP3::idBanco = -1; // inicializa valor static
 int Conta::counter = 0; // inicializa valor static
 class ExampleLogHandler : public crow::ILogHandler {
     public:
@@ -112,7 +112,7 @@ int main()
 
         if(req.url_params.get("nomeBanco") != nullptr) {
           std::string nomeBanco = std::string(req.url_params.get("nomeBanco"));
-            std::cout << "The value of 'nomeBanco' is " << nomeBanco << std::endl;
+            // std::cout << "The value of 'nomeBanco' is " << nomeBanco << std::endl;
             WebTeste.CadastrarBanco(nomeBanco);
         }
         return "";

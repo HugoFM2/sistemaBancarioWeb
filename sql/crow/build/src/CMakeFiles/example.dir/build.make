@@ -122,22 +122,35 @@ src/CMakeFiles/example.dir/TP1/Movimentacao.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/example.dir/TP1/Movimentacao.cpp.s"
 	cd /app/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /app/src/TP1/Movimentacao.cpp -o CMakeFiles/example.dir/TP1/Movimentacao.cpp.s
 
-src/CMakeFiles/example.dir/TP1/WebInterface.cpp.o: src/CMakeFiles/example.dir/flags.make
-src/CMakeFiles/example.dir/TP1/WebInterface.cpp.o: ../src/TP1/WebInterface.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object src/CMakeFiles/example.dir/TP1/WebInterface.cpp.o"
-	cd /app/build/src && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/example.dir/TP1/WebInterface.cpp.o -c /app/src/TP1/WebInterface.cpp
+src/CMakeFiles/example.dir/TP3/BancoTP3.cpp.o: src/CMakeFiles/example.dir/flags.make
+src/CMakeFiles/example.dir/TP3/BancoTP3.cpp.o: ../src/TP3/BancoTP3.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object src/CMakeFiles/example.dir/TP3/BancoTP3.cpp.o"
+	cd /app/build/src && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/example.dir/TP3/BancoTP3.cpp.o -c /app/src/TP3/BancoTP3.cpp
 
-src/CMakeFiles/example.dir/TP1/WebInterface.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/example.dir/TP1/WebInterface.cpp.i"
-	cd /app/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /app/src/TP1/WebInterface.cpp > CMakeFiles/example.dir/TP1/WebInterface.cpp.i
+src/CMakeFiles/example.dir/TP3/BancoTP3.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/example.dir/TP3/BancoTP3.cpp.i"
+	cd /app/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /app/src/TP3/BancoTP3.cpp > CMakeFiles/example.dir/TP3/BancoTP3.cpp.i
 
-src/CMakeFiles/example.dir/TP1/WebInterface.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/example.dir/TP1/WebInterface.cpp.s"
-	cd /app/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /app/src/TP1/WebInterface.cpp -o CMakeFiles/example.dir/TP1/WebInterface.cpp.s
+src/CMakeFiles/example.dir/TP3/BancoTP3.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/example.dir/TP3/BancoTP3.cpp.s"
+	cd /app/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /app/src/TP3/BancoTP3.cpp -o CMakeFiles/example.dir/TP3/BancoTP3.cpp.s
+
+src/CMakeFiles/example.dir/TP3/WebInterface.cpp.o: src/CMakeFiles/example.dir/flags.make
+src/CMakeFiles/example.dir/TP3/WebInterface.cpp.o: ../src/TP3/WebInterface.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object src/CMakeFiles/example.dir/TP3/WebInterface.cpp.o"
+	cd /app/build/src && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/example.dir/TP3/WebInterface.cpp.o -c /app/src/TP3/WebInterface.cpp
+
+src/CMakeFiles/example.dir/TP3/WebInterface.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/example.dir/TP3/WebInterface.cpp.i"
+	cd /app/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /app/src/TP3/WebInterface.cpp > CMakeFiles/example.dir/TP3/WebInterface.cpp.i
+
+src/CMakeFiles/example.dir/TP3/WebInterface.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/example.dir/TP3/WebInterface.cpp.s"
+	cd /app/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /app/src/TP3/WebInterface.cpp -o CMakeFiles/example.dir/TP3/WebInterface.cpp.s
 
 src/CMakeFiles/example.dir/example.cpp.o: src/CMakeFiles/example.dir/flags.make
 src/CMakeFiles/example.dir/example.cpp.o: ../src/example.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object src/CMakeFiles/example.dir/example.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object src/CMakeFiles/example.dir/example.cpp.o"
 	cd /app/build/src && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/example.dir/example.cpp.o -c /app/src/example.cpp
 
 src/CMakeFiles/example.dir/example.cpp.i: cmake_force
@@ -155,7 +168,8 @@ example_OBJECTS = \
 "CMakeFiles/example.dir/TP1/Conta.cpp.o" \
 "CMakeFiles/example.dir/TP1/Date.cpp.o" \
 "CMakeFiles/example.dir/TP1/Movimentacao.cpp.o" \
-"CMakeFiles/example.dir/TP1/WebInterface.cpp.o" \
+"CMakeFiles/example.dir/TP3/BancoTP3.cpp.o" \
+"CMakeFiles/example.dir/TP3/WebInterface.cpp.o" \
 "CMakeFiles/example.dir/example.cpp.o"
 
 # External object files for target example
@@ -166,7 +180,8 @@ src/example: src/CMakeFiles/example.dir/TP1/Cliente.cpp.o
 src/example: src/CMakeFiles/example.dir/TP1/Conta.cpp.o
 src/example: src/CMakeFiles/example.dir/TP1/Date.cpp.o
 src/example: src/CMakeFiles/example.dir/TP1/Movimentacao.cpp.o
-src/example: src/CMakeFiles/example.dir/TP1/WebInterface.cpp.o
+src/example: src/CMakeFiles/example.dir/TP3/BancoTP3.cpp.o
+src/example: src/CMakeFiles/example.dir/TP3/WebInterface.cpp.o
 src/example: src/CMakeFiles/example.dir/example.cpp.o
 src/example: src/CMakeFiles/example.dir/build.make
 src/example: /usr/lib/x86_64-linux-gnu/libboost_system.so
@@ -180,7 +195,7 @@ src/example: /usr/lib/x86_64-linux-gnu/libboost_chrono.so
 src/example: /usr/lib/x86_64-linux-gnu/libboost_date_time.so
 src/example: /usr/lib/x86_64-linux-gnu/libboost_atomic.so
 src/example: src/CMakeFiles/example.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable example"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Linking CXX executable example"
 	cd /app/build/src && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/example.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
