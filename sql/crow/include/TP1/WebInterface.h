@@ -7,7 +7,7 @@ class WebInterface : public Interface{
 private:
   std::vector<Banco*> Bancos;
 public:
-  void CadastrarBanco(std::string nomeBanco, Banco* banco);
+  void CadastrarBanco(std::string nomeBanco);
   std::vector<Banco*> &getBancos();
 
 

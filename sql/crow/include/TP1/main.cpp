@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "Banco.h"
-#include "Interface.h"
+#include "WebInterface.h"
 #include "Date.h"
 
 
@@ -14,9 +14,8 @@ int Conta::counter = 0; // inicializa valor static
 int Interface::counter = 0; // inicializa valor static
 
 int main() {
-  // ---===TESTE INTERFACE ===---
-  Banco * Banco2 = new Banco("Bradesco");
-  Interface * teste = new Interface(Banco2);
+  WebInterface * teste = new WebInterface();
+  WebInterface->CadastrarBanco("Bradesco");
   teste->Menu();
   return 0;
 }

@@ -4,9 +4,16 @@
 std::vector<Banco*> &WebInterface::getBancos(){
   return Bancos;
 }
-void WebInterface::CadastrarBanco(std::string nomeBanco, Banco* banco){
-  
-  query << "INSERT INTO `Bancos` (`id`, `nomebanco`) VALUES ('', 'InitTeste');";
+void WebInterface::CadastrarBanco(std::string nomeBanco){
+
+  mysqlpp::Connection conn(false);
+  if (conn.connect("teste", "bd5", "root", "123.456")) {
+      std::cout << "ENTROU NA CONEXAO DO PATH" << std::endl;
+      mysqlpp::Query query = conn.query();
+      query << "INSERT INTO `Banco`" << "(`id`, `Nome`) VALUES ('', '"<< nomeBanco << "');";
+      query.execute();
+      query.reset();
+  }
   Bancos.push_back(new Banco(nomeBanco));
 }
 
