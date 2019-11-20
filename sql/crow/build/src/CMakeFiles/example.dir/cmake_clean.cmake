@@ -5,6 +5,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/example.dir/TP1/Date.cpp.o"
   "CMakeFiles/example.dir/TP1/Movimentacao.cpp.o"
   "CMakeFiles/example.dir/TP3/BancoTP3.cpp.o"
+  "CMakeFiles/example.dir/TP3/ClienteTP3.cpp.o"
   "CMakeFiles/example.dir/TP3/WebInterface.cpp.o"
   "CMakeFiles/example.dir/example.cpp.o"
   "example"

@@ -13,3 +13,10 @@ int BancoTP3::getBancoid(){
 std::string &BancoTP3::getNome(){
   return nomeBanco;
 }
+
+void BancoTP3::NovoCliente(ClienteTP3* cliente){
+  Clientes.push_back(cliente);
+}
+std::vector<ClienteTP3*> &BancoTP3::getClientes(){
+  return Clientes;
+}

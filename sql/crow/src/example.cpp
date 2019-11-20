@@ -10,6 +10,7 @@
 using namespace mysqlpp;
 
 int BancoTP3::ID = -1; // inicializa valor static
+int ClienteTP3::ID = 0; // inicializa valor static
 int Conta::counter = 0; // inicializa valor static
 class ExampleLogHandler : public crow::ILogHandler {
     public:
@@ -105,7 +106,7 @@ int main()
 
         return "Path2";
     });
-
+// BANCO
     CROW_ROUTE(app, "/criarBanco")
     ([&WebTeste](const crow::request& req){
 
@@ -129,6 +130,50 @@ int main()
         return x;
     });
 
+// CLIENTE
+  CROW_ROUTE(app, "/criarCliente")
+  ([&WebTeste](const crow::request& req){
+
+      if(req.url_params.get("idBanco") != nullptr) {
+        int idBanco = std::stoi(std::string(req.url_params.get("idBanco")));
+        std::cout << "ACHOU id banco" << std::endl;
+        if (req.url_params.get("nomeCliente") != nullptr) {
+          std::cout << "ACHOU nomecliente" << std::endl;
+          std::string nomeCliente = std::string(req.url_params.get("nomeCliente"));
+          if (req.url_params.get("cpf_cnpj") != nullptr){
+            std::cout << "cpf_cnpj" << std::endl;
+            std::string cpf_cnpj = std::string(req.url_params.get("cpf_cnpj"));
+            if (req.url_params.get("endereco") != nullptr){
+              std::cout << "ACHOU endereco" << std::endl;
+              std::string endereco = std::string(req.url_params.get("endereco"));
+              if (req.url_params.get("fone") != nullptr){
+                std::string fone = std::string(req.url_params.get("fone"));
+                WebTeste.CadastrarCliente(WebTeste.getBanco(idBanco), nomeCliente, cpf_cnpj, endereco, fone);
+              }
+            }
+          }
+        }
+      }
+      return "";
+  });
+
+  CROW_ROUTE(app, "/listarClientes")
+  ([&WebTeste](const crow::request& req){
+    crow::json::wvalue x;
+    if(req.url_params.get("idBanco") != nullptr) {
+      std::cout << "Entrou listarClientes com algum id";
+      int idBanco = std::stoi(std::string(req.url_params.get("idBanco")));
+      for(int i = 0;i < WebTeste.getBanco(idBanco)->getClientes().size(); i++){
+        std::cout << i << ". " << WebTeste.getBanco(idBanco)->getClientes()[i]->getNome() << std::endl;
+        x["Nome"][i] = WebTeste.getBanco(idBanco)->getClientes()[i]->getNome();
+        x["cpf_cnpj"][i] = WebTeste.getBanco(idBanco)->getClientes()[i]->getCpf_cnpj();
+        x["endereco"][i] = WebTeste.getBanco(idBanco)->getClientes()[i]->getEndereco();
+        x["fone"][i] = WebTeste.getBanco(idBanco)->getClientes()[i]->getFone();
+        x["id"][i] = WebTeste.getBanco(idBanco)->getClientes()[i]->getClienteID();
+      }
+  }
+      return x;
+  });
     // simple json response
     // To see it in action enter {ip}:18080/json
     CROW_ROUTE(app, "/json")

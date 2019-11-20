@@ -31,6 +31,11 @@ src/CMakeFiles/example.dir/TP3/BancoTP3.cpp.o: ../src/TP1/Date.h
 src/CMakeFiles/example.dir/TP3/BancoTP3.cpp.o: ../src/TP1/Movimentacao.h
 src/CMakeFiles/example.dir/TP3/BancoTP3.cpp.o: ../src/TP3/BancoTP3.cpp
 src/CMakeFiles/example.dir/TP3/BancoTP3.cpp.o: ../src/TP3/BancoTP3.h
+src/CMakeFiles/example.dir/TP3/BancoTP3.cpp.o: ../src/TP3/ClienteTP3.h
+
+src/CMakeFiles/example.dir/TP3/ClienteTP3.cpp.o: ../src/TP1/Cliente.h
+src/CMakeFiles/example.dir/TP3/ClienteTP3.cpp.o: ../src/TP3/ClienteTP3.cpp
+src/CMakeFiles/example.dir/TP3/ClienteTP3.cpp.o: ../src/TP3/ClienteTP3.h
 
 src/CMakeFiles/example.dir/TP3/WebInterface.cpp.o: ../src/TP1/Banco.h
 src/CMakeFiles/example.dir/TP3/WebInterface.cpp.o: ../src/TP1/Cliente.h
@@ -39,6 +44,7 @@ src/CMakeFiles/example.dir/TP3/WebInterface.cpp.o: ../src/TP1/Date.h
 src/CMakeFiles/example.dir/TP3/WebInterface.cpp.o: ../src/TP1/Interface.h
 src/CMakeFiles/example.dir/TP3/WebInterface.cpp.o: ../src/TP1/Movimentacao.h
 src/CMakeFiles/example.dir/TP3/WebInterface.cpp.o: ../src/TP3/BancoTP3.h
+src/CMakeFiles/example.dir/TP3/WebInterface.cpp.o: ../src/TP3/ClienteTP3.h
 src/CMakeFiles/example.dir/TP3/WebInterface.cpp.o: ../src/TP3/WebInterface.cpp
 src/CMakeFiles/example.dir/TP3/WebInterface.cpp.o: ../src/TP3/WebInterface.h
 src/CMakeFiles/example.dir/TP3/WebInterface.cpp.o: /usr/include/mysql++/beemutex.h
@@ -122,6 +128,7 @@ src/CMakeFiles/example.dir/example.cpp.o: ../src/TP1/Date.h
 src/CMakeFiles/example.dir/example.cpp.o: ../src/TP1/Interface.h
 src/CMakeFiles/example.dir/example.cpp.o: ../src/TP1/Movimentacao.h
 src/CMakeFiles/example.dir/example.cpp.o: ../src/TP3/BancoTP3.h
+src/CMakeFiles/example.dir/example.cpp.o: ../src/TP3/ClienteTP3.h
 src/CMakeFiles/example.dir/example.cpp.o: ../src/TP3/WebInterface.h
 src/CMakeFiles/example.dir/example.cpp.o: ../src/example.cpp
 src/CMakeFiles/example.dir/example.cpp.o: ../src/stock.h

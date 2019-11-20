@@ -26,7 +26,7 @@ return Bancos;
 
 
 
-Banco* WebInterface::getBanco(int idBank){
+BancoTP3* WebInterface::getBanco(int idBank){
   for(int i = 0; i < Bancos.size();i++){
     if(idBank == getBancos()[i]->getBancoid()){
       return Bancos[i];
@@ -35,12 +35,13 @@ Banco* WebInterface::getBanco(int idBank){
 }
 
 void WebInterface::CadastrarCliente(BancoTP3* banco,std::string nomeCliente,std::string cpf_cnpj,std::string endereco,std::string fone){
-  banco->NovoCliente(new Cliente(nomeCliente,cpf_cnpj,endereco,fone));
+  banco->NovoCliente(new ClienteTP3(nomeCliente,cpf_cnpj,endereco,fone));
+  std::cout << "Cliente CRIADO" << std::endl << std::endl;
 }
 void WebInterface::ExcluirCliente(BancoTP3* banco, std::string cpf_cnpj){
   banco->RemoverCliente(cpf_cnpj);
 }
 
-void WebInterface::CadastrarConta(BancoTP3* banco, Cliente* cliente){
+void WebInterface::CadastrarConta(BancoTP3* banco, ClienteTP3* cliente){
   banco->NovaConta(cliente);
 }

@@ -298,6 +298,33 @@ TP3/BancoTP3.cpp.s:
 	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP3/BancoTP3.cpp.s
 .PHONY : TP3/BancoTP3.cpp.s
 
+TP3/ClienteTP3.o: TP3/ClienteTP3.cpp.o
+
+.PHONY : TP3/ClienteTP3.o
+
+# target to build an object file
+TP3/ClienteTP3.cpp.o:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP3/ClienteTP3.cpp.o
+.PHONY : TP3/ClienteTP3.cpp.o
+
+TP3/ClienteTP3.i: TP3/ClienteTP3.cpp.i
+
+.PHONY : TP3/ClienteTP3.i
+
+# target to preprocess a source file
+TP3/ClienteTP3.cpp.i:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP3/ClienteTP3.cpp.i
+.PHONY : TP3/ClienteTP3.cpp.i
+
+TP3/ClienteTP3.s: TP3/ClienteTP3.cpp.s
+
+.PHONY : TP3/ClienteTP3.s
+
+# target to generate assembly for a file
+TP3/ClienteTP3.cpp.s:
+	cd /app/build && $(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/TP3/ClienteTP3.cpp.s
+.PHONY : TP3/ClienteTP3.cpp.s
+
 TP3/WebInterface.o: TP3/WebInterface.cpp.o
 
 .PHONY : TP3/WebInterface.o
@@ -380,6 +407,9 @@ help:
 	@echo "... TP3/BancoTP3.o"
 	@echo "... TP3/BancoTP3.i"
 	@echo "... TP3/BancoTP3.s"
+	@echo "... TP3/ClienteTP3.o"
+	@echo "... TP3/ClienteTP3.i"
+	@echo "... TP3/ClienteTP3.s"
 	@echo "... TP3/WebInterface.o"
 	@echo "... TP3/WebInterface.i"
 	@echo "... TP3/WebInterface.s"

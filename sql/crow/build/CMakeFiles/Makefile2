@@ -126,7 +126,7 @@ src/clean: src/CMakeFiles/example.dir/clean
 src/CMakeFiles/example.dir/all:
 	$(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/depend
 	$(MAKE) -f src/CMakeFiles/example.dir/build.make src/CMakeFiles/example.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/app/build/CMakeFiles --progress-num=2,3,4,5,6,7,8,9,10 "Built target example"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/app/build/CMakeFiles --progress-num=2,3,4,5,6,7,8,9,10,11 "Built target example"
 .PHONY : src/CMakeFiles/example.dir/all
 
 # Include target in all.
@@ -136,7 +136,7 @@ all: src/CMakeFiles/example.dir/all
 
 # Build rule for subdir invocation for target.
 src/CMakeFiles/example.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /app/build/CMakeFiles 9
+	$(CMAKE_COMMAND) -E cmake_progress_start /app/build/CMakeFiles 10
 	$(MAKE) -f CMakeFiles/Makefile2 src/CMakeFiles/example.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /app/build/CMakeFiles 0
 .PHONY : src/CMakeFiles/example.dir/rule
@@ -178,7 +178,7 @@ tests/clean: tests/template/clean
 tests/CMakeFiles/unittest.dir/all:
 	$(MAKE) -f tests/CMakeFiles/unittest.dir/build.make tests/CMakeFiles/unittest.dir/depend
 	$(MAKE) -f tests/CMakeFiles/unittest.dir/build.make tests/CMakeFiles/unittest.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/app/build/CMakeFiles --progress-num=14,15 "Built target unittest"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/app/build/CMakeFiles --progress-num=15,16 "Built target unittest"
 .PHONY : tests/CMakeFiles/unittest.dir/all
 
 # Include target in all.
@@ -230,7 +230,7 @@ tests/template/clean: tests/template/CMakeFiles/template_test_copy.dir/clean
 tests/template/CMakeFiles/mustachetest.dir/all:
 	$(MAKE) -f tests/template/CMakeFiles/mustachetest.dir/build.make tests/template/CMakeFiles/mustachetest.dir/depend
 	$(MAKE) -f tests/template/CMakeFiles/mustachetest.dir/build.make tests/template/CMakeFiles/mustachetest.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/app/build/CMakeFiles --progress-num=11,12 "Built target mustachetest"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/app/build/CMakeFiles --progress-num=12,13 "Built target mustachetest"
 .PHONY : tests/template/CMakeFiles/mustachetest.dir/all
 
 # Include target in all.
@@ -262,7 +262,7 @@ tests/template/CMakeFiles/mustachetest.dir/clean:
 tests/template/CMakeFiles/template_test_copy.dir/all:
 	$(MAKE) -f tests/template/CMakeFiles/template_test_copy.dir/build.make tests/template/CMakeFiles/template_test_copy.dir/depend
 	$(MAKE) -f tests/template/CMakeFiles/template_test_copy.dir/build.make tests/template/CMakeFiles/template_test_copy.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/app/build/CMakeFiles --progress-num=13 "Built target template_test_copy"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/app/build/CMakeFiles --progress-num=14 "Built target template_test_copy"
 .PHONY : tests/template/CMakeFiles/template_test_copy.dir/all
 
 # Include target in all.
