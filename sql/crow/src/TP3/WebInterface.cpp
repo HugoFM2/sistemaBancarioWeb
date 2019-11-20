@@ -38,10 +38,10 @@ void WebInterface::CadastrarCliente(BancoTP3* banco,std::string nomeCliente,std:
   banco->NovoCliente(new ClienteTP3(nomeCliente,cpf_cnpj,endereco,fone));
   std::cout << "Cliente CRIADO" << std::endl << std::endl;
 }
-void WebInterface::ExcluirCliente(BancoTP3* banco, std::string cpf_cnpj){
-  banco->RemoverCliente(cpf_cnpj);
+void WebInterface::ExcluirCliente(BancoTP3* banco, int idCliente){
+  banco->RemoverCliente(idCliente);
 }
 
-void WebInterface::CadastrarConta(BancoTP3* banco, ClienteTP3* cliente){
-  banco->NovaConta(cliente);
-}
+// void WebInterface::CadastrarConta(BancoTP3* banco, ClienteTP3* cliente){
+//   banco->NovaConta(cliente);
+// }

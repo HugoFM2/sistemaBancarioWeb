@@ -1,11 +1,18 @@
 #include "Conta.h"
 
+Conta::Conta(){
+  saldo = 0;
+  counter++;
+  numConta = counter;
+}
+
 Conta::Conta(Cliente* c){
   saldo = 0;
   counter++;
   numConta = counter;
   cliente = c;
 }
+
 
 Conta::Conta(Cliente* c,int nC){
   saldo = 0;

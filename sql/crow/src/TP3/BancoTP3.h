@@ -4,10 +4,12 @@
 #include <bits/stdc++.h>
 #include "../TP1/Banco.h"
 #include "ClienteTP3.h"
+#include "ContaTP3.h"
 
 class BancoTP3 : public Banco{
 private:
   std::vector<ClienteTP3*> Clientes;
+  std::vector<ContaTP3*> Contas;
   std::string nomeBanco;
   static int ID;
   int idBanco;
@@ -16,7 +18,12 @@ public:
   BancoTP3(std::string nB);
   int getBancoid();
   void NovoCliente(ClienteTP3* cliente);
+  void RemoverCliente(int idCliente);
   std::vector<ClienteTP3*> &getClientes();
+
+
+
+  void NovaConta(ClienteTP3* cliente);
 
 };
 

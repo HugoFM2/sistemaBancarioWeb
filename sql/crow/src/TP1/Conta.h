@@ -9,7 +9,7 @@
 
 
 class Conta{
-private:
+protected:
   static int counter;
   int numConta; //OBS STATIC???
   double saldo;
@@ -17,6 +17,7 @@ private:
   std::vector<Movimentacao> movimentacoes;
   static int proxNumConta;
 public:
+  Conta();
   Conta(Cliente* c);
   Conta(Cliente* c,int nC);
   ~Conta();
