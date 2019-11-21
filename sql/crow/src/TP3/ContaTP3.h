@@ -29,7 +29,7 @@ public:
   // std::vector<Movimentacao> Extrato(Date DataInit, Date DataFinal);
   // int getNumConta();
   // double getSaldo();
-  // Cliente *getCliente();
+  ClienteTP3 *getCliente();
   // std::string NomeCliente();
 };
 #endif

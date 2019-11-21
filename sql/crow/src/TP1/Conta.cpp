@@ -2,14 +2,16 @@
 
 Conta::Conta(){
   saldo = 0;
-  counter++;
   numConta = counter;
+  counter++;
+
 }
 
 Conta::Conta(Cliente* c){
   saldo = 0;
-  counter++;
   numConta = counter;
+  counter++;
+
   cliente = c;
 }
 

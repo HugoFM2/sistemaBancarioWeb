@@ -18,11 +18,17 @@ std::string &BancoTP3::getNome(){
 void BancoTP3::NovoCliente(ClienteTP3* cliente){
   Clientes.push_back(cliente);
 }
+ClienteTP3* BancoTP3::getCliente(int idCliente){
+  for(unsigned int i = 0; i < Clientes.size() ; ++i){
+    if(Clientes[i]->getClienteID() == idCliente){
+      return Clientes[i];
+    }
+  }
+}
 
 void BancoTP3::RemoverCliente(int idCliente){
   for(unsigned int i = 0; i < Clientes.size() ; ++i){
     if(Clientes[i]->getClienteID() == idCliente){
-      std::cout << "ACHOU CLIENTE";
       Clientes.erase(Clientes.begin()+i);
     }
   }
@@ -34,10 +40,10 @@ std::vector<ClienteTP3*> &BancoTP3::getClientes(){
 
 
 
-// void BancoTP3::NovaConta(ClienteTP3* cliente){
-//   if(getContas().size() == 0){
-//     Contas.push_back(new ContaTP3(cliente,1));
-//   } else {
-//     Contas.push_back(new ContaTP3(cliente,getContas().back()->getNumConta() + 1));
-//   }
-// }
+void BancoTP3::NovaConta(ClienteTP3* cliente){
+    Contas.push_back(new ContaTP3(cliente));
+}
+
+std::vector<ContaTP3*> &BancoTP3::getContas(){
+  return Contas;
+}

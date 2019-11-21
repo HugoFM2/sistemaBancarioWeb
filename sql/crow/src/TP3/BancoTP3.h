@@ -19,11 +19,13 @@ public:
   int getBancoid();
   void NovoCliente(ClienteTP3* cliente);
   void RemoverCliente(int idCliente);
+  ClienteTP3* getCliente(int idCliente);
   std::vector<ClienteTP3*> &getClientes();
 
 
 
   void NovaConta(ClienteTP3* cliente);
+  std::vector<ContaTP3*> &getContas();
 
 };
 
