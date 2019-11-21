@@ -19,10 +19,11 @@ void BancoTP3::NovoCliente(ClienteTP3* cliente){
   Clientes.push_back(cliente);
 }
 
-void BancoTP3::RemoverCliente(int idCliente){ // BUG: Caso nao ache, vai retornar 0, resolucao, comecar NumCliente com -1, se for -1 cliente nao foi achado pelo cpf e nao apaga
-  for(int i = 0; Clientes.size() ; i++){
+void BancoTP3::RemoverCliente(int idCliente){
+  for(unsigned int i = 0; i < Clientes.size() ; ++i){
     if(Clientes[i]->getClienteID() == idCliente){
-      Clientes.erase(Clientes.begin()+idCliente);
+      std::cout << "ACHOU CLIENTE";
+      Clientes.erase(Clientes.begin()+i);
     }
   }
 }

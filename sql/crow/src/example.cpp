@@ -156,12 +156,25 @@ int main()
       }
       return "";
   });
+  CROW_ROUTE(app, "/removerCliente")
+  ([&WebTeste](const crow::request& req){
+      if(req.url_params.get("idBanco") != nullptr) {
+        int idBanco = std::stoi(std::string(req.url_params.get("idBanco")));
+        if(req.url_params.get("idCliente") != nullptr) {
+          int idCliente = std::stoi(std::string(req.url_params.get("idCliente")));
+          std::cout << std::endl << std:: endl << "ID CLIENTE É: " << idCliente;
+          WebTeste.getBanco(idBanco)->RemoverCliente(idCliente);
+        }
+        return "Faltou ID Cliente";
+      }
+      return "Faltou ID Banco";
+  });
 
   CROW_ROUTE(app, "/listarClientes")
   ([&WebTeste](const crow::request& req){
     crow::json::wvalue x;
     if(req.url_params.get("idBanco") != nullptr) {
-      std::cout << "Entrou listarClientes com algum id";
+      std::cout << " Entrou listarClientes com algum id ";
       int idBanco = std::stoi(std::string(req.url_params.get("idBanco")));
       for(int i = 0;i < WebTeste.getBanco(idBanco)->getClientes().size(); i++){
         std::cout << i << ". " << WebTeste.getBanco(idBanco)->getClientes()[i]->getNome() << std::endl;

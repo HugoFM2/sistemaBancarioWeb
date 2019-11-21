@@ -16,7 +16,7 @@ public:
   ~Banco();
   virtual std::string &getNome();
   int ProcurarPorCPF(std::string cpf_cnpj);
-  std::string RemoverCliente(std::string cpf_cnpj);
+  virtual std::string RemoverCliente(std::string cpf_cnpj);
   std::vector<Cliente*> &getClientes();
   void NovoCliente(Cliente* cliente);
   std::vector<Conta*> &getContas();
