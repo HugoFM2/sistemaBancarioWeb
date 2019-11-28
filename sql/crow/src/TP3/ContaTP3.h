@@ -12,15 +12,16 @@
 class ContaTP3 : public Conta{
 protected:
   ClienteTP3* cliente; //= new Cliente();
-  int tipoConta; // 1 - > poupanca , 13  -> Conta Corrente
-  double limiteConta;
+  int tipoConta; // 1 - > Conta Corrente , 13  ->  poupanca
+  double limiteCredito;
   // std::vector<Movimentacao> movimentacoes;
 public:
-  ContaTP3(ClienteTP3* c);
+  ContaTP3(ClienteTP3* c, int tipo);
   ~ContaTP3();
-  // void DebitarValor(double valor,std::string desc);
+  int getTipoConta();
+  void DebitarValor(double valor,std::string desc);
   // void CreditarValor(double valor,std::string desc);
-  // void DebitarValor(double valor,std::string desc,Date d);
+  void DebitarValor(double valor,std::string desc,Date d);
   // void DebitarValorTarifa(double valor,std::string desc,Date d);
   // void CreditarValor(double valor,std::string desc,Date d);
   // std::vector<Movimentacao> &Extrato();

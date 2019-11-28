@@ -191,15 +191,19 @@ int main()
   // Contas
   CROW_ROUTE(app, "/criarConta")
   ([&WebTeste](const crow::request& req){
-      if(req.url_params.get("idBanco") != nullptr) {
+      if((req.url_params.get("idBanco") != nullptr) && (std::string(req.url_params.get("idBanco")) != "")  && (std::string(req.url_params.get("idBanco")) != "undefined")) {
         int idBanco = std::stoi(std::string(req.url_params.get("idBanco")));
-        if(req.url_params.get("idCliente") != nullptr) {
+        if((req.url_params.get("idCliente") != nullptr) && (std::string(req.url_params.get("idCliente")) != "")  && (std::string(req.url_params.get("idCliente")) != "undefined"))  {
           int idCliente = std::stoi(std::string(req.url_params.get("idCliente")));
-          WebTeste.getBanco(idBanco)->NovaConta(WebTeste.getBanco(idBanco)->getCliente(idCliente));
-          std::cout << std::endl << std::endl << "CRIAR CONTA" << std::endl;
-          return "Conta Criada";
+          if((req.url_params.get("tipoConta") != nullptr) && (std::string(req.url_params.get("tipoConta")) != "undefined") && (std::string(req.url_params.get("tipoConta")) != "")) {
+            int tipoConta = std::stoi(std::string(req.url_params.get("tipoConta")));
+            WebTeste.getBanco(idBanco)->NovaConta(WebTeste.getBanco(idBanco)->getCliente(idCliente), tipoConta);
+            std::cout << std::endl << std::endl << "CRIAR CONTA" << std::endl;
+            return "Conta Criada";
+          }
+          return "Faltou Tipo da Conta";
         }
-        return "Faltou ID Cliente";
+        return "Faltou Selecionar Cliente";
       }
       return "Faltou ID Banco";
   });
@@ -215,6 +219,7 @@ int main()
         for(unsigned int i = 0; i < WebTeste.getBanco(idBanco)->getContas().size(); i++){
           if(WebTeste.getBanco(idBanco)->getContas()[i]->getCliente()->getClienteID() == idCliente){
             x["numConta"][i] = WebTeste.getBanco(idBanco)->getContas()[i]->getNumConta();
+            x["tipoConta"][i] = WebTeste.getBanco(idBanco)->getContas()[i]->getTipoConta();
           }
 
       }
@@ -222,6 +227,28 @@ int main()
   }
       return x;
   });
+
+  //DADOS Conta INDIVIDUAL
+  CROW_ROUTE(app, "/dadosConta")
+  ([&WebTeste](const crow::request& req){
+    crow::json::wvalue x;
+      if((req.url_params.get("idBanco") != nullptr) && (std::string(req.url_params.get("idBanco")) != "")  && (std::string(req.url_params.get("idBanco")) != "undefined")) {
+        int idBanco = std::stoi(std::string(req.url_params.get("idBanco")));
+        if((req.url_params.get("idCliente") != nullptr) && (std::string(req.url_params.get("idCliente")) != "")  && (std::string(req.url_params.get("idCliente")) != "undefined"))  {
+          int idCliente = std::stoi(std::string(req.url_params.get("idCliente")));
+          if((req.url_params.get("numConta") != nullptr) && (std::string(req.url_params.get("numConta")) != "undefined") && (std::string(req.url_params.get("numConta")) != "")) {
+            int numConta = std::stoi(std::string(req.url_params.get("numConta")));
+            x["saldo"] = WebTeste.getBanco(idBanco)->getConta(numConta)->getSaldo();
+            x["tipoConta"] = WebTeste.getBanco(idBanco)->getConta(numConta)->getTipoConta();
+            return x;
+          }
+          // return "Faltou num da Conta";
+        }
+        // return "Faltou Selecionar Cliente";
+      }
+      // return "Faltou ID Banco";
+  });
+
     // simple json response
     // To see it in action enter {ip}:18080/json
     CROW_ROUTE(app, "/json")

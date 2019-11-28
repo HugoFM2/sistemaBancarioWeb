@@ -40,10 +40,18 @@ std::vector<ClienteTP3*> &BancoTP3::getClientes(){
 
 
 
-void BancoTP3::NovaConta(ClienteTP3* cliente){
-    Contas.push_back(new ContaTP3(cliente));
+void BancoTP3::NovaConta(ClienteTP3* cliente, int tipoConta){
+    Contas.push_back(new ContaTP3(cliente, tipoConta));
 }
 
 std::vector<ContaTP3*> &BancoTP3::getContas(){
   return Contas;
+}
+
+ContaTP3* BancoTP3::getConta(int numConta){
+  for(unsigned int i = 0; i < Contas.size() ; ++i){
+    if(Contas[i]->getNumConta() == numConta){
+      return Contas[i];
+    }
+  }
 }

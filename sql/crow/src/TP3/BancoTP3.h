@@ -24,8 +24,9 @@ public:
 
 
 
-  void NovaConta(ClienteTP3* cliente);
+  void NovaConta(ClienteTP3* cliente, int tipoConta);
   std::vector<ContaTP3*> &getContas();
+  ContaTP3* getConta(int numConta);
 
 };
 
