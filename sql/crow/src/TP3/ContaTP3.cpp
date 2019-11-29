@@ -1,8 +1,9 @@
 #include "ContaTP3.h"
 
-ContaTP3::ContaTP3(ClienteTP3* c, int tipo){
+ContaTP3::ContaTP3(ClienteTP3* c, int tipo,double lim){
   this->cliente = c;
   this->tipoConta = tipo;
+  this->limiteCredito = lim;
   saldo = 0;
 
 

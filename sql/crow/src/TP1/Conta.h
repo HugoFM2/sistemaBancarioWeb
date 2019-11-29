@@ -21,11 +21,11 @@ public:
   Conta(Cliente* c);
   Conta(Cliente* c,int nC);
   ~Conta();
-  void DebitarValor(double valor,std::string desc);
-  void CreditarValor(double valor,std::string desc);
-  void DebitarValor(double valor,std::string desc,Date d);
-  void DebitarValorTarifa(double valor,std::string desc,Date d);
-  void CreditarValor(double valor,std::string desc,Date d);
+  virtual void DebitarValor(double valor,std::string desc);
+  virtual void CreditarValor(double valor,std::string desc);
+  virtual void DebitarValor(double valor,std::string desc,Date d);
+  virtual void DebitarValorTarifa(double valor,std::string desc,Date d);
+  virtual void CreditarValor(double valor,std::string desc,Date d);
   std::vector<Movimentacao> &Extrato();
   std::vector<Movimentacao> ExtratoMensal();
   std::vector<Movimentacao> Extrato(Date DataInit);

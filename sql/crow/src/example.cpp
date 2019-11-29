@@ -248,6 +248,83 @@ int main()
       }
       // return "Faltou ID Banco";
   });
+  CROW_ROUTE(app, "/debitarValorConta")
+  ([&WebTeste](const crow::request& req){
+      if((req.url_params.get("idBanco") != nullptr) && (std::string(req.url_params.get("idBanco")) != "")  && (std::string(req.url_params.get("idBanco")) != "undefined")) {
+        int idBanco = std::stoi(std::string(req.url_params.get("idBanco")));
+        if((req.url_params.get("idCliente") != nullptr) && (std::string(req.url_params.get("idCliente")) != "")  && (std::string(req.url_params.get("idCliente")) != "undefined"))  {
+          int idCliente = std::stoi(std::string(req.url_params.get("idCliente")));
+          if((req.url_params.get("numConta") != nullptr) && (std::string(req.url_params.get("numConta")) != "undefined") && (std::string(req.url_params.get("numConta")) != "")) {
+            int numConta = std::stoi(std::string(req.url_params.get("numConta")));
+              if((req.url_params.get("valor") != nullptr) && (std::string(req.url_params.get("valor")) != "undefined") && (std::string(req.url_params.get("valor")) != "")) {
+                double valor = std::stod(std::string(req.url_params.get("valor")));
+                std::string desc = "";
+                  if((req.url_params.get("desc") != nullptr) && (std::string(req.url_params.get("desc")) != "undefined")) {
+                    desc = std::string(req.url_params.get("desc"));
+                  }
+                WebTeste.getBanco(idBanco)->getConta(numConta)->DebitarValor(valor,desc);
+                return "Valor Debitado"; //tirado da conta
+              }
+              return "Faltou Valor a ser debitado";
+          }
+          return "Faltou num da Conta";
+        }
+        return "Faltou Selecionar Cliente";
+      }
+      return "Faltou ID Banco";
+  });
+  CROW_ROUTE(app, "/creditarValorConta")
+  ([&WebTeste](const crow::request& req){
+      if((req.url_params.get("idBanco") != nullptr) && (std::string(req.url_params.get("idBanco")) != "")  && (std::string(req.url_params.get("idBanco")) != "undefined")) {
+        int idBanco = std::stoi(std::string(req.url_params.get("idBanco")));
+        if((req.url_params.get("idCliente") != nullptr) && (std::string(req.url_params.get("idCliente")) != "")  && (std::string(req.url_params.get("idCliente")) != "undefined"))  {
+          int idCliente = std::stoi(std::string(req.url_params.get("idCliente")));
+          if((req.url_params.get("numConta") != nullptr) && (std::string(req.url_params.get("numConta")) != "undefined") && (std::string(req.url_params.get("numConta")) != "")) {
+            int numConta = std::stoi(std::string(req.url_params.get("numConta")));
+              if((req.url_params.get("valor") != nullptr) && (std::string(req.url_params.get("valor")) != "undefined") && (std::string(req.url_params.get("valor")) != "")) {
+                double valor = std::stod(std::string(req.url_params.get("valor")));
+                std::string desc = "";
+                  if((req.url_params.get("desc") != nullptr) && (std::string(req.url_params.get("desc")) != "undefined")) {
+                    desc = std::string(req.url_params.get("desc"));
+                  }
+                WebTeste.getBanco(idBanco)->getConta(numConta)->CreditarValor(valor,desc);
+                return "Valor Creditado"; //acrescentado a conta
+              }
+              return "Faltou Valor a ser creditado";
+          }
+          return "Faltou num da Conta";
+        }
+        return "Faltou Selecionar Cliente";
+      }
+      return "Faltou ID Banco";
+  });
+
+
+
+  CROW_ROUTE(app, "/movimentacoesConta")
+  ([&WebTeste](const crow::request& req){
+    crow::json::wvalue x;
+      if((req.url_params.get("idBanco") != nullptr) && (std::string(req.url_params.get("idBanco")) != "")  && (std::string(req.url_params.get("idBanco")) != "undefined")) {
+        int idBanco = std::stoi(std::string(req.url_params.get("idBanco")));
+        if((req.url_params.get("idCliente") != nullptr) && (std::string(req.url_params.get("idCliente")) != "")  && (std::string(req.url_params.get("idCliente")) != "undefined"))  {
+          int idCliente = std::stoi(std::string(req.url_params.get("idCliente")));
+          if((req.url_params.get("numConta") != nullptr) && (std::string(req.url_params.get("numConta")) != "undefined") && (std::string(req.url_params.get("numConta")) != "")) {
+            int numConta = std::stoi(std::string(req.url_params.get("numConta")));
+            for(unsigned int i = 0; i < WebTeste.getBanco(idBanco)->getConta(numConta)->Extrato().size(); i++){
+              x["data"][i] = WebTeste.getBanco(idBanco)->getConta(numConta)->Extrato()[i].getDate().StringData();
+              x["valor"][i] = WebTeste.getBanco(idBanco)->getConta(numConta)->Extrato()[i].getValor();
+              x["tipo"][i] = std::string(1,WebTeste.getBanco(idBanco)->getConta(numConta)->Extrato()[i].getDebitoCredito());
+              x["desc"][i] = WebTeste.getBanco(idBanco)->getConta(numConta)->Extrato()[i].getDescricao();
+
+              }
+            return x;
+          }
+          // return "Faltou num da Conta";
+        }
+        // return "Faltou Selecionar Cliente";
+      }
+      // return "Faltou ID Banco";
+  });
 
     // simple json response
     // To see it in action enter {ip}:18080/json

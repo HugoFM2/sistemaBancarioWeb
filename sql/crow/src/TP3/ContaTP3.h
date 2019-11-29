@@ -16,7 +16,7 @@ protected:
   double limiteCredito;
   // std::vector<Movimentacao> movimentacoes;
 public:
-  ContaTP3(ClienteTP3* c, int tipo);
+  ContaTP3(ClienteTP3* c, int tipo,double lim = 0);
   ~ContaTP3();
   int getTipoConta();
   void DebitarValor(double valor,std::string desc);
