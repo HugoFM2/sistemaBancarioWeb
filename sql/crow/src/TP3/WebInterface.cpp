@@ -37,6 +37,18 @@ BancoTP3* WebInterface::getBanco(int idBank){
 void WebInterface::CadastrarCliente(BancoTP3* banco,std::string nomeCliente,std::string cpf_cnpj,std::string endereco,std::string fone){
   banco->NovoCliente(new ClienteTP3(nomeCliente,cpf_cnpj,endereco,fone));
   std::cout << "Cliente CRIADO" << std::endl << std::endl;
+   mysqlpp::Connection conn(false);
+  //Migrando para sql
+  if (conn.connect("teste", "bd5", "root", "123.456")) {
+      mysqlpp::Query query = conn.query();
+      //query << "INSERT INTO `Banco`" << "(`id`, `Nome`) VALUES ('" <<  Bancos.back()->getBancoid() << "', '"<< nomeBanco << "');";
+      //query << "INSERT INTO `Bancos` (`Nome`) VALUES ('"<< nomeCliente << "');";
+      std::cout << "INSERT INTO `Banco` (`Nome`) VALUES ('"<< nomeCliente << "');";
+      query << "INSERT INTO `Clientes`"<<"(`nome`,`cpf`, `endereco`, `telefone`) VALUES ('" << nomeCliente <<"','"<<cpf_cnpj<<"','"<<endereco<<"','"<<fone<<"');";
+      query.execute();
+      query.reset();
+  }
+
 }
 void WebInterface::ExcluirCliente(BancoTP3* banco, int idCliente){
   banco->RemoverCliente(idCliente);
