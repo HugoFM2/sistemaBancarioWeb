@@ -268,37 +268,42 @@ int main()
                   if((req.url_params.get("desc") != nullptr) && (std::string(req.url_params.get("desc")) != "undefined")) {
                     desc = std::string(req.url_params.get("desc"));
                   }
-                  if((req.url_params.get("dia") != nullptr) && (std::string(req.url_params.get("dia")) != "undefined") && (std::string(req.url_params.get("dia")) != "")) {
-                    int dia = std::stoi(std::string(req.url_params.get("dia")));
-                    if((req.url_params.get("mes") != nullptr) && (std::string(req.url_params.get("mes")) != "undefined") && (std::string(req.url_params.get("mes")) != "")) {
-                      int mes = std::stoi(std::string(req.url_params.get("mes")));
-                      if((req.url_params.get("ano") != nullptr) && (std::string(req.url_params.get("ano")) != "undefined") && (std::string(req.url_params.get("ano")) != "")) {
-                        int ano = std::stoi(std::string(req.url_params.get("ano")));
-                        if (mes <= 12 && mes > 0){
-                          if ( (mes == 1 || mes == 3 || mes == 5 || mes == 7 || mes == 8 || mes == 10 || mes == 12 ) && (dia <= 31)){
-                            Date DataInput(dia,mes,ano);
-                            WebTeste.getBanco(idBanco)->getConta(numConta)->DebitarValor(valor,desc,DataInput);
-                            return "Valor Debitado com a data especificada";
-                          }
-                          else if ( (mes == 4 || mes == 6 || mes == 9 || mes == 11) && (dia <= 30) ) {
-                            Date DataInput(dia,mes,ano);
-                            WebTeste.getBanco(idBanco)->getConta(numConta)->DebitarValor(valor,desc,DataInput);
-                            return "Valor Debitado com a data especificada";
-                          }
-                          else if ( (mes == 2) && (dia <= 28) ){
-                            Date DataInput(dia,mes,ano);
-                            WebTeste.getBanco(idBanco)->getConta(numConta)->DebitarValor(valor,desc,DataInput);
-                            return "Valor Debitado com a data especificada";
-                          }
-                          else {
-                            return "Data invalida";
+                  if(WebTeste.getBanco(idBanco)->getConta(numConta)->getSaldo() + WebTeste.getBanco(idBanco)->getConta(numConta)->getLimiteConta()  >= valor){
+                    if((req.url_params.get("dia") != nullptr) && (std::string(req.url_params.get("dia")) != "undefined") && (std::string(req.url_params.get("dia")) != "")) {
+                      int dia = std::stoi(std::string(req.url_params.get("dia")));
+                      if((req.url_params.get("mes") != nullptr) && (std::string(req.url_params.get("mes")) != "undefined") && (std::string(req.url_params.get("mes")) != "")) {
+                        int mes = std::stoi(std::string(req.url_params.get("mes")));
+                        if((req.url_params.get("ano") != nullptr) && (std::string(req.url_params.get("ano")) != "undefined") && (std::string(req.url_params.get("ano")) != "")) {
+                          int ano = std::stoi(std::string(req.url_params.get("ano")));
+
+                          if (mes <= 12 && mes > 0){
+                            if ( (mes == 1 || mes == 3 || mes == 5 || mes == 7 || mes == 8 || mes == 10 || mes == 12 ) && (dia <= 31)){
+                              Date DataInput(dia,mes,ano);
+                              WebTeste.getBanco(idBanco)->getConta(numConta)->DebitarValor(valor,desc,DataInput);
+                              return "Valor Debitado com a data especificada";
+                            }
+                            else if ( (mes == 4 || mes == 6 || mes == 9 || mes == 11) && (dia <= 30) ) {
+                              Date DataInput(dia,mes,ano);
+                              WebTeste.getBanco(idBanco)->getConta(numConta)->DebitarValor(valor,desc,DataInput);
+                              return "Valor Debitado com a data especificada";
+                            }
+                            else if ( (mes == 2) && (dia <= 28) ){
+                              Date DataInput(dia,mes,ano);
+                              WebTeste.getBanco(idBanco)->getConta(numConta)->DebitarValor(valor,desc,DataInput);
+                              return "Valor Debitado com a data especificada";
+                            }
+                            else {
+                              return "Data invalida";
+                            }
                           }
                         }
                       }
                     }
+                    WebTeste.getBanco(idBanco)->getConta(numConta)->CreditarValor(valor,desc);
+                    return "Valor Debitado com o dia de hoje"; // tira da conta
                   }
-                  WebTeste.getBanco(idBanco)->getConta(numConta)->CreditarValor(valor,desc);
-                  return "Valor Debitado com o dia de hoje"; // acrescentado a conta
+                  return "Saldo insuficiente para Debitar";
+
               }
               return "Faltou Valor a ser Debitado";
           }
