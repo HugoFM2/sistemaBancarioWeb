@@ -159,16 +159,30 @@ int main()
   });
   CROW_ROUTE(app, "/removerCliente")
   ([&WebTeste](const crow::request& req){
-      if(req.url_params.get("idBanco") != nullptr) {
-        int idBanco = std::stoi(std::string(req.url_params.get("idBanco")));
         if(req.url_params.get("idCliente") != nullptr) {
           int idCliente = std::stoi(std::string(req.url_params.get("idCliente")));
-          std::cout << std::endl << std:: endl << "ID CLIENTE É: " << idCliente;
-          WebTeste.getBanco(idBanco)->RemoverCliente(idCliente);
+          if(WebTeste.getBanco(0)->ExisteContaCliente(idCliente)){
+              return "Não é possivel remover o cliente, existem contas dependentes";
+          } else {
+            WebTeste.getBanco(0)->RemoverCliente(idCliente);
+            return "Cliente Deletado";
+          }
         }
         return "Faltou ID Cliente";
-      }
-      return "Faltou ID Banco";
+  });
+
+    CROW_ROUTE(app, "/removerConta")
+  ([&WebTeste](const crow::request& req){
+        if(req.url_params.get("numConta") != nullptr) {
+          int numConta = std::stoi(std::string(req.url_params.get("numConta")));
+          if(WebTeste.getBanco(0)->ExisteConta(numConta)){
+                WebTeste.getBanco(0)->RemoverConta(numConta);
+                return "Conta Deletada";
+          } else {
+              return "A conta não existe";
+          }
+        }
+        return "Faltou ID Cliente";
   });
 
   CROW_ROUTE(app, "/listarClientes")

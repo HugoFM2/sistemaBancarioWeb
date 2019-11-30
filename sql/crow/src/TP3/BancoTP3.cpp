@@ -64,6 +64,23 @@ bool BancoTP3::ExisteConta(int numConta){
   return false;
 }
 
+bool BancoTP3::ExisteContaCliente(int IDCliente){
+  for(unsigned int i = 0; i <  getContas().size();i++ ){
+    if(IDCliente == getContas()[i]->getCliente()->getClienteID()){
+      return true;
+    }
+  }
+  return false;
+}
+
+void BancoTP3::RemoverConta(int numConta){
+    for(unsigned int i = 0; i < Contas.size() ; ++i){
+        if(Contas[i]->getNumConta() == numConta){
+        Contas.erase(Contas.begin()+i);
+        }
+    }
+}
+
 void BancoTP3::TransferirDePara(int contaOrigem,int contaDestino, double valor, Date d){
   std::string DescricaoOrigem = "Transferência PARA conta número "+ std::to_string(contaDestino);
   std::string DescricaoDestino = "Transferência DA conta número " + std::to_string(contaOrigem);

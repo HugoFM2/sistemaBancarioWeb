@@ -28,6 +28,8 @@ public:
   std::vector<ContaTP3*> &getContas();
   ContaTP3* getConta(int numConta);
   bool ExisteConta(int numConta);
+  bool ExisteContaCliente(int IDCliente);
+  void RemoverConta(int numConta);
 
   void TransferirDePara(int contaOrigem,int contaDestino, double valor, Date d);
   void TransferirDePara(int contaOrigem,int contaDestino, double valor);

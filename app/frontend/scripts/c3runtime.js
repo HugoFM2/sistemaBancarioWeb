@@ -560,7 +560,7 @@ self.C3_GetObjectRefTable = function () {
 		C3.Plugins.System.Acts.GoToLayout,
 		C3.Plugins.System.Exps.regexmatchat,
 		C3.Plugins.List.Exps.SelectedText,
-		C3.Plugins.System.Acts.RestartLayout,
+		C3.Plugins.Text.Acts.SetText,
 		C3.Plugins.List.Cnds.CompareSelectedText,
 		C3.Plugins.Text.Acts.SetVisible,
 		C3.Plugins.TextBox.Acts.SetVisible,
@@ -569,7 +569,6 @@ self.C3_GetObjectRefTable = function () {
 		C3.Plugins.System.Cnds.OnLayoutEnd,
 		C3.Plugins.TextBox.Exps.Text,
 		C3.Plugins.Button.Acts.SetVisible,
-		C3.Plugins.Text.Acts.SetText,
 		C3.Plugins.List.Acts.Select,
 		C3.Plugins.System.Acts.Wait,
 		C3.Plugins.List.Cnds.OnSelectionChanged,
@@ -653,6 +652,7 @@ self.C3_JsPropNameTable = [
 	{specDataSelect: 0},
 	{StatusMovResult: 0},
 	{contaDestinoInput: 0},
+	{RemoverContaBtn: 0},
 	{index: 0},
 	{index2: 0},
 	{host: 0},
@@ -785,7 +785,7 @@ self.C3_JsPropNameTable = [
 			const v0 = p._GetNode(0).GetVar();
 			const f1 = p._GetNode(1).GetBoundMethod();
 			const n2 = p._GetNode(2);
-			return () => (((v0.GetValue() + "removerCliente?idBanco=0") + "&idCliente=") + f1(n2.ExpObject(), "^([0-9])", "", 1));
+			return () => (((v0.GetValue() + "removerCliente?") + "&idCliente=") + f1(n2.ExpObject(), "^([0-9])", "", 1));
 		},
 		() => "13 - Poupança",
 		() => "0",
@@ -835,6 +835,13 @@ self.C3_JsPropNameTable = [
 		p => {
 			const n0 = p._GetNode(0);
 			return () => n0.ExpObject();
+		},
+		() => "removerContaAjax",
+		p => {
+			const v0 = p._GetNode(0).GetVar();
+			const f1 = p._GetNode(1).GetBoundMethod();
+			const n2 = p._GetNode(2);
+			return () => ((v0.GetValue() + "removerConta?&numConta=") + f1(n2.ExpObject(), "([0-9])+", "g", 0));
 		},
 		() => "DadosCliente",
 		p => {

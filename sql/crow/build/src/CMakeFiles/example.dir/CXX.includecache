@@ -440,6 +440,10 @@ iostream
 Date.h
 /app/src/TP1/Date.h
 
+/app/src/TP3/BancoTP3.cpp
+BancoTP3.h
+/app/src/TP3/BancoTP3.h
+
 /app/src/TP3/BancoTP3.h
 bits/stdc++.h
 -
