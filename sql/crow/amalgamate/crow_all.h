@@ -1,44 +1,3 @@
-#pragma once
-// settings for crow
-// TODO - replace with runtime config. libucl?
-
-/* #ifdef - enables debug mode */
-//#define CROW_ENABLE_DEBUG
-
-/* #ifdef - enables logging */
-#define CROW_ENABLE_LOGGING
-
-/* #ifdef - enables ssl */
-//#define CROW_ENABLE_SSL
-
-/* #define - specifies log level */
-/*
-    Debug       = 0
-    Info        = 1
-    Warning     = 2
-    Error       = 3
-    Critical    = 4
-
-    default to INFO
-*/
-#define CROW_LOG_LEVEL 1
-
-
-// compiler flags
-#if __cplusplus >= 201402L
-#define CROW_CAN_USE_CPP14
-#endif
-
-#if defined(_MSC_VER)
-#if _MSC_VER < 1900
-#define CROW_MSVC_WORKAROUND
-#define constexpr const
-#define noexcept throw()
-#endif
-#endif
-
-
-
 /* merged revision: 5b951d74bd66ec9d38448e0a85b1cf8b85d97db3 */
 /* Copyright Joyent, Inc. and other Node contributors. All rights reserved.
  *
@@ -2682,6 +2641,242 @@ http_parser_version(void) {
 
 
 
+/* 
+ *
+ * TinySHA1 - a header only implementation of the SHA1 algorithm in C++. Based
+ * on the implementation in boost::uuid::details.
+ * 
+ * SHA1 Wikipedia Page: http://en.wikipedia.org/wiki/SHA-1
+ * 
+ * Copyright (c) 2012-22 SAURAV MOHAPATRA <mohaps@gmail.com>
+ *
+ * Permission to use, copy, modify, and distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+#ifndef _TINY_SHA1_HPP_
+#define _TINY_SHA1_HPP_
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <stdint.h>
+namespace sha1
+{
+	class SHA1
+	{
+	public:
+		typedef uint32_t digest32_t[5];
+		typedef uint8_t digest8_t[20];
+		inline static uint32_t LeftRotate(uint32_t value, size_t count) {
+			return (value << count) ^ (value >> (32-count));
+		}
+		SHA1(){ reset(); }
+		virtual ~SHA1() {}
+		SHA1(const SHA1& s) { *this = s; }
+		const SHA1& operator = (const SHA1& s) {
+			memcpy(m_digest, s.m_digest, 5 * sizeof(uint32_t));
+			memcpy(m_block, s.m_block, 64);
+			m_blockByteIndex = s.m_blockByteIndex;
+			m_byteCount = s.m_byteCount;
+			return *this;
+		}
+		SHA1& reset() {
+			m_digest[0] = 0x67452301;
+			m_digest[1] = 0xEFCDAB89;
+			m_digest[2] = 0x98BADCFE;
+			m_digest[3] = 0x10325476;
+			m_digest[4] = 0xC3D2E1F0;
+			m_blockByteIndex = 0;
+			m_byteCount = 0;
+			return *this;
+		}
+		SHA1& processByte(uint8_t octet) {
+			this->m_block[this->m_blockByteIndex++] = octet;
+			++this->m_byteCount;
+			if(m_blockByteIndex == 64) {
+				this->m_blockByteIndex = 0;
+				processBlock();
+			}
+			return *this;
+		}
+		SHA1& processBlock(const void* const start, const void* const end) {
+			const uint8_t* begin = static_cast<const uint8_t*>(start);
+			const uint8_t* finish = static_cast<const uint8_t*>(end);
+			while(begin != finish) {
+				processByte(*begin);
+				begin++;
+			}
+			return *this;
+		}
+		SHA1& processBytes(const void* const data, size_t len) {
+			const uint8_t* block = static_cast<const uint8_t*>(data);
+			processBlock(block, block + len);
+			return *this;
+		}
+		const uint32_t* getDigest(digest32_t digest) {
+			size_t bitCount = this->m_byteCount * 8;
+			processByte(0x80);
+			if (this->m_blockByteIndex > 56) {
+				while (m_blockByteIndex != 0) {
+					processByte(0);
+				}
+				while (m_blockByteIndex < 56) {
+					processByte(0);
+				}
+			} else {
+				while (m_blockByteIndex < 56) {
+					processByte(0);
+				}
+			}
+			processByte(0);
+			processByte(0);
+			processByte(0);
+			processByte(0);
+			processByte( static_cast<unsigned char>((bitCount>>24) & 0xFF));
+			processByte( static_cast<unsigned char>((bitCount>>16) & 0xFF));
+			processByte( static_cast<unsigned char>((bitCount>>8 ) & 0xFF));
+			processByte( static_cast<unsigned char>((bitCount)     & 0xFF));
+	
+			memcpy(digest, m_digest, 5 * sizeof(uint32_t));
+			return digest;
+		}
+		const uint8_t* getDigestBytes(digest8_t digest) {
+			digest32_t d32;
+			getDigest(d32);
+			size_t di = 0;
+			digest[di++] = ((d32[0] >> 24) & 0xFF);
+			digest[di++] = ((d32[0] >> 16) & 0xFF);
+			digest[di++] = ((d32[0] >> 8) & 0xFF);
+			digest[di++] = ((d32[0]) & 0xFF);
+			
+			digest[di++] = ((d32[1] >> 24) & 0xFF);
+			digest[di++] = ((d32[1] >> 16) & 0xFF);
+			digest[di++] = ((d32[1] >> 8) & 0xFF);
+			digest[di++] = ((d32[1]) & 0xFF);
+			
+			digest[di++] = ((d32[2] >> 24) & 0xFF);
+			digest[di++] = ((d32[2] >> 16) & 0xFF);
+			digest[di++] = ((d32[2] >> 8) & 0xFF);
+			digest[di++] = ((d32[2]) & 0xFF);
+			
+			digest[di++] = ((d32[3] >> 24) & 0xFF);
+			digest[di++] = ((d32[3] >> 16) & 0xFF);
+			digest[di++] = ((d32[3] >> 8) & 0xFF);
+			digest[di++] = ((d32[3]) & 0xFF);
+			
+			digest[di++] = ((d32[4] >> 24) & 0xFF);
+			digest[di++] = ((d32[4] >> 16) & 0xFF);
+			digest[di++] = ((d32[4] >> 8) & 0xFF);
+			digest[di++] = ((d32[4]) & 0xFF);
+			return digest;
+		}
+	
+	protected:
+		void processBlock() {
+			uint32_t w[80];
+			for (size_t i = 0; i < 16; i++) {
+				w[i]  = (m_block[i*4 + 0] << 24);
+				w[i] |= (m_block[i*4 + 1] << 16);
+				w[i] |= (m_block[i*4 + 2] << 8);
+				w[i] |= (m_block[i*4 + 3]);
+			}
+			for (size_t i = 16; i < 80; i++) {
+				w[i] = LeftRotate((w[i-3] ^ w[i-8] ^ w[i-14] ^ w[i-16]), 1);
+			}
+	
+			uint32_t a = m_digest[0];
+			uint32_t b = m_digest[1];
+			uint32_t c = m_digest[2];
+			uint32_t d = m_digest[3];
+			uint32_t e = m_digest[4];
+	
+			for (std::size_t i=0; i<80; ++i) {
+				uint32_t f = 0;
+				uint32_t k = 0;
+	
+				if (i<20) {
+					f = (b & c) | (~b & d);
+					k = 0x5A827999;
+				} else if (i<40) {
+					f = b ^ c ^ d;
+					k = 0x6ED9EBA1;
+				} else if (i<60) {
+					f = (b & c) | (b & d) | (c & d);
+					k = 0x8F1BBCDC;
+				} else {
+					f = b ^ c ^ d;
+					k = 0xCA62C1D6;
+				}
+				uint32_t temp = LeftRotate(a, 5) + f + e + k + w[i];
+				e = d;
+				d = c;
+				c = LeftRotate(b, 30);
+				b = a;
+				a = temp;
+			}
+	
+			m_digest[0] += a;
+			m_digest[1] += b;
+			m_digest[2] += c;
+			m_digest[3] += d;
+			m_digest[4] += e;
+		}
+	private:
+		digest32_t m_digest;
+		uint8_t m_block[64];
+		size_t m_blockByteIndex;
+		size_t m_byteCount;
+	};
+}
+#endif
+
+
+
+#pragma once
+
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/functional/hash.hpp>
+#include <unordered_map>
+
+namespace crow
+{
+    struct ci_hash
+    {
+        size_t operator()(const std::string& key) const
+        {
+            std::size_t seed = 0;
+            std::locale locale;
+
+            for(auto c : key)
+            {
+                boost::hash_combine(seed, std::toupper(c, locale));
+            }
+
+            return seed;
+        }
+    };
+
+    struct ci_key_eq
+    {
+        bool operator()(const std::string& l, const std::string& r) const
+        {
+            return boost::iequals(l, r);
+        }
+    };
+
+    using ci_map = std::unordered_multimap<std::string, std::string, ci_hash, ci_key_eq>;
+}
+
+
+
 #pragma once
 
 #include <stdio.h>
@@ -3093,118 +3288,43 @@ namespace crow
 
 
 #pragma once
-#include <boost/asio.hpp>
-#ifdef CROW_ENABLE_SSL
-#include <boost/asio/ssl.hpp>
+// settings for crow
+// TODO - replace with runtime config. libucl?
+
+/* #ifdef - enables debug mode */
+//#define CROW_ENABLE_DEBUG
+
+/* #ifdef - enables logging */
+#define CROW_ENABLE_LOGGING
+
+/* #ifdef - enables ssl */
+//#define CROW_ENABLE_SSL
+
+/* #define - specifies log level */
+/*
+    Debug       = 0
+    Info        = 1
+    Warning     = 2
+    Error       = 3
+    Critical    = 4
+
+    default to INFO
+*/
+#define CROW_LOG_LEVEL 1
+
+
+// compiler flags
+#if __cplusplus >= 201402L
+#define CROW_CAN_USE_CPP14
 #endif
 
-
-namespace crow
-{
-    using namespace boost;
-    using tcp = asio::ip::tcp;
-
-    struct SocketAdaptor
-    {
-        using context = void;
-        SocketAdaptor(boost::asio::io_service& io_service, context*)
-            : socket_(io_service)
-        {
-        }
-
-        boost::asio::io_service& get_io_service()
-        {
-            return socket_.get_io_service();
-        }
-
-        tcp::socket& raw_socket()
-        {
-            return socket_;
-        }
-
-        tcp::socket& socket()
-        {
-            return socket_;
-        }
-
-        tcp::endpoint remote_endpoint()
-        {
-            return socket_.remote_endpoint();
-        }
-
-        bool is_open()
-        {
-            return socket_.is_open();
-        }
-
-        void close()
-        {
-            socket_.close();
-        }
-
-        template <typename F> 
-        void start(F f)
-        {
-            f(boost::system::error_code());
-        }
-
-        tcp::socket socket_;
-    };
-
-#ifdef CROW_ENABLE_SSL
-    struct SSLAdaptor
-    {
-        using context = boost::asio::ssl::context;
-        using ssl_socket_t = boost::asio::ssl::stream<tcp::socket>;
-        SSLAdaptor(boost::asio::io_service& io_service, context* ctx)
-            : ssl_socket_(new ssl_socket_t(io_service, *ctx))
-        {
-        }
-
-        boost::asio::ssl::stream<tcp::socket>& socket()
-        {
-            return *ssl_socket_;
-        }
-
-        tcp::socket::lowest_layer_type&
-        raw_socket()
-        {
-            return ssl_socket_->lowest_layer();
-        }
-
-        tcp::endpoint remote_endpoint()
-        {
-            return raw_socket().remote_endpoint();
-        }
-
-        bool is_open()
-        {
-            return raw_socket().is_open();
-        }
-
-        void close()
-        {
-            raw_socket().close();
-        }
-
-        boost::asio::io_service& get_io_service()
-        {
-            return raw_socket().get_io_service();
-        }
-
-        template <typename F> 
-        void start(F f)
-        {
-            ssl_socket_->async_handshake(boost::asio::ssl::stream_base::server,
-                    [f](const boost::system::error_code& ec) {
-                        f(ec);
-                    });
-        }
-
-        std::unique_ptr<boost::asio::ssl::stream<tcp::socket>> ssl_socket_;
-    };
+#if defined(_MSC_VER)
+#if _MSC_VER < 1900
+#define CROW_MSVC_WORKAROUND
+#define constexpr const
+#define noexcept throw()
 #endif
-}
+#endif
 
 
 
@@ -3756,6 +3876,1044 @@ template <typename F, typename Set>
 
 
     } // namespace utility
+}
+
+
+
+#pragma once
+
+#include <vector>
+#include <string>
+#include <stdexcept>
+#include <iostream>
+
+
+
+namespace crow
+{
+    enum class HTTPMethod
+    {
+#ifndef DELETE
+        DELETE = 0,
+        GET,
+        HEAD,
+        POST,
+        PUT,
+        CONNECT,
+        OPTIONS,
+        TRACE,
+        PATCH = 24,
+#endif
+
+        Delete = 0,
+        Get,
+        Head,
+        Post,
+        Put,
+        Connect,
+        Options,
+        Trace,
+        Patch = 24,
+    };
+
+    inline std::string method_name(HTTPMethod method)
+    {
+        switch(method)
+        {
+            case HTTPMethod::Delete:
+                return "DELETE";
+            case HTTPMethod::Get:
+                return "GET";
+            case HTTPMethod::Head:
+                return "HEAD";
+            case HTTPMethod::Post:
+                return "POST";
+            case HTTPMethod::Put:
+                return "PUT";
+            case HTTPMethod::Connect:
+                return "CONNECT";
+            case HTTPMethod::Options:
+                return "OPTIONS";
+            case HTTPMethod::Trace:
+                return "TRACE";
+            case HTTPMethod::Patch:
+                return "PATCH";
+        }
+        return "invalid";
+    }
+
+    enum class ParamType
+    {
+        INT,
+        UINT,
+        DOUBLE,
+        STRING,
+        PATH,
+
+        MAX
+    };
+
+    struct routing_params
+    {
+        std::vector<int64_t> int_params;
+        std::vector<uint64_t> uint_params;
+        std::vector<double> double_params;
+        std::vector<std::string> string_params;
+
+        void debug_print() const
+        {
+            std::cerr << "routing_params" << std::endl;
+            for(auto i:int_params)
+                std::cerr<<i <<", " ;
+            std::cerr<<std::endl;
+            for(auto i:uint_params)
+                std::cerr<<i <<", " ;
+            std::cerr<<std::endl;
+            for(auto i:double_params)
+                std::cerr<<i <<", " ;
+            std::cerr<<std::endl;
+            for(auto& i:string_params)
+                std::cerr<<i <<", " ;
+            std::cerr<<std::endl;
+        }
+
+        template <typename T>
+        T get(unsigned) const;
+
+    };
+
+    template<>
+    inline int64_t routing_params::get<int64_t>(unsigned index) const
+    {
+        return int_params[index];
+    }
+
+    template<>
+    inline uint64_t routing_params::get<uint64_t>(unsigned index) const
+    {
+        return uint_params[index];
+    }
+
+    template<>
+    inline double routing_params::get<double>(unsigned index) const
+    {
+        return double_params[index];
+    }
+
+    template<>
+    inline std::string routing_params::get<std::string>(unsigned index) const
+    {
+        return string_params[index];
+    }
+}
+
+#ifndef CROW_MSVC_WORKAROUND
+constexpr crow::HTTPMethod operator "" _method(const char* str, size_t /*len*/)
+{
+    return
+        crow::black_magic::is_equ_p(str, "GET", 3) ? crow::HTTPMethod::Get :
+        crow::black_magic::is_equ_p(str, "DELETE", 6) ? crow::HTTPMethod::Delete :
+        crow::black_magic::is_equ_p(str, "HEAD", 4) ? crow::HTTPMethod::Head :
+        crow::black_magic::is_equ_p(str, "POST", 4) ? crow::HTTPMethod::Post :
+        crow::black_magic::is_equ_p(str, "PUT", 3) ? crow::HTTPMethod::Put :
+        crow::black_magic::is_equ_p(str, "OPTIONS", 7) ? crow::HTTPMethod::Options :
+        crow::black_magic::is_equ_p(str, "CONNECT", 7) ? crow::HTTPMethod::Connect :
+        crow::black_magic::is_equ_p(str, "TRACE", 5) ? crow::HTTPMethod::Trace :
+        crow::black_magic::is_equ_p(str, "PATCH", 5) ? crow::HTTPMethod::Patch :
+        throw std::runtime_error("invalid http method");
+}
+#endif
+
+
+
+#pragma once
+
+#include <boost/asio.hpp>
+
+
+
+
+
+
+
+
+namespace crow
+{
+    template <typename T>
+    inline const std::string& get_header_value(const T& headers, const std::string& key)
+    {
+        if (headers.count(key))
+        {
+            return headers.find(key)->second;
+        }
+        static std::string empty;
+        return empty;
+    }
+
+	struct DetachHelper;
+
+    struct request
+    {
+        HTTPMethod method;
+        std::string raw_url;
+        std::string url;
+        query_string url_params;
+        ci_map headers;
+        std::string body;
+
+        void* middleware_context{};
+        boost::asio::io_service* io_service{};
+
+        request()
+            : method(HTTPMethod::Get)
+        {
+        }
+
+        request(HTTPMethod method, std::string raw_url, std::string url, query_string url_params, ci_map headers, std::string body)
+            : method(method), raw_url(std::move(raw_url)), url(std::move(url)), url_params(std::move(url_params)), headers(std::move(headers)), body(std::move(body))
+        {
+        }
+
+        void add_header(std::string key, std::string value)
+        {
+            headers.emplace(std::move(key), std::move(value));
+        }
+
+        const std::string& get_header_value(const std::string& key) const
+        {
+            return crow::get_header_value(headers, key);
+        }
+
+        template<typename CompletionHandler>
+        void post(CompletionHandler handler)
+        {
+            io_service->post(handler);
+        }
+
+        template<typename CompletionHandler>
+        void dispatch(CompletionHandler handler)
+        {
+            io_service->dispatch(handler);
+        }
+
+    };
+}
+
+
+
+#pragma once
+
+#include <string>
+#include <unordered_map>
+#include <boost/algorithm/string.hpp>
+#include <algorithm>
+
+
+
+
+
+
+namespace crow
+{
+    template <typename Handler>
+    struct HTTPParser : public http_parser
+    {
+        static int on_message_begin(http_parser* self_)
+        {
+            HTTPParser* self = static_cast<HTTPParser*>(self_);
+            self->clear();
+            return 0;
+        }
+        static int on_url(http_parser* self_, const char* at, size_t length)
+        {
+            HTTPParser* self = static_cast<HTTPParser*>(self_);
+            self->raw_url.insert(self->raw_url.end(), at, at+length);
+            return 0;
+        }
+        static int on_header_field(http_parser* self_, const char* at, size_t length)
+        {
+            HTTPParser* self = static_cast<HTTPParser*>(self_);
+            switch (self->header_building_state)
+            {
+                case 0:
+                    if (!self->header_value.empty())
+                    {
+                        self->headers.emplace(std::move(self->header_field), std::move(self->header_value));
+                    }
+                    self->header_field.assign(at, at+length);
+                    self->header_building_state = 1;
+                    break;
+                case 1:
+                    self->header_field.insert(self->header_field.end(), at, at+length);
+                    break;
+            }
+            return 0;
+        }
+        static int on_header_value(http_parser* self_, const char* at, size_t length)
+        {
+            HTTPParser* self = static_cast<HTTPParser*>(self_);
+            switch (self->header_building_state)
+            {
+                case 0:
+                    self->header_value.insert(self->header_value.end(), at, at+length);
+                    break;
+                case 1:
+                    self->header_building_state = 0;
+                    self->header_value.assign(at, at+length);
+                    break;
+            }
+            return 0;
+        }
+        static int on_headers_complete(http_parser* self_)
+        {
+            HTTPParser* self = static_cast<HTTPParser*>(self_);
+            if (!self->header_field.empty())
+            {
+                self->headers.emplace(std::move(self->header_field), std::move(self->header_value));
+            }
+            self->process_header();
+            return 0;
+        }
+        static int on_body(http_parser* self_, const char* at, size_t length)
+        {
+            HTTPParser* self = static_cast<HTTPParser*>(self_);
+            self->body.insert(self->body.end(), at, at+length);
+            return 0;
+        }
+        static int on_message_complete(http_parser* self_)
+        {
+            HTTPParser* self = static_cast<HTTPParser*>(self_);
+
+            // url params
+            self->url = self->raw_url.substr(0, self->raw_url.find("?"));
+            self->url_params = query_string(self->raw_url);
+
+            self->process_message();
+            return 0;
+        }
+        HTTPParser(Handler* handler) :
+            handler_(handler)
+        {
+            http_parser_init(this, HTTP_REQUEST);
+        }
+
+        // return false on error
+        bool feed(const char* buffer, int length)
+        {
+            const static http_parser_settings settings_{
+                on_message_begin,
+                on_url,
+                nullptr,
+                on_header_field,
+                on_header_value,
+                on_headers_complete,
+                on_body,
+                on_message_complete,
+            };
+
+            int nparsed = http_parser_execute(this, &settings_, buffer, length);
+            return nparsed == length;
+        }
+
+        bool done()
+        {
+            return feed(nullptr, 0);
+        }
+
+        void clear()
+        {
+            url.clear();
+            raw_url.clear();
+            header_building_state = 0;
+            header_field.clear();
+            header_value.clear();
+            headers.clear();
+            url_params.clear();
+            body.clear();
+        }
+
+        void process_header()
+        {
+            handler_->handle_header();
+        }
+
+        void process_message()
+        {
+            handler_->handle();
+        }
+
+        request to_request() const
+        {
+            return request{(HTTPMethod)method, std::move(raw_url), std::move(url), std::move(url_params), std::move(headers), std::move(body)};
+        }
+
+		bool is_upgrade() const
+		{
+			return upgrade;
+		}
+
+        bool check_version(int major, int minor) const
+        {
+            return http_major == major && http_minor == minor;
+        }
+
+        std::string raw_url;
+        std::string url;
+
+        int header_building_state = 0;
+        std::string header_field;
+        std::string header_value;
+        ci_map headers;
+        query_string url_params;
+        std::string body;
+
+        Handler* handler_;
+    };
+}
+
+
+
+#pragma once
+#include <boost/asio.hpp>
+#ifdef CROW_ENABLE_SSL
+#include <boost/asio/ssl.hpp>
+#endif
+
+
+namespace crow
+{
+    using namespace boost;
+    using tcp = asio::ip::tcp;
+
+    struct SocketAdaptor
+    {
+        using context = void;
+        SocketAdaptor(boost::asio::io_service& io_service, context*)
+            : socket_(io_service)
+        {
+        }
+
+        boost::asio::io_service& get_io_service()
+        {
+            return socket_.get_io_service();
+        }
+
+        tcp::socket& raw_socket()
+        {
+            return socket_;
+        }
+
+        tcp::socket& socket()
+        {
+            return socket_;
+        }
+
+        tcp::endpoint remote_endpoint()
+        {
+            return socket_.remote_endpoint();
+        }
+
+        bool is_open()
+        {
+            return socket_.is_open();
+        }
+
+        void close()
+        {
+            socket_.close();
+        }
+
+        template <typename F> 
+        void start(F f)
+        {
+            f(boost::system::error_code());
+        }
+
+        tcp::socket socket_;
+    };
+
+#ifdef CROW_ENABLE_SSL
+    struct SSLAdaptor
+    {
+        using context = boost::asio::ssl::context;
+        using ssl_socket_t = boost::asio::ssl::stream<tcp::socket>;
+        SSLAdaptor(boost::asio::io_service& io_service, context* ctx)
+            : ssl_socket_(new ssl_socket_t(io_service, *ctx))
+        {
+        }
+
+        boost::asio::ssl::stream<tcp::socket>& socket()
+        {
+            return *ssl_socket_;
+        }
+
+        tcp::socket::lowest_layer_type&
+        raw_socket()
+        {
+            return ssl_socket_->lowest_layer();
+        }
+
+        tcp::endpoint remote_endpoint()
+        {
+            return raw_socket().remote_endpoint();
+        }
+
+        bool is_open()
+        {
+            return raw_socket().is_open();
+        }
+
+        void close()
+        {
+            raw_socket().close();
+        }
+
+        boost::asio::io_service& get_io_service()
+        {
+            return raw_socket().get_io_service();
+        }
+
+        template <typename F> 
+        void start(F f)
+        {
+            ssl_socket_->async_handshake(boost::asio::ssl::stream_base::server,
+                    [f](const boost::system::error_code& ec) {
+                        f(ec);
+                    });
+        }
+
+        std::unique_ptr<boost::asio::ssl::stream<tcp::socket>> ssl_socket_;
+    };
+#endif
+}
+
+
+
+#pragma once
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/array.hpp>
+
+
+
+
+
+
+
+namespace crow
+{
+    namespace websocket
+    {
+        enum class WebSocketReadState
+        {
+            MiniHeader,
+            Len16,
+            Len64,
+            Mask,
+            Payload,
+        };
+
+		struct connection
+		{
+            virtual void send_binary(const std::string& msg) = 0;
+            virtual void send_text(const std::string& msg) = 0;
+            virtual void close(const std::string& msg = "quit") = 0;
+            virtual ~connection(){}
+
+            void userdata(void* u) { userdata_ = u; }
+            void* userdata() { return userdata_; }
+
+        private:
+            void* userdata_;
+		};
+
+		template <typename Adaptor>
+        class Connection : public connection
+        {
+			public:
+				Connection(const crow::request& req, Adaptor&& adaptor, 
+						std::function<void(crow::websocket::connection&)> open_handler,
+						std::function<void(crow::websocket::connection&, const std::string&, bool)> message_handler,
+						std::function<void(crow::websocket::connection&, const std::string&)> close_handler,
+						std::function<void(crow::websocket::connection&)> error_handler,
+						std::function<bool(const crow::request&)> accept_handler)
+					: adaptor_(std::move(adaptor)), open_handler_(std::move(open_handler)), message_handler_(std::move(message_handler)), close_handler_(std::move(close_handler)), error_handler_(std::move(error_handler))
+					, accept_handler_(std::move(accept_handler))
+				{
+					if (!boost::iequals(req.get_header_value("upgrade"), "websocket"))
+					{
+						adaptor.close();
+						delete this;
+						return;
+					}
+
+					if (accept_handler_)
+					{
+						if (!accept_handler_(req))
+						{
+							adaptor.close();
+							delete this;
+							return;
+						}
+					}
+
+					// Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==
+					// Sec-WebSocket-Version: 13
+                    std::string magic = req.get_header_value("Sec-WebSocket-Key") +  "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+                    sha1::SHA1 s;
+                    s.processBytes(magic.data(), magic.size());
+                    uint8_t digest[20];
+                    s.getDigestBytes(digest);   
+                    start(crow::utility::base64encode((char*)digest, 20));
+				}
+
+                template<typename CompletionHandler>
+                void dispatch(CompletionHandler handler)
+                {
+                    adaptor_.get_io_service().dispatch(handler);
+                }
+
+                template<typename CompletionHandler>
+                void post(CompletionHandler handler)
+                {
+                    adaptor_.get_io_service().post(handler);
+                }
+
+                void send_pong(const std::string& msg)
+                {
+                    dispatch([this, msg]{
+                        char buf[3] = "\x8A\x00";
+                        buf[1] += msg.size();
+                        write_buffers_.emplace_back(buf, buf+2);
+                        write_buffers_.emplace_back(msg);
+                        do_write();
+                    });
+                }
+
+                void send_binary(const std::string& msg) override
+                {
+                    dispatch([this, msg]{
+                        auto header = build_header(2, msg.size());
+                        write_buffers_.emplace_back(std::move(header));
+                        write_buffers_.emplace_back(msg);
+                        do_write();
+                    });
+                }
+
+                void send_text(const std::string& msg) override
+                {
+                    dispatch([this, msg]{
+                        auto header = build_header(1, msg.size());
+                        write_buffers_.emplace_back(std::move(header));
+                        write_buffers_.emplace_back(msg);
+                        do_write();
+                    });
+                }
+
+                void close(const std::string& msg) override
+                {
+                    dispatch([this, msg]{
+                        has_sent_close_ = true;
+                        if (has_recv_close_ && !is_close_handler_called_)
+                        {
+                            is_close_handler_called_ = true;
+                            if (close_handler_)
+                                close_handler_(*this, msg);
+                        }
+                        auto header = build_header(0x8, msg.size());
+                        write_buffers_.emplace_back(std::move(header));
+                        write_buffers_.emplace_back(msg);
+                        do_write();
+                    });
+                }
+
+            protected:
+
+                std::string build_header(int opcode, size_t size)
+                {
+                    char buf[2+8] = "\x80\x00";
+                    buf[0] += opcode;
+                    if (size < 126)
+                    {
+                        buf[1] += size;
+                        return {buf, buf+2};
+                    }
+                    else if (size < 0x10000)
+                    {
+                        buf[1] += 126;
+                        *(uint16_t*)(buf+2) = htons((uint16_t)size);
+                        return {buf, buf+4};
+                    }
+                    else
+                    {
+                        buf[1] += 127;
+                        *(uint64_t*)(buf+2) = ((1==htonl(1)) ? (uint64_t)size : ((uint64_t)htonl((size) & 0xFFFFFFFF) << 32) | htonl((size) >> 32));
+                        return {buf, buf+10};
+                    }
+                }
+
+                void start(std::string&& hello)
+                {
+                    static std::string header = "HTTP/1.1 101 Switching Protocols\r\n"
+                        "Upgrade: websocket\r\n"
+                        "Connection: Upgrade\r\n"
+                        "Sec-WebSocket-Accept: ";
+                    static std::string crlf = "\r\n";
+                    write_buffers_.emplace_back(header);
+                    write_buffers_.emplace_back(std::move(hello));
+                    write_buffers_.emplace_back(crlf);
+                    write_buffers_.emplace_back(crlf);
+                    do_write();
+                    if (open_handler_)
+                        open_handler_(*this);
+                    do_read();
+                }
+
+                void do_read()
+                {
+                    is_reading = true;
+                    switch(state_)
+                    {
+                        case WebSocketReadState::MiniHeader:
+                            {
+                                //boost::asio::async_read(adaptor_.socket(), boost::asio::buffer(&mini_header_, 1), 
+                                adaptor_.socket().async_read_some(boost::asio::buffer(&mini_header_, 2), 
+                                    [this](const boost::system::error_code& ec, std::size_t 
+#ifdef CROW_ENABLE_DEBUG
+                                        bytes_transferred
+#endif
+                                        )
+
+                                    {
+                                        is_reading = false;
+                                        mini_header_ = htons(mini_header_);
+#ifdef CROW_ENABLE_DEBUG
+                                        
+                                        if (!ec && bytes_transferred != 2)
+                                        {
+                                            throw std::runtime_error("WebSocket:MiniHeader:async_read fail:asio bug?");
+                                        }
+#endif
+
+                                        if (!ec && ((mini_header_ & 0x80) == 0x80))
+                                        {
+                                            if ((mini_header_ & 0x7f) == 127)
+                                            {
+                                                state_ = WebSocketReadState::Len64;
+                                            }
+                                            else if ((mini_header_ & 0x7f) == 126)
+                                            {
+                                                state_ = WebSocketReadState::Len16;
+                                            }
+                                            else
+                                            {
+                                                remaining_length_ = mini_header_ & 0x7f;
+                                                state_ = WebSocketReadState::Mask;
+                                            }
+                                            do_read();
+                                        }
+                                        else
+                                        {
+                                            close_connection_ = true;
+                                            adaptor_.close();
+                                            if (error_handler_)
+                                                error_handler_(*this);
+                                            check_destroy();
+                                        }
+                                    });
+                            }
+                            break;
+                        case WebSocketReadState::Len16:
+                            {
+                                remaining_length_ = 0;
+                				uint16_t remaining_length16_ = 0;
+                                boost::asio::async_read(adaptor_.socket(), boost::asio::buffer(&remaining_length16_, 2), 
+                                    [this,&remaining_length16_](const boost::system::error_code& ec, std::size_t 
+#ifdef CROW_ENABLE_DEBUG
+                                        bytes_transferred
+#endif
+                                        ) 
+                                    {
+                                        is_reading = false;
+                                        remaining_length16_ = ntohs(remaining_length16_);
+                                        remaining_length_ = remaining_length16_;
+#ifdef CROW_ENABLE_DEBUG
+                                        if (!ec && bytes_transferred != 2)
+                                        {
+                                            throw std::runtime_error("WebSocket:Len16:async_read fail:asio bug?");
+                                        }
+#endif
+
+                                        if (!ec)
+                                        {
+                                            state_ = WebSocketReadState::Mask;
+                                            do_read();
+                                        }
+                                        else
+                                        {
+                                            close_connection_ = true;
+                                            adaptor_.close();
+                                            if (error_handler_)
+                                                error_handler_(*this);
+                                            check_destroy();
+                                        }
+                                    });
+                            }
+                            break;
+                        case WebSocketReadState::Len64:
+                            {
+                                boost::asio::async_read(adaptor_.socket(), boost::asio::buffer(&remaining_length_, 8), 
+                                    [this](const boost::system::error_code& ec, std::size_t 
+#ifdef CROW_ENABLE_DEBUG
+                                        bytes_transferred
+#endif
+                                        ) 
+                                    {
+                                        is_reading = false;
+                                        remaining_length_ = ((1==ntohl(1)) ? (remaining_length_) : ((uint64_t)ntohl((remaining_length_) & 0xFFFFFFFF) << 32) | ntohl((remaining_length_) >> 32));
+#ifdef CROW_ENABLE_DEBUG
+                                        if (!ec && bytes_transferred != 8)
+                                        {
+                                            throw std::runtime_error("WebSocket:Len16:async_read fail:asio bug?");
+                                        }
+#endif
+
+                                        if (!ec)
+                                        {
+                                            state_ = WebSocketReadState::Mask;
+                                            do_read();
+                                        }
+                                        else
+                                        {
+                                            close_connection_ = true;
+                                            adaptor_.close();
+                                            if (error_handler_)
+                                                error_handler_(*this);
+                                            check_destroy();
+                                        }
+                                    });
+                            }
+                            break;
+                        case WebSocketReadState::Mask:
+                                boost::asio::async_read(adaptor_.socket(), boost::asio::buffer((char*)&mask_, 4), 
+                                    [this](const boost::system::error_code& ec, std::size_t 
+#ifdef CROW_ENABLE_DEBUG 
+                                        bytes_transferred
+#endif
+                                    )
+                                    {
+                                        is_reading = false;
+#ifdef CROW_ENABLE_DEBUG
+                                        if (!ec && bytes_transferred != 4)
+                                        {
+                                            throw std::runtime_error("WebSocket:Mask:async_read fail:asio bug?");
+                                        }
+#endif
+
+                                        if (!ec)
+                                        {
+                                            state_ = WebSocketReadState::Payload;
+                                            do_read();
+                                        }
+                                        else
+                                        {
+                                            close_connection_ = true;
+                                            if (error_handler_)
+                                                error_handler_(*this);
+                                            adaptor_.close();
+                                        }
+                                    });
+                            break;
+                        case WebSocketReadState::Payload:
+                            {
+                                size_t to_read = buffer_.size();
+                                if (remaining_length_ < to_read)
+                                    to_read = remaining_length_;
+                                adaptor_.socket().async_read_some( boost::asio::buffer(buffer_, to_read), 
+                                    [this](const boost::system::error_code& ec, std::size_t bytes_transferred)
+                                    {
+                                        is_reading = false;
+
+                                        if (!ec)
+                                        {
+                                            fragment_.insert(fragment_.end(), buffer_.begin(), buffer_.begin() + bytes_transferred);
+                                            remaining_length_ -= bytes_transferred;
+                                            if (remaining_length_ == 0)
+                                            {
+                                                handle_fragment();
+                                                state_ = WebSocketReadState::MiniHeader;
+                                                do_read();
+                                            }
+                                        }
+                                        else
+                                        {
+                                            close_connection_ = true;
+                                            if (error_handler_)
+                                                error_handler_(*this);
+                                            adaptor_.close();
+                                        }
+                                    });
+                            }
+                            break;
+                    }
+                }
+
+                bool is_FIN()
+                {
+                    return mini_header_ & 0x8000;
+                }
+
+                int opcode()
+                {
+                    return (mini_header_ & 0x0f00) >> 8;
+                }
+
+                void handle_fragment()
+                {
+                    for(decltype(fragment_.length()) i = 0; i < fragment_.length(); i ++)
+                    {
+                        fragment_[i] ^= ((char*)&mask_)[i%4];
+                    }
+                    switch(opcode())
+                    {
+                        case 0: // Continuation
+                            {
+                                message_ += fragment_;
+                                if (is_FIN())
+                                {
+                                    if (message_handler_)
+                                        message_handler_(*this, message_, is_binary_);
+                                    message_.clear();
+                                }
+                            }
+                        case 1: // Text
+                            {
+                                is_binary_ = false;
+                                message_ += fragment_;
+                                if (is_FIN())
+                                {
+                                    if (message_handler_)
+                                        message_handler_(*this, message_, is_binary_);
+                                    message_.clear();
+                                }
+                            }
+                            break;
+                        case 2: // Binary
+                            {
+                                is_binary_ = true;
+                                message_ += fragment_;
+                                if (is_FIN())
+                                {
+                                    if (message_handler_)
+                                        message_handler_(*this, message_, is_binary_);
+                                    message_.clear();
+                                }
+                            }
+                            break;
+                        case 0x8: // Close
+                            {
+                                has_recv_close_ = true;
+                                if (!has_sent_close_)
+                                {
+                                    close(fragment_);
+                                }
+                                else
+                                {
+                                    adaptor_.close();
+                                    close_connection_ = true;
+                                    if (!is_close_handler_called_)
+                                    {
+                                        if (close_handler_)
+                                            close_handler_(*this, fragment_);
+                                        is_close_handler_called_ = true;
+                                    }
+                                    check_destroy();
+                                }
+                            }
+                            break;
+                        case 0x9: // Ping
+                            {
+                                send_pong(fragment_);
+                            }
+                            break;
+                        case 0xA: // Pong
+                            {
+                                pong_received_ = true;
+                            }
+                            break;
+                    }
+
+                    fragment_.clear();
+                }
+
+                void do_write()
+                {
+                    if (sending_buffers_.empty())
+                    {
+                        sending_buffers_.swap(write_buffers_);
+                        std::vector<boost::asio::const_buffer> buffers;
+                        buffers.reserve(sending_buffers_.size());
+                        for(auto& s:sending_buffers_)
+                        {
+                            buffers.emplace_back(boost::asio::buffer(s));
+                        }
+                        boost::asio::async_write(adaptor_.socket(), buffers, 
+                            [&](const boost::system::error_code& ec, std::size_t /*bytes_transferred*/)
+                            {
+                                sending_buffers_.clear();
+                                if (!ec && !close_connection_)
+                                {
+                                    if (!write_buffers_.empty())
+                                        do_write();
+                                    if (has_sent_close_)
+                                        close_connection_ = true;
+                                }
+                                else
+                                {
+                                    close_connection_ = true;
+                                    check_destroy();
+                                }
+                            });
+                    }
+                }
+
+                void check_destroy()
+                {
+                    //if (has_sent_close_ && has_recv_close_)
+                    if (!is_close_handler_called_)
+                        if (close_handler_)
+                            close_handler_(*this, "uncleanly");
+                    if (sending_buffers_.empty() && !is_reading)
+                        delete this;
+                }
+			private:
+				Adaptor adaptor_;
+
+                std::vector<std::string> sending_buffers_;
+                std::vector<std::string> write_buffers_;
+
+                boost::array<char, 4096> buffer_;
+                bool is_binary_;
+                std::string message_;
+                std::string fragment_;
+                WebSocketReadState state_{WebSocketReadState::MiniHeader};
+                uint64_t remaining_length_{0};
+                bool close_connection_{false};
+                bool is_reading{false};
+                uint32_t mask_;
+                uint16_t mini_header_;
+                bool has_sent_close_{false};
+                bool has_recv_close_{false};
+                bool error_occured_{false};
+                bool pong_received_{false};
+                bool is_close_handler_called_{false};
+
+				std::function<void(crow::websocket::connection&)> open_handler_;
+				std::function<void(crow::websocket::connection&, const std::string&, bool)> message_handler_;
+				std::function<void(crow::websocket::connection&, const std::string&)> close_handler_;
+				std::function<void(crow::websocket::connection&)> error_handler_;
+				std::function<bool(const crow::request&)> accept_handler_;
+        };
+    }
 }
 
 
@@ -5242,6 +6400,348 @@ namespace crow
 
 #pragma once
 #include <string>
+#include <unordered_map>
+
+
+
+
+
+
+
+
+namespace crow
+{
+    template <typename Adaptor, typename Handler, typename ... Middlewares>
+    class Connection;
+    struct response
+    {
+        template <typename Adaptor, typename Handler, typename ... Middlewares>
+        friend class crow::Connection;
+
+        int code{200};
+        std::string body;
+        json::wvalue json_value;
+
+        // `headers' stores HTTP headers.
+        ci_map headers;
+
+        void set_header(std::string key, std::string value)
+        {
+            headers.erase(key);
+            headers.emplace(std::move(key), std::move(value));
+        }
+        void add_header(std::string key, std::string value)
+        {
+            headers.emplace(std::move(key), std::move(value));
+        }
+
+        const std::string& get_header_value(const std::string& key)
+        {
+            return crow::get_header_value(headers, key);
+        }
+
+
+        response() {}
+        explicit response(int code) : code(code) {}
+        response(std::string body) : body(std::move(body)) {}
+        response(json::wvalue&& json_value) : json_value(std::move(json_value))
+        {
+            json_mode();
+        }
+        response(int code, std::string body) : code(code), body(std::move(body)) {}
+        response(const json::wvalue& json_value) : body(json::dump(json_value))
+        {
+            json_mode();
+        }
+        response(int code, const json::wvalue& json_value) : code(code), body(json::dump(json_value))
+        {
+            json_mode();
+        }
+
+        response(response&& r)
+        {
+            *this = std::move(r);
+        }
+
+        response& operator = (const response& r) = delete;
+
+        response& operator = (response&& r) noexcept
+        {
+            body = std::move(r.body);
+            json_value = std::move(r.json_value);
+            code = r.code;
+            headers = std::move(r.headers);
+            completed_ = r.completed_;
+            return *this;
+        }
+
+        bool is_completed() const noexcept
+        {
+            return completed_;
+        }
+
+        void clear()
+        {
+            body.clear();
+            json_value.clear();
+            code = 200;
+            headers.clear();
+            completed_ = false;
+        }
+
+        void redirect(const std::string& location)
+        {
+            code = 301;
+            set_header("Location", location);
+        }
+
+        void write(const std::string& body_part)
+        {
+            body += body_part;
+        }
+
+        void end()
+        {
+            if (!completed_)
+            {
+                completed_ = true;
+
+                if (complete_request_handler_)
+                {
+                    complete_request_handler_();
+                }
+            }
+        }
+
+        void end(const std::string& body_part)
+        {
+            body += body_part;
+            end();
+        }
+
+        bool is_alive()
+        {
+            return is_alive_helper_ && is_alive_helper_();
+        }
+
+        private:
+            bool completed_{};
+            std::function<void()> complete_request_handler_;
+            std::function<bool()> is_alive_helper_;
+
+            //In case of a JSON object, set the Content-Type header
+            void json_mode()
+            {
+                set_header("Content-Type", "application/json");
+            }
+    };
+}
+
+
+
+#pragma once
+
+
+
+
+
+
+
+
+namespace crow
+{
+    namespace detail
+    {
+        template <typename ... Middlewares>
+        struct partial_context
+            : public black_magic::pop_back<Middlewares...>::template rebind<partial_context>
+            , public black_magic::last_element_type<Middlewares...>::type::context
+        {
+            using parent_context = typename black_magic::pop_back<Middlewares...>::template rebind<::crow::detail::partial_context>;
+            template <int N>
+            using partial = typename std::conditional<N == sizeof...(Middlewares)-1, partial_context, typename parent_context::template partial<N>>::type;
+
+            template <typename T> 
+            typename T::context& get()
+            {
+                return static_cast<typename T::context&>(*this);
+            }
+        };
+
+        template <>
+        struct partial_context<>
+        {
+            template <int>
+            using partial = partial_context;
+        };
+
+        template <int N, typename Context, typename Container, typename CurrentMW, typename ... Middlewares>
+        bool middleware_call_helper(Container& middlewares, request& req, response& res, Context& ctx);
+
+        template <typename ... Middlewares>
+        struct context : private partial_context<Middlewares...>
+        //struct context : private Middlewares::context... // simple but less type-safe
+        {
+            template <int N, typename Context, typename Container>
+            friend typename std::enable_if<(N==0)>::type after_handlers_call_helper(Container& middlewares, Context& ctx, request& req, response& res);
+            template <int N, typename Context, typename Container>
+            friend typename std::enable_if<(N>0)>::type after_handlers_call_helper(Container& middlewares, Context& ctx, request& req, response& res);
+
+            template <int N, typename Context, typename Container, typename CurrentMW, typename ... Middlewares2>
+            friend bool middleware_call_helper(Container& middlewares, request& req, response& res, Context& ctx);
+
+            template <typename T> 
+            typename T::context& get()
+            {
+                return static_cast<typename T::context&>(*this);
+            }
+
+            template <int N>
+            using partial = typename partial_context<Middlewares...>::template partial<N>;
+        };
+    }
+}
+
+
+
+#pragma once
+#include <boost/algorithm/string/trim.hpp>
+
+
+
+
+
+namespace crow
+{
+    // Any middleware requires following 3 members:
+
+    // struct context;
+    //      storing data for the middleware; can be read from another middleware or handlers
+
+    // before_handle
+    //      called before handling the request.
+    //      if res.end() is called, the operation is halted. 
+    //      (still call after_handle of this middleware)
+    //      2 signatures:
+    //      void before_handle(request& req, response& res, context& ctx)
+    //          if you only need to access this middlewares context.
+    //      template <typename AllContext>
+    //      void before_handle(request& req, response& res, context& ctx, AllContext& all_ctx)
+    //          you can access another middlewares' context by calling `all_ctx.template get<MW>()'
+    //          ctx == all_ctx.template get<CurrentMiddleware>()
+
+    // after_handle
+    //      called after handling the request.
+    //      void after_handle(request& req, response& res, context& ctx)
+    //      template <typename AllContext>
+    //      void after_handle(request& req, response& res, context& ctx, AllContext& all_ctx)
+
+    struct CookieParser
+    {
+        struct context
+        {
+            std::unordered_map<std::string, std::string> jar;
+            std::unordered_map<std::string, std::string> cookies_to_add;
+
+            std::string get_cookie(const std::string& key) const
+            {
+                auto cookie = jar.find(key);
+                if (cookie != jar.end())
+                    return cookie->second;
+                return {};
+            }
+
+            void set_cookie(const std::string& key, const std::string& value)
+            {
+                cookies_to_add.emplace(key, value);
+            }
+        };
+
+        void before_handle(request& req, response& res, context& ctx)
+        {
+            int count = req.headers.count("Cookie");
+            if (!count)
+                return;
+            if (count > 1)
+            {
+                res.code = 400;
+                res.end();
+                return;
+            }
+            std::string cookies = req.get_header_value("Cookie");
+            size_t pos = 0;
+            while(pos < cookies.size())
+            {
+                size_t pos_equal = cookies.find('=', pos);
+                if (pos_equal == cookies.npos)
+                    break;
+                std::string name = cookies.substr(pos, pos_equal-pos);
+                boost::trim(name);
+                pos = pos_equal+1;
+                while(pos < cookies.size() && cookies[pos] == ' ') pos++;
+                if (pos == cookies.size())
+                    break;
+
+                size_t pos_semicolon = cookies.find(';', pos);
+                std::string value = cookies.substr(pos, pos_semicolon-pos);
+
+                boost::trim(value);
+                if (value[0] == '"' && value[value.size()-1] == '"')
+                {
+                    value = value.substr(1, value.size()-2);
+                }
+
+                ctx.jar.emplace(std::move(name), std::move(value));
+
+                pos = pos_semicolon;
+                if (pos == cookies.npos)
+                    break;
+                pos++;
+                while(pos < cookies.size() && cookies[pos] == ' ') pos++;
+            }
+        }
+
+        void after_handle(request& /*req*/, response& res, context& ctx)
+        {
+            for(auto& cookie:ctx.cookies_to_add)
+            {
+                if (cookie.second.empty())
+                    res.add_header("Set-Cookie", cookie.first + "=\"\"");
+                else
+                    res.add_header("Set-Cookie", cookie.first + "=" + cookie.second);
+            }
+        }
+    };
+
+    /*
+    App<CookieParser, AnotherJarMW> app;
+    A B C
+    A::context
+        int aa;
+
+    ctx1 : public A::context
+    ctx2 : public ctx1, public B::context
+    ctx3 : public ctx2, public C::context
+
+    C depends on A
+
+    C::handle
+        context.aaa
+
+    App::context : private CookieParser::contetx, ... 
+    {
+        jar
+
+    }
+
+    SimpleApp
+    */
+}
+
+
+
+#pragma once
+#include <string>
 #include <vector>
 #include <fstream>
 #include <iterator>
@@ -5955,2450 +7455,6 @@ namespace crow
         if (crow::logger::get_current_log_level() <= crow::LogLevel::Debug) \
             crow::logger("DEBUG   ", crow::LogLevel::Debug)
 
-
-
-
-#pragma once
-
-#include <vector>
-#include <string>
-#include <stdexcept>
-#include <iostream>
-
-
-
-namespace crow
-{
-    enum class HTTPMethod
-    {
-#ifndef DELETE
-        DELETE = 0,
-        GET,
-        HEAD,
-        POST,
-        PUT,
-        CONNECT,
-        OPTIONS,
-        TRACE,
-        PATCH = 24,
-#endif
-
-        Delete = 0,
-        Get,
-        Head,
-        Post,
-        Put,
-        Connect,
-        Options,
-        Trace,
-        Patch = 24,
-    };
-
-    inline std::string method_name(HTTPMethod method)
-    {
-        switch(method)
-        {
-            case HTTPMethod::Delete:
-                return "DELETE";
-            case HTTPMethod::Get:
-                return "GET";
-            case HTTPMethod::Head:
-                return "HEAD";
-            case HTTPMethod::Post:
-                return "POST";
-            case HTTPMethod::Put:
-                return "PUT";
-            case HTTPMethod::Connect:
-                return "CONNECT";
-            case HTTPMethod::Options:
-                return "OPTIONS";
-            case HTTPMethod::Trace:
-                return "TRACE";
-            case HTTPMethod::Patch:
-                return "PATCH";
-        }
-        return "invalid";
-    }
-
-    enum class ParamType
-    {
-        INT,
-        UINT,
-        DOUBLE,
-        STRING,
-        PATH,
-
-        MAX
-    };
-
-    struct routing_params
-    {
-        std::vector<int64_t> int_params;
-        std::vector<uint64_t> uint_params;
-        std::vector<double> double_params;
-        std::vector<std::string> string_params;
-
-        void debug_print() const
-        {
-            std::cerr << "routing_params" << std::endl;
-            for(auto i:int_params)
-                std::cerr<<i <<", " ;
-            std::cerr<<std::endl;
-            for(auto i:uint_params)
-                std::cerr<<i <<", " ;
-            std::cerr<<std::endl;
-            for(auto i:double_params)
-                std::cerr<<i <<", " ;
-            std::cerr<<std::endl;
-            for(auto& i:string_params)
-                std::cerr<<i <<", " ;
-            std::cerr<<std::endl;
-        }
-
-        template <typename T>
-        T get(unsigned) const;
-
-    };
-
-    template<>
-    inline int64_t routing_params::get<int64_t>(unsigned index) const
-    {
-        return int_params[index];
-    }
-
-    template<>
-    inline uint64_t routing_params::get<uint64_t>(unsigned index) const
-    {
-        return uint_params[index];
-    }
-
-    template<>
-    inline double routing_params::get<double>(unsigned index) const
-    {
-        return double_params[index];
-    }
-
-    template<>
-    inline std::string routing_params::get<std::string>(unsigned index) const
-    {
-        return string_params[index];
-    }
-}
-
-#ifndef CROW_MSVC_WORKAROUND
-constexpr crow::HTTPMethod operator "" _method(const char* str, size_t /*len*/)
-{
-    return
-        crow::black_magic::is_equ_p(str, "GET", 3) ? crow::HTTPMethod::Get :
-        crow::black_magic::is_equ_p(str, "DELETE", 6) ? crow::HTTPMethod::Delete :
-        crow::black_magic::is_equ_p(str, "HEAD", 4) ? crow::HTTPMethod::Head :
-        crow::black_magic::is_equ_p(str, "POST", 4) ? crow::HTTPMethod::Post :
-        crow::black_magic::is_equ_p(str, "PUT", 3) ? crow::HTTPMethod::Put :
-        crow::black_magic::is_equ_p(str, "OPTIONS", 7) ? crow::HTTPMethod::Options :
-        crow::black_magic::is_equ_p(str, "CONNECT", 7) ? crow::HTTPMethod::Connect :
-        crow::black_magic::is_equ_p(str, "TRACE", 5) ? crow::HTTPMethod::Trace :
-        crow::black_magic::is_equ_p(str, "PATCH", 5) ? crow::HTTPMethod::Patch :
-        throw std::runtime_error("invalid http method");
-}
-#endif
-
-
-
-/* 
- *
- * TinySHA1 - a header only implementation of the SHA1 algorithm in C++. Based
- * on the implementation in boost::uuid::details.
- * 
- * SHA1 Wikipedia Page: http://en.wikipedia.org/wiki/SHA-1
- * 
- * Copyright (c) 2012-22 SAURAV MOHAPATRA <mohaps@gmail.com>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-#ifndef _TINY_SHA1_HPP_
-#define _TINY_SHA1_HPP_
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <stdint.h>
-namespace sha1
-{
-	class SHA1
-	{
-	public:
-		typedef uint32_t digest32_t[5];
-		typedef uint8_t digest8_t[20];
-		inline static uint32_t LeftRotate(uint32_t value, size_t count) {
-			return (value << count) ^ (value >> (32-count));
-		}
-		SHA1(){ reset(); }
-		virtual ~SHA1() {}
-		SHA1(const SHA1& s) { *this = s; }
-		const SHA1& operator = (const SHA1& s) {
-			memcpy(m_digest, s.m_digest, 5 * sizeof(uint32_t));
-			memcpy(m_block, s.m_block, 64);
-			m_blockByteIndex = s.m_blockByteIndex;
-			m_byteCount = s.m_byteCount;
-			return *this;
-		}
-		SHA1& reset() {
-			m_digest[0] = 0x67452301;
-			m_digest[1] = 0xEFCDAB89;
-			m_digest[2] = 0x98BADCFE;
-			m_digest[3] = 0x10325476;
-			m_digest[4] = 0xC3D2E1F0;
-			m_blockByteIndex = 0;
-			m_byteCount = 0;
-			return *this;
-		}
-		SHA1& processByte(uint8_t octet) {
-			this->m_block[this->m_blockByteIndex++] = octet;
-			++this->m_byteCount;
-			if(m_blockByteIndex == 64) {
-				this->m_blockByteIndex = 0;
-				processBlock();
-			}
-			return *this;
-		}
-		SHA1& processBlock(const void* const start, const void* const end) {
-			const uint8_t* begin = static_cast<const uint8_t*>(start);
-			const uint8_t* finish = static_cast<const uint8_t*>(end);
-			while(begin != finish) {
-				processByte(*begin);
-				begin++;
-			}
-			return *this;
-		}
-		SHA1& processBytes(const void* const data, size_t len) {
-			const uint8_t* block = static_cast<const uint8_t*>(data);
-			processBlock(block, block + len);
-			return *this;
-		}
-		const uint32_t* getDigest(digest32_t digest) {
-			size_t bitCount = this->m_byteCount * 8;
-			processByte(0x80);
-			if (this->m_blockByteIndex > 56) {
-				while (m_blockByteIndex != 0) {
-					processByte(0);
-				}
-				while (m_blockByteIndex < 56) {
-					processByte(0);
-				}
-			} else {
-				while (m_blockByteIndex < 56) {
-					processByte(0);
-				}
-			}
-			processByte(0);
-			processByte(0);
-			processByte(0);
-			processByte(0);
-			processByte( static_cast<unsigned char>((bitCount>>24) & 0xFF));
-			processByte( static_cast<unsigned char>((bitCount>>16) & 0xFF));
-			processByte( static_cast<unsigned char>((bitCount>>8 ) & 0xFF));
-			processByte( static_cast<unsigned char>((bitCount)     & 0xFF));
-	
-			memcpy(digest, m_digest, 5 * sizeof(uint32_t));
-			return digest;
-		}
-		const uint8_t* getDigestBytes(digest8_t digest) {
-			digest32_t d32;
-			getDigest(d32);
-			size_t di = 0;
-			digest[di++] = ((d32[0] >> 24) & 0xFF);
-			digest[di++] = ((d32[0] >> 16) & 0xFF);
-			digest[di++] = ((d32[0] >> 8) & 0xFF);
-			digest[di++] = ((d32[0]) & 0xFF);
-			
-			digest[di++] = ((d32[1] >> 24) & 0xFF);
-			digest[di++] = ((d32[1] >> 16) & 0xFF);
-			digest[di++] = ((d32[1] >> 8) & 0xFF);
-			digest[di++] = ((d32[1]) & 0xFF);
-			
-			digest[di++] = ((d32[2] >> 24) & 0xFF);
-			digest[di++] = ((d32[2] >> 16) & 0xFF);
-			digest[di++] = ((d32[2] >> 8) & 0xFF);
-			digest[di++] = ((d32[2]) & 0xFF);
-			
-			digest[di++] = ((d32[3] >> 24) & 0xFF);
-			digest[di++] = ((d32[3] >> 16) & 0xFF);
-			digest[di++] = ((d32[3] >> 8) & 0xFF);
-			digest[di++] = ((d32[3]) & 0xFF);
-			
-			digest[di++] = ((d32[4] >> 24) & 0xFF);
-			digest[di++] = ((d32[4] >> 16) & 0xFF);
-			digest[di++] = ((d32[4] >> 8) & 0xFF);
-			digest[di++] = ((d32[4]) & 0xFF);
-			return digest;
-		}
-	
-	protected:
-		void processBlock() {
-			uint32_t w[80];
-			for (size_t i = 0; i < 16; i++) {
-				w[i]  = (m_block[i*4 + 0] << 24);
-				w[i] |= (m_block[i*4 + 1] << 16);
-				w[i] |= (m_block[i*4 + 2] << 8);
-				w[i] |= (m_block[i*4 + 3]);
-			}
-			for (size_t i = 16; i < 80; i++) {
-				w[i] = LeftRotate((w[i-3] ^ w[i-8] ^ w[i-14] ^ w[i-16]), 1);
-			}
-	
-			uint32_t a = m_digest[0];
-			uint32_t b = m_digest[1];
-			uint32_t c = m_digest[2];
-			uint32_t d = m_digest[3];
-			uint32_t e = m_digest[4];
-	
-			for (std::size_t i=0; i<80; ++i) {
-				uint32_t f = 0;
-				uint32_t k = 0;
-	
-				if (i<20) {
-					f = (b & c) | (~b & d);
-					k = 0x5A827999;
-				} else if (i<40) {
-					f = b ^ c ^ d;
-					k = 0x6ED9EBA1;
-				} else if (i<60) {
-					f = (b & c) | (b & d) | (c & d);
-					k = 0x8F1BBCDC;
-				} else {
-					f = b ^ c ^ d;
-					k = 0xCA62C1D6;
-				}
-				uint32_t temp = LeftRotate(a, 5) + f + e + k + w[i];
-				e = d;
-				d = c;
-				c = LeftRotate(b, 30);
-				b = a;
-				a = temp;
-			}
-	
-			m_digest[0] += a;
-			m_digest[1] += b;
-			m_digest[2] += c;
-			m_digest[3] += d;
-			m_digest[4] += e;
-		}
-	private:
-		digest32_t m_digest;
-		uint8_t m_block[64];
-		size_t m_blockByteIndex;
-		size_t m_byteCount;
-	};
-}
-#endif
-
-
-
-#pragma once
-
-#include <boost/asio.hpp>
-#include <deque>
-#include <functional>
-#include <chrono>
-#include <thread>
-
-
-
-
-namespace crow
-{
-    namespace detail 
-    {
-        // fast timer queue for fixed tick value.
-        class dumb_timer_queue
-        {
-        public:
-            using key = std::pair<dumb_timer_queue*, int>;
-
-            void cancel(key& k)
-            {
-                auto self = k.first;
-                k.first = nullptr;
-                if (!self)
-                    return;
-
-                unsigned int index = (unsigned int)(k.second - self->step_);
-                if (index < self->dq_.size())
-                    self->dq_[index].second = nullptr;
-            }
-
-            key add(std::function<void()> f)
-            {
-                dq_.emplace_back(std::chrono::steady_clock::now(), std::move(f));
-                int ret = step_+dq_.size()-1;
-
-                CROW_LOG_DEBUG << "timer add inside: " << this << ' ' << ret ;
-                return {this, ret};
-            }
-
-            void process()
-            {
-                if (!io_service_)
-                    return;
-
-                auto now = std::chrono::steady_clock::now();
-                while(!dq_.empty())
-                {
-                    auto& x = dq_.front();
-                    if (now - x.first < std::chrono::seconds(tick))
-                        break;
-                    if (x.second)
-                    {
-                        CROW_LOG_DEBUG << "timer call: " << this << ' ' << step_;
-                        // we know that timer handlers are very simple currenty; call here
-                        x.second();
-                    }
-                    dq_.pop_front();
-                    step_++;
-                }
-            }
-
-            void set_io_service(boost::asio::io_service& io_service)
-            {
-                io_service_ = &io_service;
-            }
-
-            dumb_timer_queue() noexcept
-            {
-            }
-
-        private:
-
-            int tick{5};
-            boost::asio::io_service* io_service_{};
-            std::deque<std::pair<decltype(std::chrono::steady_clock::now()), std::function<void()>>> dq_;
-            int step_{};
-        };
-    }
-}
-
-
-
-#pragma once
-
-#include <boost/algorithm/string/predicate.hpp>
-#include <boost/functional/hash.hpp>
-#include <unordered_map>
-
-namespace crow
-{
-    struct ci_hash
-    {
-        size_t operator()(const std::string& key) const
-        {
-            std::size_t seed = 0;
-            std::locale locale;
-
-            for(auto c : key)
-            {
-                boost::hash_combine(seed, std::toupper(c, locale));
-            }
-
-            return seed;
-        }
-    };
-
-    struct ci_key_eq
-    {
-        bool operator()(const std::string& l, const std::string& r) const
-        {
-            return boost::iequals(l, r);
-        }
-    };
-
-    using ci_map = std::unordered_multimap<std::string, std::string, ci_hash, ci_key_eq>;
-}
-
-
-
-#pragma once
-
-#include <boost/asio.hpp>
-
-
-
-
-
-
-
-
-namespace crow
-{
-    template <typename T>
-    inline const std::string& get_header_value(const T& headers, const std::string& key)
-    {
-        if (headers.count(key))
-        {
-            return headers.find(key)->second;
-        }
-        static std::string empty;
-        return empty;
-    }
-
-	struct DetachHelper;
-
-    struct request
-    {
-        HTTPMethod method;
-        std::string raw_url;
-        std::string url;
-        query_string url_params;
-        ci_map headers;
-        std::string body;
-
-        void* middleware_context{};
-        boost::asio::io_service* io_service{};
-
-        request()
-            : method(HTTPMethod::Get)
-        {
-        }
-
-        request(HTTPMethod method, std::string raw_url, std::string url, query_string url_params, ci_map headers, std::string body)
-            : method(method), raw_url(std::move(raw_url)), url(std::move(url)), url_params(std::move(url_params)), headers(std::move(headers)), body(std::move(body))
-        {
-        }
-
-        void add_header(std::string key, std::string value)
-        {
-            headers.emplace(std::move(key), std::move(value));
-        }
-
-        const std::string& get_header_value(const std::string& key) const
-        {
-            return crow::get_header_value(headers, key);
-        }
-
-        template<typename CompletionHandler>
-        void post(CompletionHandler handler)
-        {
-            io_service->post(handler);
-        }
-
-        template<typename CompletionHandler>
-        void dispatch(CompletionHandler handler)
-        {
-            io_service->dispatch(handler);
-        }
-
-    };
-}
-
-
-
-#pragma once
-#include <string>
-#include <unordered_map>
-
-
-
-
-
-
-
-
-namespace crow
-{
-    template <typename Adaptor, typename Handler, typename ... Middlewares>
-    class Connection;
-    struct response
-    {
-        template <typename Adaptor, typename Handler, typename ... Middlewares>
-        friend class crow::Connection;
-
-        int code{200};
-        std::string body;
-        json::wvalue json_value;
-
-        // `headers' stores HTTP headers.
-        ci_map headers;
-
-        void set_header(std::string key, std::string value)
-        {
-            headers.erase(key);
-            headers.emplace(std::move(key), std::move(value));
-        }
-        void add_header(std::string key, std::string value)
-        {
-            headers.emplace(std::move(key), std::move(value));
-        }
-
-        const std::string& get_header_value(const std::string& key)
-        {
-            return crow::get_header_value(headers, key);
-        }
-
-
-        response() {}
-        explicit response(int code) : code(code) {}
-        response(std::string body) : body(std::move(body)) {}
-        response(json::wvalue&& json_value) : json_value(std::move(json_value))
-        {
-            json_mode();
-        }
-        response(int code, std::string body) : code(code), body(std::move(body)) {}
-        response(const json::wvalue& json_value) : body(json::dump(json_value))
-        {
-            json_mode();
-        }
-        response(int code, const json::wvalue& json_value) : code(code), body(json::dump(json_value))
-        {
-            json_mode();
-        }
-
-        response(response&& r)
-        {
-            *this = std::move(r);
-        }
-
-        response& operator = (const response& r) = delete;
-
-        response& operator = (response&& r) noexcept
-        {
-            body = std::move(r.body);
-            json_value = std::move(r.json_value);
-            code = r.code;
-            headers = std::move(r.headers);
-            completed_ = r.completed_;
-            return *this;
-        }
-
-        bool is_completed() const noexcept
-        {
-            return completed_;
-        }
-
-        void clear()
-        {
-            body.clear();
-            json_value.clear();
-            code = 200;
-            headers.clear();
-            completed_ = false;
-        }
-
-        void redirect(const std::string& location)
-        {
-            code = 301;
-            set_header("Location", location);
-        }
-
-        void write(const std::string& body_part)
-        {
-            body += body_part;
-        }
-
-        void end()
-        {
-            if (!completed_)
-            {
-                completed_ = true;
-
-                if (complete_request_handler_)
-                {
-                    complete_request_handler_();
-                }
-            }
-        }
-
-        void end(const std::string& body_part)
-        {
-            body += body_part;
-            end();
-        }
-
-        bool is_alive()
-        {
-            return is_alive_helper_ && is_alive_helper_();
-        }
-
-        private:
-            bool completed_{};
-            std::function<void()> complete_request_handler_;
-            std::function<bool()> is_alive_helper_;
-
-            //In case of a JSON object, set the Content-Type header
-            void json_mode()
-            {
-                set_header("Content-Type", "application/json");
-            }
-    };
-}
-
-
-
-#pragma once
-#include <boost/algorithm/string/trim.hpp>
-
-
-
-
-
-namespace crow
-{
-    // Any middleware requires following 3 members:
-
-    // struct context;
-    //      storing data for the middleware; can be read from another middleware or handlers
-
-    // before_handle
-    //      called before handling the request.
-    //      if res.end() is called, the operation is halted. 
-    //      (still call after_handle of this middleware)
-    //      2 signatures:
-    //      void before_handle(request& req, response& res, context& ctx)
-    //          if you only need to access this middlewares context.
-    //      template <typename AllContext>
-    //      void before_handle(request& req, response& res, context& ctx, AllContext& all_ctx)
-    //          you can access another middlewares' context by calling `all_ctx.template get<MW>()'
-    //          ctx == all_ctx.template get<CurrentMiddleware>()
-
-    // after_handle
-    //      called after handling the request.
-    //      void after_handle(request& req, response& res, context& ctx)
-    //      template <typename AllContext>
-    //      void after_handle(request& req, response& res, context& ctx, AllContext& all_ctx)
-
-    struct CookieParser
-    {
-        struct context
-        {
-            std::unordered_map<std::string, std::string> jar;
-            std::unordered_map<std::string, std::string> cookies_to_add;
-
-            std::string get_cookie(const std::string& key) const
-            {
-                auto cookie = jar.find(key);
-                if (cookie != jar.end())
-                    return cookie->second;
-                return {};
-            }
-
-            void set_cookie(const std::string& key, const std::string& value)
-            {
-                cookies_to_add.emplace(key, value);
-            }
-        };
-
-        void before_handle(request& req, response& res, context& ctx)
-        {
-            int count = req.headers.count("Cookie");
-            if (!count)
-                return;
-            if (count > 1)
-            {
-                res.code = 400;
-                res.end();
-                return;
-            }
-            std::string cookies = req.get_header_value("Cookie");
-            size_t pos = 0;
-            while(pos < cookies.size())
-            {
-                size_t pos_equal = cookies.find('=', pos);
-                if (pos_equal == cookies.npos)
-                    break;
-                std::string name = cookies.substr(pos, pos_equal-pos);
-                boost::trim(name);
-                pos = pos_equal+1;
-                while(pos < cookies.size() && cookies[pos] == ' ') pos++;
-                if (pos == cookies.size())
-                    break;
-
-                size_t pos_semicolon = cookies.find(';', pos);
-                std::string value = cookies.substr(pos, pos_semicolon-pos);
-
-                boost::trim(value);
-                if (value[0] == '"' && value[value.size()-1] == '"')
-                {
-                    value = value.substr(1, value.size()-2);
-                }
-
-                ctx.jar.emplace(std::move(name), std::move(value));
-
-                pos = pos_semicolon;
-                if (pos == cookies.npos)
-                    break;
-                pos++;
-                while(pos < cookies.size() && cookies[pos] == ' ') pos++;
-            }
-        }
-
-        void after_handle(request& /*req*/, response& res, context& ctx)
-        {
-            for(auto& cookie:ctx.cookies_to_add)
-            {
-                if (cookie.second.empty())
-                    res.add_header("Set-Cookie", cookie.first + "=\"\"");
-                else
-                    res.add_header("Set-Cookie", cookie.first + "=" + cookie.second);
-            }
-        }
-    };
-
-    /*
-    App<CookieParser, AnotherJarMW> app;
-    A B C
-    A::context
-        int aa;
-
-    ctx1 : public A::context
-    ctx2 : public ctx1, public B::context
-    ctx3 : public ctx2, public C::context
-
-    C depends on A
-
-    C::handle
-        context.aaa
-
-    App::context : private CookieParser::contetx, ... 
-    {
-        jar
-
-    }
-
-    SimpleApp
-    */
-}
-
-
-
-#pragma once
-
-#include <string>
-#include <unordered_map>
-#include <boost/algorithm/string.hpp>
-#include <algorithm>
-
-
-
-
-
-
-namespace crow
-{
-    template <typename Handler>
-    struct HTTPParser : public http_parser
-    {
-        static int on_message_begin(http_parser* self_)
-        {
-            HTTPParser* self = static_cast<HTTPParser*>(self_);
-            self->clear();
-            return 0;
-        }
-        static int on_url(http_parser* self_, const char* at, size_t length)
-        {
-            HTTPParser* self = static_cast<HTTPParser*>(self_);
-            self->raw_url.insert(self->raw_url.end(), at, at+length);
-            return 0;
-        }
-        static int on_header_field(http_parser* self_, const char* at, size_t length)
-        {
-            HTTPParser* self = static_cast<HTTPParser*>(self_);
-            switch (self->header_building_state)
-            {
-                case 0:
-                    if (!self->header_value.empty())
-                    {
-                        self->headers.emplace(std::move(self->header_field), std::move(self->header_value));
-                    }
-                    self->header_field.assign(at, at+length);
-                    self->header_building_state = 1;
-                    break;
-                case 1:
-                    self->header_field.insert(self->header_field.end(), at, at+length);
-                    break;
-            }
-            return 0;
-        }
-        static int on_header_value(http_parser* self_, const char* at, size_t length)
-        {
-            HTTPParser* self = static_cast<HTTPParser*>(self_);
-            switch (self->header_building_state)
-            {
-                case 0:
-                    self->header_value.insert(self->header_value.end(), at, at+length);
-                    break;
-                case 1:
-                    self->header_building_state = 0;
-                    self->header_value.assign(at, at+length);
-                    break;
-            }
-            return 0;
-        }
-        static int on_headers_complete(http_parser* self_)
-        {
-            HTTPParser* self = static_cast<HTTPParser*>(self_);
-            if (!self->header_field.empty())
-            {
-                self->headers.emplace(std::move(self->header_field), std::move(self->header_value));
-            }
-            self->process_header();
-            return 0;
-        }
-        static int on_body(http_parser* self_, const char* at, size_t length)
-        {
-            HTTPParser* self = static_cast<HTTPParser*>(self_);
-            self->body.insert(self->body.end(), at, at+length);
-            return 0;
-        }
-        static int on_message_complete(http_parser* self_)
-        {
-            HTTPParser* self = static_cast<HTTPParser*>(self_);
-
-            // url params
-            self->url = self->raw_url.substr(0, self->raw_url.find("?"));
-            self->url_params = query_string(self->raw_url);
-
-            self->process_message();
-            return 0;
-        }
-        HTTPParser(Handler* handler) :
-            handler_(handler)
-        {
-            http_parser_init(this, HTTP_REQUEST);
-        }
-
-        // return false on error
-        bool feed(const char* buffer, int length)
-        {
-            const static http_parser_settings settings_{
-                on_message_begin,
-                on_url,
-                nullptr,
-                on_header_field,
-                on_header_value,
-                on_headers_complete,
-                on_body,
-                on_message_complete,
-            };
-
-            int nparsed = http_parser_execute(this, &settings_, buffer, length);
-            return nparsed == length;
-        }
-
-        bool done()
-        {
-            return feed(nullptr, 0);
-        }
-
-        void clear()
-        {
-            url.clear();
-            raw_url.clear();
-            header_building_state = 0;
-            header_field.clear();
-            header_value.clear();
-            headers.clear();
-            url_params.clear();
-            body.clear();
-        }
-
-        void process_header()
-        {
-            handler_->handle_header();
-        }
-
-        void process_message()
-        {
-            handler_->handle();
-        }
-
-        request to_request() const
-        {
-            return request{(HTTPMethod)method, std::move(raw_url), std::move(url), std::move(url_params), std::move(headers), std::move(body)};
-        }
-
-		bool is_upgrade() const
-		{
-			return upgrade;
-		}
-
-        bool check_version(int major, int minor) const
-        {
-            return http_major == major && http_minor == minor;
-        }
-
-        std::string raw_url;
-        std::string url;
-
-        int header_building_state = 0;
-        std::string header_field;
-        std::string header_value;
-        ci_map headers;
-        query_string url_params;
-        std::string body;
-
-        Handler* handler_;
-    };
-}
-
-
-
-#pragma once
-
-
-
-
-
-
-
-
-namespace crow
-{
-    namespace detail
-    {
-        template <typename ... Middlewares>
-        struct partial_context
-            : public black_magic::pop_back<Middlewares...>::template rebind<partial_context>
-            , public black_magic::last_element_type<Middlewares...>::type::context
-        {
-            using parent_context = typename black_magic::pop_back<Middlewares...>::template rebind<::crow::detail::partial_context>;
-            template <int N>
-            using partial = typename std::conditional<N == sizeof...(Middlewares)-1, partial_context, typename parent_context::template partial<N>>::type;
-
-            template <typename T> 
-            typename T::context& get()
-            {
-                return static_cast<typename T::context&>(*this);
-            }
-        };
-
-        template <>
-        struct partial_context<>
-        {
-            template <int>
-            using partial = partial_context;
-        };
-
-        template <int N, typename Context, typename Container, typename CurrentMW, typename ... Middlewares>
-        bool middleware_call_helper(Container& middlewares, request& req, response& res, Context& ctx);
-
-        template <typename ... Middlewares>
-        struct context : private partial_context<Middlewares...>
-        //struct context : private Middlewares::context... // simple but less type-safe
-        {
-            template <int N, typename Context, typename Container>
-            friend typename std::enable_if<(N==0)>::type after_handlers_call_helper(Container& middlewares, Context& ctx, request& req, response& res);
-            template <int N, typename Context, typename Container>
-            friend typename std::enable_if<(N>0)>::type after_handlers_call_helper(Container& middlewares, Context& ctx, request& req, response& res);
-
-            template <int N, typename Context, typename Container, typename CurrentMW, typename ... Middlewares2>
-            friend bool middleware_call_helper(Container& middlewares, request& req, response& res, Context& ctx);
-
-            template <typename T> 
-            typename T::context& get()
-            {
-                return static_cast<typename T::context&>(*this);
-            }
-
-            template <int N>
-            using partial = typename partial_context<Middlewares...>::template partial<N>;
-        };
-    }
-}
-
-
-
-#pragma once
-#include <boost/asio.hpp>
-#include <boost/algorithm/string/predicate.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/array.hpp>
-#include <atomic>
-#include <chrono>
-#include <vector>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-namespace crow
-{
-    using namespace boost;
-    using tcp = asio::ip::tcp;
-
-    namespace detail
-    {
-        template <typename MW>
-        struct check_before_handle_arity_3_const
-        {
-            template <typename T,
-                void (T::*)(request&, response&, typename MW::context&) const = &T::before_handle
-            >
-            struct get
-            { };
-        };
-
-        template <typename MW>
-        struct check_before_handle_arity_3
-        {
-            template <typename T,
-                void (T::*)(request&, response&, typename MW::context&) = &T::before_handle
-            >
-            struct get
-            { };
-        };
-
-        template <typename MW>
-        struct check_after_handle_arity_3_const
-        {
-            template <typename T,
-                void (T::*)(request&, response&, typename MW::context&) const = &T::after_handle
-            >
-            struct get
-            { };
-        };
-
-        template <typename MW>
-        struct check_after_handle_arity_3
-        {
-            template <typename T,
-                void (T::*)(request&, response&, typename MW::context&) = &T::after_handle
-            >
-            struct get
-            { };
-        };
-
-        template <typename T>
-        struct is_before_handle_arity_3_impl
-        {
-            template <typename C>
-            static std::true_type f(typename check_before_handle_arity_3_const<T>::template get<C>*);
-
-            template <typename C>
-            static std::true_type f(typename check_before_handle_arity_3<T>::template get<C>*);
-
-            template <typename C>
-            static std::false_type f(...);
-
-        public:
-            static const bool value = decltype(f<T>(nullptr))::value;
-        };
-
-        template <typename T>
-        struct is_after_handle_arity_3_impl
-        {
-            template <typename C>
-            static std::true_type f(typename check_after_handle_arity_3_const<T>::template get<C>*);
-
-            template <typename C>
-            static std::true_type f(typename check_after_handle_arity_3<T>::template get<C>*);
-
-            template <typename C>
-            static std::false_type f(...);
-
-        public:
-            static const bool value = decltype(f<T>(nullptr))::value;
-        };
-
-        template <typename MW, typename Context, typename ParentContext>
-        typename std::enable_if<!is_before_handle_arity_3_impl<MW>::value>::type
-        before_handler_call(MW& mw, request& req, response& res, Context& ctx, ParentContext& /*parent_ctx*/)
-        {
-            mw.before_handle(req, res, ctx.template get<MW>(), ctx);
-        }
-
-        template <typename MW, typename Context, typename ParentContext>
-        typename std::enable_if<is_before_handle_arity_3_impl<MW>::value>::type
-        before_handler_call(MW& mw, request& req, response& res, Context& ctx, ParentContext& /*parent_ctx*/)
-        {
-            mw.before_handle(req, res, ctx.template get<MW>());
-        }
-
-        template <typename MW, typename Context, typename ParentContext>
-        typename std::enable_if<!is_after_handle_arity_3_impl<MW>::value>::type
-        after_handler_call(MW& mw, request& req, response& res, Context& ctx, ParentContext& /*parent_ctx*/)
-        {
-            mw.after_handle(req, res, ctx.template get<MW>(), ctx);
-        }
-
-        template <typename MW, typename Context, typename ParentContext>
-        typename std::enable_if<is_after_handle_arity_3_impl<MW>::value>::type
-        after_handler_call(MW& mw, request& req, response& res, Context& ctx, ParentContext& /*parent_ctx*/)
-        {
-            mw.after_handle(req, res, ctx.template get<MW>());
-        }
-
-        template <int N, typename Context, typename Container, typename CurrentMW, typename ... Middlewares>
-        bool middleware_call_helper(Container& middlewares, request& req, response& res, Context& ctx)
-        {
-            using parent_context_t = typename Context::template partial<N-1>;
-            before_handler_call<CurrentMW, Context, parent_context_t>(std::get<N>(middlewares), req, res, ctx, static_cast<parent_context_t&>(ctx));
-
-            if (res.is_completed())
-            {
-                after_handler_call<CurrentMW, Context, parent_context_t>(std::get<N>(middlewares), req, res, ctx, static_cast<parent_context_t&>(ctx));
-                return true;
-            }
-
-            if (middleware_call_helper<N+1, Context, Container, Middlewares...>(middlewares, req, res, ctx))
-            {
-                after_handler_call<CurrentMW, Context, parent_context_t>(std::get<N>(middlewares), req, res, ctx, static_cast<parent_context_t&>(ctx));
-                return true;
-            }
-
-            return false;
-        }
-
-        template <int N, typename Context, typename Container>
-        bool middleware_call_helper(Container& /*middlewares*/, request& /*req*/, response& /*res*/, Context& /*ctx*/)
-        {
-            return false;
-        }
-
-        template <int N, typename Context, typename Container>
-        typename std::enable_if<(N<0)>::type 
-        after_handlers_call_helper(Container& /*middlewares*/, Context& /*context*/, request& /*req*/, response& /*res*/)
-        {
-        }
-
-        template <int N, typename Context, typename Container>
-        typename std::enable_if<(N==0)>::type after_handlers_call_helper(Container& middlewares, Context& ctx, request& req, response& res)
-        {
-            using parent_context_t = typename Context::template partial<N-1>;
-            using CurrentMW = typename std::tuple_element<N, typename std::remove_reference<Container>::type>::type;
-            after_handler_call<CurrentMW, Context, parent_context_t>(std::get<N>(middlewares), req, res, ctx, static_cast<parent_context_t&>(ctx));
-        }
-
-        template <int N, typename Context, typename Container>
-        typename std::enable_if<(N>0)>::type after_handlers_call_helper(Container& middlewares, Context& ctx, request& req, response& res)
-        {
-            using parent_context_t = typename Context::template partial<N-1>;
-            using CurrentMW = typename std::tuple_element<N, typename std::remove_reference<Container>::type>::type;
-            after_handler_call<CurrentMW, Context, parent_context_t>(std::get<N>(middlewares), req, res, ctx, static_cast<parent_context_t&>(ctx));
-            after_handlers_call_helper<N-1, Context, Container>(middlewares, ctx, req, res);
-        }
-    }
-
-#ifdef CROW_ENABLE_DEBUG
-    static std::atomic<int> connectionCount;
-#endif
-    template <typename Adaptor, typename Handler, typename ... Middlewares>
-    class Connection
-    {
-    public:
-        Connection(
-            boost::asio::io_service& io_service, 
-            Handler* handler, 
-            const std::string& server_name,
-            std::tuple<Middlewares...>* middlewares,
-            std::function<std::string()>& get_cached_date_str_f,
-            detail::dumb_timer_queue& timer_queue,
-            typename Adaptor::context* adaptor_ctx_
-            ) 
-            : adaptor_(io_service, adaptor_ctx_), 
-            handler_(handler), 
-            parser_(this), 
-            server_name_(server_name),
-            middlewares_(middlewares),
-            get_cached_date_str(get_cached_date_str_f),
-            timer_queue(timer_queue)
-        {
-#ifdef CROW_ENABLE_DEBUG
-            connectionCount ++;
-            CROW_LOG_DEBUG << "Connection open, total " << connectionCount << ", " << this;
-#endif
-        }
-        
-        ~Connection()
-        {
-            res.complete_request_handler_ = nullptr;
-            cancel_deadline_timer();
-#ifdef CROW_ENABLE_DEBUG
-            connectionCount --;
-            CROW_LOG_DEBUG << "Connection closed, total " << connectionCount << ", " << this;
-#endif
-        }
-
-        decltype(std::declval<Adaptor>().raw_socket())& socket()
-        {
-            return adaptor_.raw_socket();
-        }
-
-        void start()
-        {
-            adaptor_.start([this](const boost::system::error_code& ec) {
-                if (!ec)
-                {
-                    start_deadline();
-
-                    do_read();
-                }
-                else
-                {
-                    check_destroy();
-                }
-            });
-        }
-
-        void handle_header()
-        {
-            // HTTP 1.1 Expect: 100-continue
-            if (parser_.check_version(1, 1) && parser_.headers.count("expect") && get_header_value(parser_.headers, "expect") == "100-continue")
-            {
-                buffers_.clear();
-                static std::string expect_100_continue = "HTTP/1.1 100 Continue\r\n\r\n";
-                buffers_.emplace_back(expect_100_continue.data(), expect_100_continue.size());
-                do_write();
-            }
-        }
-
-        void handle()
-        {
-            cancel_deadline_timer();
-            bool is_invalid_request = false;
-            add_keep_alive_ = false;
-
-            req_ = std::move(parser_.to_request());
-            request& req = req_;
-
-            if (parser_.check_version(1, 0))
-            {
-                // HTTP/1.0
-                if (req.headers.count("connection"))
-                {
-                    if (boost::iequals(req.get_header_value("connection"),"Keep-Alive"))
-                        add_keep_alive_ = true;
-                }
-                else
-                    close_connection_ = true;
-            }
-            else if (parser_.check_version(1, 1))
-            {
-                // HTTP/1.1
-                if (req.headers.count("connection"))
-                {
-                    if (req.get_header_value("connection") == "close")
-                        close_connection_ = true;
-                    else if (boost::iequals(req.get_header_value("connection"),"Keep-Alive"))
-                        add_keep_alive_ = true;
-                }
-                if (!req.headers.count("host"))
-                {
-                    is_invalid_request = true;
-                    res = response(400);
-                }
-				if (parser_.is_upgrade())
-				{
-					if (req.get_header_value("upgrade") == "h2c")
-					{
-						// TODO HTTP/2
-                        // currently, ignore upgrade header
-					}
-                    else
-                    {
-                        close_connection_ = true;
-                        handler_->handle_upgrade(req, res, std::move(adaptor_));
-                        return;
-                    }
-				}
-            }
-
-            CROW_LOG_INFO << "Request: " << boost::lexical_cast<std::string>(adaptor_.remote_endpoint()) << " " << this << " HTTP/" << parser_.http_major << "." << parser_.http_minor << ' '
-             << method_name(req.method) << " " << req.url;
-
-
-            need_to_call_after_handlers_ = false;
-            if (!is_invalid_request)
-            {
-                res.complete_request_handler_ = []{};
-                res.is_alive_helper_ = [this]()->bool{ return adaptor_.is_open(); };
-
-                ctx_ = detail::context<Middlewares...>();
-                req.middleware_context = (void*)&ctx_;
-                req.io_service = &adaptor_.get_io_service();
-                detail::middleware_call_helper<0, decltype(ctx_), decltype(*middlewares_), Middlewares...>(*middlewares_, req, res, ctx_);
-
-                if (!res.completed_)
-                {
-                    res.complete_request_handler_ = [this]{ this->complete_request(); };
-                    need_to_call_after_handlers_ = true;
-                    handler_->handle(req, res);
-                    if (add_keep_alive_)
-                        res.set_header("connection", "Keep-Alive");
-                }
-                else
-                {
-                    complete_request();
-                }
-            }
-            else
-            {
-                complete_request();
-            }
-        }
-
-        void complete_request()
-        {
-            CROW_LOG_INFO << "Response: " << this << ' ' << req_.raw_url << ' ' << res.code << ' ' << close_connection_;
-
-            if (need_to_call_after_handlers_)
-            {
-                need_to_call_after_handlers_ = false;
-
-                // call all after_handler of middlewares
-                detail::after_handlers_call_helper<
-                    ((int)sizeof...(Middlewares)-1),
-                    decltype(ctx_),
-                    decltype(*middlewares_)> 
-                (*middlewares_, ctx_, req_, res);
-            }
-
-            //auto self = this->shared_from_this();
-            res.complete_request_handler_ = nullptr;
-            
-            if (!adaptor_.is_open())
-            {
-                //CROW_LOG_DEBUG << this << " delete (socket is closed) " << is_reading << ' ' << is_writing;
-                //delete this;
-                return;
-            }
-
-            static std::unordered_map<int, std::string> statusCodes = {
-                {200, "HTTP/1.1 200 OK\r\n"},
-                {201, "HTTP/1.1 201 Created\r\n"},
-                {202, "HTTP/1.1 202 Accepted\r\n"},
-                {204, "HTTP/1.1 204 No Content\r\n"},
-
-                {300, "HTTP/1.1 300 Multiple Choices\r\n"},
-                {301, "HTTP/1.1 301 Moved Permanently\r\n"},
-                {302, "HTTP/1.1 302 Moved Temporarily\r\n"},
-                {304, "HTTP/1.1 304 Not Modified\r\n"},
-
-                {400, "HTTP/1.1 400 Bad Request\r\n"},
-                {401, "HTTP/1.1 401 Unauthorized\r\n"},
-                {403, "HTTP/1.1 403 Forbidden\r\n"},
-                {404, "HTTP/1.1 404 Not Found\r\n"},
-                {413, "HTTP/1.1 413 Payload Too Large\r\n"},
-                {422, "HTTP/1.1 422 Unprocessable Entity\r\n"},
-                {429, "HTTP/1.1 429 Too Many Requests\r\n"},
-
-                {500, "HTTP/1.1 500 Internal Server Error\r\n"},
-                {501, "HTTP/1.1 501 Not Implemented\r\n"},
-                {502, "HTTP/1.1 502 Bad Gateway\r\n"},
-                {503, "HTTP/1.1 503 Service Unavailable\r\n"},
-            };
-
-            static std::string seperator = ": ";
-            static std::string crlf = "\r\n";
-
-            buffers_.clear();
-            buffers_.reserve(4*(res.headers.size()+5)+3);
-
-            if (res.body.empty() && res.json_value.t() == json::type::Object)
-            {
-                res.body = json::dump(res.json_value);
-            }
-
-            if (!statusCodes.count(res.code))
-                res.code = 500;
-            {
-                auto& status = statusCodes.find(res.code)->second;
-                buffers_.emplace_back(status.data(), status.size());
-            }
-
-            if (res.code >= 400 && res.body.empty())
-                res.body = statusCodes[res.code].substr(9);
-
-            for(auto& kv : res.headers)
-            {
-                buffers_.emplace_back(kv.first.data(), kv.first.size());
-                buffers_.emplace_back(seperator.data(), seperator.size());
-                buffers_.emplace_back(kv.second.data(), kv.second.size());
-                buffers_.emplace_back(crlf.data(), crlf.size());
-
-            }
-
-            if (!res.headers.count("content-length"))
-            {
-                content_length_ = std::to_string(res.body.size());
-                static std::string content_length_tag = "Content-Length: ";
-                buffers_.emplace_back(content_length_tag.data(), content_length_tag.size());
-                buffers_.emplace_back(content_length_.data(), content_length_.size());
-                buffers_.emplace_back(crlf.data(), crlf.size());
-            }
-            if (!res.headers.count("server"))
-            {
-                static std::string server_tag = "Server: ";
-                buffers_.emplace_back(server_tag.data(), server_tag.size());
-                buffers_.emplace_back(server_name_.data(), server_name_.size());
-                buffers_.emplace_back(crlf.data(), crlf.size());
-            }
-            if (!res.headers.count("date"))
-            {
-                static std::string date_tag = "Date: ";
-                date_str_ = get_cached_date_str();
-                buffers_.emplace_back(date_tag.data(), date_tag.size());
-                buffers_.emplace_back(date_str_.data(), date_str_.size());
-                buffers_.emplace_back(crlf.data(), crlf.size());
-            }
-            if (add_keep_alive_)
-            {
-                static std::string keep_alive_tag = "Connection: Keep-Alive";
-                buffers_.emplace_back(keep_alive_tag.data(), keep_alive_tag.size());
-                buffers_.emplace_back(crlf.data(), crlf.size());
-            }
-
-            buffers_.emplace_back(crlf.data(), crlf.size());
-            res_body_copy_.swap(res.body);
-            buffers_.emplace_back(res_body_copy_.data(), res_body_copy_.size());
-
-            do_write();
-
-            if (need_to_start_read_after_complete_)
-            {
-                need_to_start_read_after_complete_ = false;
-                start_deadline();
-                do_read();
-            }
-        }
-
-    private:
-        void do_read()
-        {
-            //auto self = this->shared_from_this();
-            is_reading = true;
-            adaptor_.socket().async_read_some(boost::asio::buffer(buffer_), 
-                [this](const boost::system::error_code& ec, std::size_t bytes_transferred)
-                {
-                    bool error_while_reading = true;
-                    if (!ec)
-                    {
-                        bool ret = parser_.feed(buffer_.data(), bytes_transferred);
-                        if (ret && adaptor_.is_open())
-                        {
-                            error_while_reading = false;
-                        }
-                    }
-
-                    if (error_while_reading)
-                    {
-                        cancel_deadline_timer();
-                        parser_.done();
-                        adaptor_.close();
-                        is_reading = false;
-                        CROW_LOG_DEBUG << this << " from read(1)";
-                        check_destroy();
-                    }
-                    else if (close_connection_)
-                    {
-                        cancel_deadline_timer();
-                        parser_.done();
-                        is_reading = false;
-                        check_destroy();
-                        // adaptor will close after write
-                    }
-                    else if (!need_to_call_after_handlers_)
-                    {
-                        start_deadline();
-                        do_read();
-                    }
-                    else
-                    {
-                        // res will be completed later by user
-                        need_to_start_read_after_complete_ = true;
-                    }
-                });
-        }
-
-        void do_write()
-        {
-            //auto self = this->shared_from_this();
-            is_writing = true;
-            boost::asio::async_write(adaptor_.socket(), buffers_, 
-                [&](const boost::system::error_code& ec, std::size_t /*bytes_transferred*/)
-                {
-                    is_writing = false;
-                    res.clear();
-                    res_body_copy_.clear();
-                    if (!ec)
-                    {
-                        if (close_connection_)
-                        {
-                            adaptor_.close();
-                            CROW_LOG_DEBUG << this << " from write(1)";
-                            check_destroy();
-                        }
-                    }
-                    else
-                    {
-                        CROW_LOG_DEBUG << this << " from write(2)";
-                        check_destroy();
-                    }
-                });
-        }
-
-        void check_destroy()
-        {
-            CROW_LOG_DEBUG << this << " is_reading " << is_reading << " is_writing " << is_writing;
-            if (!is_reading && !is_writing)
-            {
-                CROW_LOG_DEBUG << this << " delete (idle) ";
-                delete this;
-            }
-        }
-
-        void cancel_deadline_timer()
-        {
-            CROW_LOG_DEBUG << this << " timer cancelled: " << timer_cancel_key_.first << ' ' << timer_cancel_key_.second;
-            timer_queue.cancel(timer_cancel_key_);
-        }
-
-        void start_deadline(/*int timeout = 5*/)
-        {
-            cancel_deadline_timer();
-            
-            timer_cancel_key_ = timer_queue.add([this]
-            {
-                if (!adaptor_.is_open())
-                {
-                    return;
-                }
-                adaptor_.close();
-            });
-            CROW_LOG_DEBUG << this << " timer added: " << timer_cancel_key_.first << ' ' << timer_cancel_key_.second;
-        }
-
-    private:
-        Adaptor adaptor_;
-        Handler* handler_;
-
-        boost::array<char, 4096> buffer_;
-
-        HTTPParser<Connection> parser_;
-        request req_;
-        response res;
-
-        bool close_connection_ = false;
-
-        const std::string& server_name_;
-        std::vector<boost::asio::const_buffer> buffers_;
-
-        std::string content_length_;
-        std::string date_str_;
-        std::string res_body_copy_;
-
-        //boost::asio::deadline_timer deadline_;
-        detail::dumb_timer_queue::key timer_cancel_key_;
-
-        bool is_reading{};
-        bool is_writing{};
-        bool need_to_call_after_handlers_{};
-        bool need_to_start_read_after_complete_{};
-        bool add_keep_alive_{};
-
-        std::tuple<Middlewares...>* middlewares_;
-        detail::context<Middlewares...> ctx_;
-
-        std::function<std::string()>& get_cached_date_str;
-        detail::dumb_timer_queue& timer_queue;
-    };
-
-}
-
-
-
-#pragma once
-
-#include <chrono>
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/asio.hpp>
-#ifdef CROW_ENABLE_SSL
-#include <boost/asio/ssl.hpp>
-#endif
-#include <cstdint>
-#include <atomic>
-#include <future>
-#include <vector>
-
-#include <memory>
-
-
-
-
-
-
-
-
-namespace crow
-{
-    using namespace boost;
-    using tcp = asio::ip::tcp;
-
-    template <typename Handler, typename Adaptor = SocketAdaptor, typename ... Middlewares>
-    class Server
-    {
-    public:
-    Server(Handler* handler, std::string bindaddr, uint16_t port, std::tuple<Middlewares...>* middlewares = nullptr, uint16_t concurrency = 1, typename Adaptor::context* adaptor_ctx = nullptr)
-            : acceptor_(io_service_, tcp::endpoint(boost::asio::ip::address::from_string(bindaddr), port)),
-            signals_(io_service_, SIGINT, SIGTERM),
-            tick_timer_(io_service_),
-            handler_(handler),
-            concurrency_(concurrency),
-            port_(port),
-            bindaddr_(bindaddr),
-            middlewares_(middlewares),
-            adaptor_ctx_(adaptor_ctx)
-        {
-        }
-
-        void set_tick_function(std::chrono::milliseconds d, std::function<void()> f)
-        {
-            tick_interval_ = d;
-            tick_function_ = f;
-        }
-
-        void on_tick()
-        {
-            tick_function_();
-            tick_timer_.expires_from_now(boost::posix_time::milliseconds(tick_interval_.count()));
-            tick_timer_.async_wait([this](const boost::system::error_code& ec)
-                    {
-                        if (ec)
-                            return;
-                        on_tick();
-                    });
-        }
-
-        void run()
-        {
-            if (concurrency_ < 0)
-                concurrency_ = 1;
-
-            for(int i = 0; i < concurrency_;  i++)
-                io_service_pool_.emplace_back(new boost::asio::io_service());
-            get_cached_date_str_pool_.resize(concurrency_);
-            timer_queue_pool_.resize(concurrency_);
-
-            std::vector<std::future<void>> v;
-            std::atomic<int> init_count(0);
-            for(uint16_t i = 0; i < concurrency_; i ++)
-                v.push_back(
-                        std::async(std::launch::async, [this, i, &init_count]{
-
-                            // thread local date string get function
-                            auto last = std::chrono::steady_clock::now();
-
-                            std::string date_str;
-                            auto update_date_str = [&]
-                            {
-                                auto last_time_t = time(0);
-                                tm my_tm;
-
-#ifdef _MSC_VER
-                                gmtime_s(&my_tm, &last_time_t);
-#else
-                                gmtime_r(&last_time_t, &my_tm);
-#endif
-                                date_str.resize(100);
-                                size_t date_str_sz = strftime(&date_str[0], 99, "%a, %d %b %Y %H:%M:%S GMT", &my_tm);
-                                date_str.resize(date_str_sz);
-                            };
-                            update_date_str();
-                            get_cached_date_str_pool_[i] = [&]()->std::string
-                            {
-                                if (std::chrono::steady_clock::now() - last >= std::chrono::seconds(1))
-                                {
-                                    last = std::chrono::steady_clock::now();
-                                    update_date_str();
-                                }
-                                return date_str;
-                            };
-
-                            // initializing timer queue
-                            detail::dumb_timer_queue timer_queue;
-                            timer_queue_pool_[i] = &timer_queue;
-
-                            timer_queue.set_io_service(*io_service_pool_[i]);
-                            boost::asio::deadline_timer timer(*io_service_pool_[i]);
-                            timer.expires_from_now(boost::posix_time::seconds(1));
-
-                            std::function<void(const boost::system::error_code& ec)> handler;
-                            handler = [&](const boost::system::error_code& ec){
-                                if (ec)
-                                    return;
-                                timer_queue.process();
-                                timer.expires_from_now(boost::posix_time::seconds(1));
-                                timer.async_wait(handler);
-                            };
-                            timer.async_wait(handler);
-
-                            init_count ++;
-                            while(1)
-                            {
-                                try 
-                                {
-                                    if (io_service_pool_[i]->run() == 0)
-                                    {
-                                        // when io_service.run returns 0, there are no more works to do.
-                                        break;
-                                    }
-                                } catch(std::exception& e)
-                                {
-                                    CROW_LOG_ERROR << "Worker Crash: An uncaught exception occurred: " << e.what();
-                                }
-                            }
-                        }));
-
-            if (tick_function_ && tick_interval_.count() > 0) 
-            {
-                tick_timer_.expires_from_now(boost::posix_time::milliseconds(tick_interval_.count()));
-                tick_timer_.async_wait([this](const boost::system::error_code& ec)
-                        {
-                            if (ec)
-                                return;
-                            on_tick();
-                        });
-            }
-
-            CROW_LOG_INFO << server_name_ << " server is running at " << bindaddr_ <<":" << port_
-                          << " using " << concurrency_ << " threads";
-            CROW_LOG_INFO << "Call `app.loglevel(crow::LogLevel::Warning)` to hide Info level logs.";
-
-            signals_.async_wait(
-                [&](const boost::system::error_code& /*error*/, int /*signal_number*/){
-                    stop();
-                });
-
-            while(concurrency_ != init_count)
-                std::this_thread::yield();
-
-            do_accept();
-
-            std::thread([this]{
-                io_service_.run();
-                CROW_LOG_INFO << "Exiting.";
-            }).join();
-        }
-
-        void stop()
-        {
-            io_service_.stop();
-            for(auto& io_service:io_service_pool_)
-                io_service->stop();
-        }
-
-    private:
-        asio::io_service& pick_io_service()
-        {
-            // TODO load balancing
-            roundrobin_index_++;
-            if (roundrobin_index_ >= io_service_pool_.size())
-                roundrobin_index_ = 0;
-            return *io_service_pool_[roundrobin_index_];
-        }
-
-        void do_accept()
-        {
-            asio::io_service& is = pick_io_service();
-            auto p = new Connection<Adaptor, Handler, Middlewares...>(
-                is, handler_, server_name_, middlewares_,
-                get_cached_date_str_pool_[roundrobin_index_], *timer_queue_pool_[roundrobin_index_],
-                adaptor_ctx_);
-            acceptor_.async_accept(p->socket(),
-                [this, p, &is](boost::system::error_code ec)
-                {
-                    if (!ec)
-                    {
-                        is.post([p]
-                        {
-                            p->start();
-                        });
-                    }
-                    else
-                    {
-                        delete p;
-                    }
-                    do_accept();
-                });
-        }
-
-    private:
-        asio::io_service io_service_;
-        std::vector<std::unique_ptr<asio::io_service>> io_service_pool_;
-        std::vector<detail::dumb_timer_queue*> timer_queue_pool_;
-        std::vector<std::function<std::string()>> get_cached_date_str_pool_;
-        tcp::acceptor acceptor_;
-        boost::asio::signal_set signals_;
-        boost::asio::deadline_timer tick_timer_;
-
-        Handler* handler_;
-        uint16_t concurrency_{1};
-        std::string server_name_ = "Crow/0.1";
-        uint16_t port_;
-        std::string bindaddr_;
-        unsigned int roundrobin_index_{};
-
-        std::chrono::milliseconds tick_interval_;
-        std::function<void()> tick_function_;
-
-        std::tuple<Middlewares...>* middlewares_;
-
-#ifdef CROW_ENABLE_SSL
-        bool use_ssl_{false};
-        boost::asio::ssl::context ssl_context_{boost::asio::ssl::context::sslv23};
-#endif
-        typename Adaptor::context* adaptor_ctx_;
-    };
-}
-
-
-
-#pragma once
-#include <boost/algorithm/string/predicate.hpp>
-#include <boost/array.hpp>
-
-
-
-
-
-
-
-namespace crow
-{
-    namespace websocket
-    {
-        enum class WebSocketReadState
-        {
-            MiniHeader,
-            Len16,
-            Len64,
-            Mask,
-            Payload,
-        };
-
-		struct connection
-		{
-            virtual void send_binary(const std::string& msg) = 0;
-            virtual void send_text(const std::string& msg) = 0;
-            virtual void close(const std::string& msg = "quit") = 0;
-            virtual ~connection(){}
-
-            void userdata(void* u) { userdata_ = u; }
-            void* userdata() { return userdata_; }
-
-        private:
-            void* userdata_;
-		};
-
-		template <typename Adaptor>
-        class Connection : public connection
-        {
-			public:
-				Connection(const crow::request& req, Adaptor&& adaptor, 
-						std::function<void(crow::websocket::connection&)> open_handler,
-						std::function<void(crow::websocket::connection&, const std::string&, bool)> message_handler,
-						std::function<void(crow::websocket::connection&, const std::string&)> close_handler,
-						std::function<void(crow::websocket::connection&)> error_handler,
-						std::function<bool(const crow::request&)> accept_handler)
-					: adaptor_(std::move(adaptor)), open_handler_(std::move(open_handler)), message_handler_(std::move(message_handler)), close_handler_(std::move(close_handler)), error_handler_(std::move(error_handler))
-					, accept_handler_(std::move(accept_handler))
-				{
-					if (!boost::iequals(req.get_header_value("upgrade"), "websocket"))
-					{
-						adaptor.close();
-						delete this;
-						return;
-					}
-
-					if (accept_handler_)
-					{
-						if (!accept_handler_(req))
-						{
-							adaptor.close();
-							delete this;
-							return;
-						}
-					}
-
-					// Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==
-					// Sec-WebSocket-Version: 13
-                    std::string magic = req.get_header_value("Sec-WebSocket-Key") +  "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
-                    sha1::SHA1 s;
-                    s.processBytes(magic.data(), magic.size());
-                    uint8_t digest[20];
-                    s.getDigestBytes(digest);   
-                    start(crow::utility::base64encode((char*)digest, 20));
-				}
-
-                template<typename CompletionHandler>
-                void dispatch(CompletionHandler handler)
-                {
-                    adaptor_.get_io_service().dispatch(handler);
-                }
-
-                template<typename CompletionHandler>
-                void post(CompletionHandler handler)
-                {
-                    adaptor_.get_io_service().post(handler);
-                }
-
-                void send_pong(const std::string& msg)
-                {
-                    dispatch([this, msg]{
-                        char buf[3] = "\x8A\x00";
-                        buf[1] += msg.size();
-                        write_buffers_.emplace_back(buf, buf+2);
-                        write_buffers_.emplace_back(msg);
-                        do_write();
-                    });
-                }
-
-                void send_binary(const std::string& msg) override
-                {
-                    dispatch([this, msg]{
-                        auto header = build_header(2, msg.size());
-                        write_buffers_.emplace_back(std::move(header));
-                        write_buffers_.emplace_back(msg);
-                        do_write();
-                    });
-                }
-
-                void send_text(const std::string& msg) override
-                {
-                    dispatch([this, msg]{
-                        auto header = build_header(1, msg.size());
-                        write_buffers_.emplace_back(std::move(header));
-                        write_buffers_.emplace_back(msg);
-                        do_write();
-                    });
-                }
-
-                void close(const std::string& msg) override
-                {
-                    dispatch([this, msg]{
-                        has_sent_close_ = true;
-                        if (has_recv_close_ && !is_close_handler_called_)
-                        {
-                            is_close_handler_called_ = true;
-                            if (close_handler_)
-                                close_handler_(*this, msg);
-                        }
-                        auto header = build_header(0x8, msg.size());
-                        write_buffers_.emplace_back(std::move(header));
-                        write_buffers_.emplace_back(msg);
-                        do_write();
-                    });
-                }
-
-            protected:
-
-                std::string build_header(int opcode, size_t size)
-                {
-                    char buf[2+8] = "\x80\x00";
-                    buf[0] += opcode;
-                    if (size < 126)
-                    {
-                        buf[1] += size;
-                        return {buf, buf+2};
-                    }
-                    else if (size < 0x10000)
-                    {
-                        buf[1] += 126;
-                        *(uint16_t*)(buf+2) = htons((uint16_t)size);
-                        return {buf, buf+4};
-                    }
-                    else
-                    {
-                        buf[1] += 127;
-                        *(uint64_t*)(buf+2) = ((1==htonl(1)) ? (uint64_t)size : ((uint64_t)htonl((size) & 0xFFFFFFFF) << 32) | htonl((size) >> 32));
-                        return {buf, buf+10};
-                    }
-                }
-
-                void start(std::string&& hello)
-                {
-                    static std::string header = "HTTP/1.1 101 Switching Protocols\r\n"
-                        "Upgrade: websocket\r\n"
-                        "Connection: Upgrade\r\n"
-                        "Sec-WebSocket-Accept: ";
-                    static std::string crlf = "\r\n";
-                    write_buffers_.emplace_back(header);
-                    write_buffers_.emplace_back(std::move(hello));
-                    write_buffers_.emplace_back(crlf);
-                    write_buffers_.emplace_back(crlf);
-                    do_write();
-                    if (open_handler_)
-                        open_handler_(*this);
-                    do_read();
-                }
-
-                void do_read()
-                {
-                    is_reading = true;
-                    switch(state_)
-                    {
-                        case WebSocketReadState::MiniHeader:
-                            {
-                                //boost::asio::async_read(adaptor_.socket(), boost::asio::buffer(&mini_header_, 1), 
-                                adaptor_.socket().async_read_some(boost::asio::buffer(&mini_header_, 2), 
-                                    [this](const boost::system::error_code& ec, std::size_t 
-#ifdef CROW_ENABLE_DEBUG
-                                        bytes_transferred
-#endif
-                                        )
-
-                                    {
-                                        is_reading = false;
-                                        mini_header_ = htons(mini_header_);
-#ifdef CROW_ENABLE_DEBUG
-                                        
-                                        if (!ec && bytes_transferred != 2)
-                                        {
-                                            throw std::runtime_error("WebSocket:MiniHeader:async_read fail:asio bug?");
-                                        }
-#endif
-
-                                        if (!ec && ((mini_header_ & 0x80) == 0x80))
-                                        {
-                                            if ((mini_header_ & 0x7f) == 127)
-                                            {
-                                                state_ = WebSocketReadState::Len64;
-                                            }
-                                            else if ((mini_header_ & 0x7f) == 126)
-                                            {
-                                                state_ = WebSocketReadState::Len16;
-                                            }
-                                            else
-                                            {
-                                                remaining_length_ = mini_header_ & 0x7f;
-                                                state_ = WebSocketReadState::Mask;
-                                            }
-                                            do_read();
-                                        }
-                                        else
-                                        {
-                                            close_connection_ = true;
-                                            adaptor_.close();
-                                            if (error_handler_)
-                                                error_handler_(*this);
-                                            check_destroy();
-                                        }
-                                    });
-                            }
-                            break;
-                        case WebSocketReadState::Len16:
-                            {
-                                remaining_length_ = 0;
-                				uint16_t remaining_length16_ = 0;
-                                boost::asio::async_read(adaptor_.socket(), boost::asio::buffer(&remaining_length16_, 2), 
-                                    [this,&remaining_length16_](const boost::system::error_code& ec, std::size_t 
-#ifdef CROW_ENABLE_DEBUG
-                                        bytes_transferred
-#endif
-                                        ) 
-                                    {
-                                        is_reading = false;
-                                        remaining_length16_ = ntohs(remaining_length16_);
-                                        remaining_length_ = remaining_length16_;
-#ifdef CROW_ENABLE_DEBUG
-                                        if (!ec && bytes_transferred != 2)
-                                        {
-                                            throw std::runtime_error("WebSocket:Len16:async_read fail:asio bug?");
-                                        }
-#endif
-
-                                        if (!ec)
-                                        {
-                                            state_ = WebSocketReadState::Mask;
-                                            do_read();
-                                        }
-                                        else
-                                        {
-                                            close_connection_ = true;
-                                            adaptor_.close();
-                                            if (error_handler_)
-                                                error_handler_(*this);
-                                            check_destroy();
-                                        }
-                                    });
-                            }
-                            break;
-                        case WebSocketReadState::Len64:
-                            {
-                                boost::asio::async_read(adaptor_.socket(), boost::asio::buffer(&remaining_length_, 8), 
-                                    [this](const boost::system::error_code& ec, std::size_t 
-#ifdef CROW_ENABLE_DEBUG
-                                        bytes_transferred
-#endif
-                                        ) 
-                                    {
-                                        is_reading = false;
-                                        remaining_length_ = ((1==ntohl(1)) ? (remaining_length_) : ((uint64_t)ntohl((remaining_length_) & 0xFFFFFFFF) << 32) | ntohl((remaining_length_) >> 32));
-#ifdef CROW_ENABLE_DEBUG
-                                        if (!ec && bytes_transferred != 8)
-                                        {
-                                            throw std::runtime_error("WebSocket:Len16:async_read fail:asio bug?");
-                                        }
-#endif
-
-                                        if (!ec)
-                                        {
-                                            state_ = WebSocketReadState::Mask;
-                                            do_read();
-                                        }
-                                        else
-                                        {
-                                            close_connection_ = true;
-                                            adaptor_.close();
-                                            if (error_handler_)
-                                                error_handler_(*this);
-                                            check_destroy();
-                                        }
-                                    });
-                            }
-                            break;
-                        case WebSocketReadState::Mask:
-                                boost::asio::async_read(adaptor_.socket(), boost::asio::buffer((char*)&mask_, 4), 
-                                    [this](const boost::system::error_code& ec, std::size_t 
-#ifdef CROW_ENABLE_DEBUG 
-                                        bytes_transferred
-#endif
-                                    )
-                                    {
-                                        is_reading = false;
-#ifdef CROW_ENABLE_DEBUG
-                                        if (!ec && bytes_transferred != 4)
-                                        {
-                                            throw std::runtime_error("WebSocket:Mask:async_read fail:asio bug?");
-                                        }
-#endif
-
-                                        if (!ec)
-                                        {
-                                            state_ = WebSocketReadState::Payload;
-                                            do_read();
-                                        }
-                                        else
-                                        {
-                                            close_connection_ = true;
-                                            if (error_handler_)
-                                                error_handler_(*this);
-                                            adaptor_.close();
-                                        }
-                                    });
-                            break;
-                        case WebSocketReadState::Payload:
-                            {
-                                size_t to_read = buffer_.size();
-                                if (remaining_length_ < to_read)
-                                    to_read = remaining_length_;
-                                adaptor_.socket().async_read_some( boost::asio::buffer(buffer_, to_read), 
-                                    [this](const boost::system::error_code& ec, std::size_t bytes_transferred)
-                                    {
-                                        is_reading = false;
-
-                                        if (!ec)
-                                        {
-                                            fragment_.insert(fragment_.end(), buffer_.begin(), buffer_.begin() + bytes_transferred);
-                                            remaining_length_ -= bytes_transferred;
-                                            if (remaining_length_ == 0)
-                                            {
-                                                handle_fragment();
-                                                state_ = WebSocketReadState::MiniHeader;
-                                                do_read();
-                                            }
-                                        }
-                                        else
-                                        {
-                                            close_connection_ = true;
-                                            if (error_handler_)
-                                                error_handler_(*this);
-                                            adaptor_.close();
-                                        }
-                                    });
-                            }
-                            break;
-                    }
-                }
-
-                bool is_FIN()
-                {
-                    return mini_header_ & 0x8000;
-                }
-
-                int opcode()
-                {
-                    return (mini_header_ & 0x0f00) >> 8;
-                }
-
-                void handle_fragment()
-                {
-                    for(decltype(fragment_.length()) i = 0; i < fragment_.length(); i ++)
-                    {
-                        fragment_[i] ^= ((char*)&mask_)[i%4];
-                    }
-                    switch(opcode())
-                    {
-                        case 0: // Continuation
-                            {
-                                message_ += fragment_;
-                                if (is_FIN())
-                                {
-                                    if (message_handler_)
-                                        message_handler_(*this, message_, is_binary_);
-                                    message_.clear();
-                                }
-                            }
-                        case 1: // Text
-                            {
-                                is_binary_ = false;
-                                message_ += fragment_;
-                                if (is_FIN())
-                                {
-                                    if (message_handler_)
-                                        message_handler_(*this, message_, is_binary_);
-                                    message_.clear();
-                                }
-                            }
-                            break;
-                        case 2: // Binary
-                            {
-                                is_binary_ = true;
-                                message_ += fragment_;
-                                if (is_FIN())
-                                {
-                                    if (message_handler_)
-                                        message_handler_(*this, message_, is_binary_);
-                                    message_.clear();
-                                }
-                            }
-                            break;
-                        case 0x8: // Close
-                            {
-                                has_recv_close_ = true;
-                                if (!has_sent_close_)
-                                {
-                                    close(fragment_);
-                                }
-                                else
-                                {
-                                    adaptor_.close();
-                                    close_connection_ = true;
-                                    if (!is_close_handler_called_)
-                                    {
-                                        if (close_handler_)
-                                            close_handler_(*this, fragment_);
-                                        is_close_handler_called_ = true;
-                                    }
-                                    check_destroy();
-                                }
-                            }
-                            break;
-                        case 0x9: // Ping
-                            {
-                                send_pong(fragment_);
-                            }
-                            break;
-                        case 0xA: // Pong
-                            {
-                                pong_received_ = true;
-                            }
-                            break;
-                    }
-
-                    fragment_.clear();
-                }
-
-                void do_write()
-                {
-                    if (sending_buffers_.empty())
-                    {
-                        sending_buffers_.swap(write_buffers_);
-                        std::vector<boost::asio::const_buffer> buffers;
-                        buffers.reserve(sending_buffers_.size());
-                        for(auto& s:sending_buffers_)
-                        {
-                            buffers.emplace_back(boost::asio::buffer(s));
-                        }
-                        boost::asio::async_write(adaptor_.socket(), buffers, 
-                            [&](const boost::system::error_code& ec, std::size_t /*bytes_transferred*/)
-                            {
-                                sending_buffers_.clear();
-                                if (!ec && !close_connection_)
-                                {
-                                    if (!write_buffers_.empty())
-                                        do_write();
-                                    if (has_sent_close_)
-                                        close_connection_ = true;
-                                }
-                                else
-                                {
-                                    close_connection_ = true;
-                                    check_destroy();
-                                }
-                            });
-                    }
-                }
-
-                void check_destroy()
-                {
-                    //if (has_sent_close_ && has_recv_close_)
-                    if (!is_close_handler_called_)
-                        if (close_handler_)
-                            close_handler_(*this, "uncleanly");
-                    if (sending_buffers_.empty() && !is_reading)
-                        delete this;
-                }
-			private:
-				Adaptor adaptor_;
-
-                std::vector<std::string> sending_buffers_;
-                std::vector<std::string> write_buffers_;
-
-                boost::array<char, 4096> buffer_;
-                bool is_binary_;
-                std::string message_;
-                std::string fragment_;
-                WebSocketReadState state_{WebSocketReadState::MiniHeader};
-                uint64_t remaining_length_{0};
-                bool close_connection_{false};
-                bool is_reading{false};
-                uint32_t mask_;
-                uint16_t mini_header_;
-                bool has_sent_close_{false};
-                bool has_recv_close_{false};
-                bool error_occured_{false};
-                bool pong_received_{false};
-                bool is_close_handler_called_{false};
-
-				std::function<void(crow::websocket::connection&)> open_handler_;
-				std::function<void(crow::websocket::connection&, const std::string&, bool)> message_handler_;
-				std::function<void(crow::websocket::connection&, const std::string&)> close_handler_;
-				std::function<void(crow::websocket::connection&)> error_handler_;
-				std::function<bool(const crow::request&)> accept_handler_;
-        };
-    }
-}
 
 
 
@@ -9489,6 +8545,950 @@ public:
 
 #pragma once
 
+#include <boost/asio.hpp>
+#include <deque>
+#include <functional>
+#include <chrono>
+#include <thread>
+
+
+
+
+namespace crow
+{
+    namespace detail 
+    {
+        // fast timer queue for fixed tick value.
+        class dumb_timer_queue
+        {
+        public:
+            using key = std::pair<dumb_timer_queue*, int>;
+
+            void cancel(key& k)
+            {
+                auto self = k.first;
+                k.first = nullptr;
+                if (!self)
+                    return;
+
+                unsigned int index = (unsigned int)(k.second - self->step_);
+                if (index < self->dq_.size())
+                    self->dq_[index].second = nullptr;
+            }
+
+            key add(std::function<void()> f)
+            {
+                dq_.emplace_back(std::chrono::steady_clock::now(), std::move(f));
+                int ret = step_+dq_.size()-1;
+
+                CROW_LOG_DEBUG << "timer add inside: " << this << ' ' << ret ;
+                return {this, ret};
+            }
+
+            void process()
+            {
+                if (!io_service_)
+                    return;
+
+                auto now = std::chrono::steady_clock::now();
+                while(!dq_.empty())
+                {
+                    auto& x = dq_.front();
+                    if (now - x.first < std::chrono::seconds(tick))
+                        break;
+                    if (x.second)
+                    {
+                        CROW_LOG_DEBUG << "timer call: " << this << ' ' << step_;
+                        // we know that timer handlers are very simple currenty; call here
+                        x.second();
+                    }
+                    dq_.pop_front();
+                    step_++;
+                }
+            }
+
+            void set_io_service(boost::asio::io_service& io_service)
+            {
+                io_service_ = &io_service;
+            }
+
+            dumb_timer_queue() noexcept
+            {
+            }
+
+        private:
+
+            int tick{5};
+            boost::asio::io_service* io_service_{};
+            std::deque<std::pair<decltype(std::chrono::steady_clock::now()), std::function<void()>>> dq_;
+            int step_{};
+        };
+    }
+}
+
+
+
+#pragma once
+#include <boost/asio.hpp>
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/array.hpp>
+#include <atomic>
+#include <chrono>
+#include <vector>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+namespace crow
+{
+    using namespace boost;
+    using tcp = asio::ip::tcp;
+
+    namespace detail
+    {
+        template <typename MW>
+        struct check_before_handle_arity_3_const
+        {
+            template <typename T,
+                void (T::*)(request&, response&, typename MW::context&) const = &T::before_handle
+            >
+            struct get
+            { };
+        };
+
+        template <typename MW>
+        struct check_before_handle_arity_3
+        {
+            template <typename T,
+                void (T::*)(request&, response&, typename MW::context&) = &T::before_handle
+            >
+            struct get
+            { };
+        };
+
+        template <typename MW>
+        struct check_after_handle_arity_3_const
+        {
+            template <typename T,
+                void (T::*)(request&, response&, typename MW::context&) const = &T::after_handle
+            >
+            struct get
+            { };
+        };
+
+        template <typename MW>
+        struct check_after_handle_arity_3
+        {
+            template <typename T,
+                void (T::*)(request&, response&, typename MW::context&) = &T::after_handle
+            >
+            struct get
+            { };
+        };
+
+        template <typename T>
+        struct is_before_handle_arity_3_impl
+        {
+            template <typename C>
+            static std::true_type f(typename check_before_handle_arity_3_const<T>::template get<C>*);
+
+            template <typename C>
+            static std::true_type f(typename check_before_handle_arity_3<T>::template get<C>*);
+
+            template <typename C>
+            static std::false_type f(...);
+
+        public:
+            static const bool value = decltype(f<T>(nullptr))::value;
+        };
+
+        template <typename T>
+        struct is_after_handle_arity_3_impl
+        {
+            template <typename C>
+            static std::true_type f(typename check_after_handle_arity_3_const<T>::template get<C>*);
+
+            template <typename C>
+            static std::true_type f(typename check_after_handle_arity_3<T>::template get<C>*);
+
+            template <typename C>
+            static std::false_type f(...);
+
+        public:
+            static const bool value = decltype(f<T>(nullptr))::value;
+        };
+
+        template <typename MW, typename Context, typename ParentContext>
+        typename std::enable_if<!is_before_handle_arity_3_impl<MW>::value>::type
+        before_handler_call(MW& mw, request& req, response& res, Context& ctx, ParentContext& /*parent_ctx*/)
+        {
+            mw.before_handle(req, res, ctx.template get<MW>(), ctx);
+        }
+
+        template <typename MW, typename Context, typename ParentContext>
+        typename std::enable_if<is_before_handle_arity_3_impl<MW>::value>::type
+        before_handler_call(MW& mw, request& req, response& res, Context& ctx, ParentContext& /*parent_ctx*/)
+        {
+            mw.before_handle(req, res, ctx.template get<MW>());
+        }
+
+        template <typename MW, typename Context, typename ParentContext>
+        typename std::enable_if<!is_after_handle_arity_3_impl<MW>::value>::type
+        after_handler_call(MW& mw, request& req, response& res, Context& ctx, ParentContext& /*parent_ctx*/)
+        {
+            mw.after_handle(req, res, ctx.template get<MW>(), ctx);
+        }
+
+        template <typename MW, typename Context, typename ParentContext>
+        typename std::enable_if<is_after_handle_arity_3_impl<MW>::value>::type
+        after_handler_call(MW& mw, request& req, response& res, Context& ctx, ParentContext& /*parent_ctx*/)
+        {
+            mw.after_handle(req, res, ctx.template get<MW>());
+        }
+
+        template <int N, typename Context, typename Container, typename CurrentMW, typename ... Middlewares>
+        bool middleware_call_helper(Container& middlewares, request& req, response& res, Context& ctx)
+        {
+            using parent_context_t = typename Context::template partial<N-1>;
+            before_handler_call<CurrentMW, Context, parent_context_t>(std::get<N>(middlewares), req, res, ctx, static_cast<parent_context_t&>(ctx));
+
+            if (res.is_completed())
+            {
+                after_handler_call<CurrentMW, Context, parent_context_t>(std::get<N>(middlewares), req, res, ctx, static_cast<parent_context_t&>(ctx));
+                return true;
+            }
+
+            if (middleware_call_helper<N+1, Context, Container, Middlewares...>(middlewares, req, res, ctx))
+            {
+                after_handler_call<CurrentMW, Context, parent_context_t>(std::get<N>(middlewares), req, res, ctx, static_cast<parent_context_t&>(ctx));
+                return true;
+            }
+
+            return false;
+        }
+
+        template <int N, typename Context, typename Container>
+        bool middleware_call_helper(Container& /*middlewares*/, request& /*req*/, response& /*res*/, Context& /*ctx*/)
+        {
+            return false;
+        }
+
+        template <int N, typename Context, typename Container>
+        typename std::enable_if<(N<0)>::type 
+        after_handlers_call_helper(Container& /*middlewares*/, Context& /*context*/, request& /*req*/, response& /*res*/)
+        {
+        }
+
+        template <int N, typename Context, typename Container>
+        typename std::enable_if<(N==0)>::type after_handlers_call_helper(Container& middlewares, Context& ctx, request& req, response& res)
+        {
+            using parent_context_t = typename Context::template partial<N-1>;
+            using CurrentMW = typename std::tuple_element<N, typename std::remove_reference<Container>::type>::type;
+            after_handler_call<CurrentMW, Context, parent_context_t>(std::get<N>(middlewares), req, res, ctx, static_cast<parent_context_t&>(ctx));
+        }
+
+        template <int N, typename Context, typename Container>
+        typename std::enable_if<(N>0)>::type after_handlers_call_helper(Container& middlewares, Context& ctx, request& req, response& res)
+        {
+            using parent_context_t = typename Context::template partial<N-1>;
+            using CurrentMW = typename std::tuple_element<N, typename std::remove_reference<Container>::type>::type;
+            after_handler_call<CurrentMW, Context, parent_context_t>(std::get<N>(middlewares), req, res, ctx, static_cast<parent_context_t&>(ctx));
+            after_handlers_call_helper<N-1, Context, Container>(middlewares, ctx, req, res);
+        }
+    }
+
+#ifdef CROW_ENABLE_DEBUG
+    static std::atomic<int> connectionCount;
+#endif
+    template <typename Adaptor, typename Handler, typename ... Middlewares>
+    class Connection
+    {
+    public:
+        Connection(
+            boost::asio::io_service& io_service, 
+            Handler* handler, 
+            const std::string& server_name,
+            std::tuple<Middlewares...>* middlewares,
+            std::function<std::string()>& get_cached_date_str_f,
+            detail::dumb_timer_queue& timer_queue,
+            typename Adaptor::context* adaptor_ctx_
+            ) 
+            : adaptor_(io_service, adaptor_ctx_), 
+            handler_(handler), 
+            parser_(this), 
+            server_name_(server_name),
+            middlewares_(middlewares),
+            get_cached_date_str(get_cached_date_str_f),
+            timer_queue(timer_queue)
+        {
+#ifdef CROW_ENABLE_DEBUG
+            connectionCount ++;
+            CROW_LOG_DEBUG << "Connection open, total " << connectionCount << ", " << this;
+#endif
+        }
+        
+        ~Connection()
+        {
+            res.complete_request_handler_ = nullptr;
+            cancel_deadline_timer();
+#ifdef CROW_ENABLE_DEBUG
+            connectionCount --;
+            CROW_LOG_DEBUG << "Connection closed, total " << connectionCount << ", " << this;
+#endif
+        }
+
+        decltype(std::declval<Adaptor>().raw_socket())& socket()
+        {
+            return adaptor_.raw_socket();
+        }
+
+        void start()
+        {
+            adaptor_.start([this](const boost::system::error_code& ec) {
+                if (!ec)
+                {
+                    start_deadline();
+
+                    do_read();
+                }
+                else
+                {
+                    check_destroy();
+                }
+            });
+        }
+
+        void handle_header()
+        {
+            // HTTP 1.1 Expect: 100-continue
+            if (parser_.check_version(1, 1) && parser_.headers.count("expect") && get_header_value(parser_.headers, "expect") == "100-continue")
+            {
+                buffers_.clear();
+                static std::string expect_100_continue = "HTTP/1.1 100 Continue\r\n\r\n";
+                buffers_.emplace_back(expect_100_continue.data(), expect_100_continue.size());
+                do_write();
+            }
+        }
+
+        void handle()
+        {
+            cancel_deadline_timer();
+            bool is_invalid_request = false;
+            add_keep_alive_ = false;
+
+            req_ = std::move(parser_.to_request());
+            request& req = req_;
+
+            if (parser_.check_version(1, 0))
+            {
+                // HTTP/1.0
+                if (req.headers.count("connection"))
+                {
+                    if (boost::iequals(req.get_header_value("connection"),"Keep-Alive"))
+                        add_keep_alive_ = true;
+                }
+                else
+                    close_connection_ = true;
+            }
+            else if (parser_.check_version(1, 1))
+            {
+                // HTTP/1.1
+                if (req.headers.count("connection"))
+                {
+                    if (req.get_header_value("connection") == "close")
+                        close_connection_ = true;
+                    else if (boost::iequals(req.get_header_value("connection"),"Keep-Alive"))
+                        add_keep_alive_ = true;
+                }
+                if (!req.headers.count("host"))
+                {
+                    is_invalid_request = true;
+                    res = response(400);
+                }
+				if (parser_.is_upgrade())
+				{
+					if (req.get_header_value("upgrade") == "h2c")
+					{
+						// TODO HTTP/2
+                        // currently, ignore upgrade header
+					}
+                    else
+                    {
+                        close_connection_ = true;
+                        handler_->handle_upgrade(req, res, std::move(adaptor_));
+                        return;
+                    }
+				}
+            }
+
+            CROW_LOG_INFO << "Request: " << boost::lexical_cast<std::string>(adaptor_.remote_endpoint()) << " " << this << " HTTP/" << parser_.http_major << "." << parser_.http_minor << ' '
+             << method_name(req.method) << " " << req.url;
+
+
+            need_to_call_after_handlers_ = false;
+            if (!is_invalid_request)
+            {
+                res.complete_request_handler_ = []{};
+                res.is_alive_helper_ = [this]()->bool{ return adaptor_.is_open(); };
+
+                ctx_ = detail::context<Middlewares...>();
+                req.middleware_context = (void*)&ctx_;
+                req.io_service = &adaptor_.get_io_service();
+                detail::middleware_call_helper<0, decltype(ctx_), decltype(*middlewares_), Middlewares...>(*middlewares_, req, res, ctx_);
+
+                if (!res.completed_)
+                {
+                    res.complete_request_handler_ = [this]{ this->complete_request(); };
+                    need_to_call_after_handlers_ = true;
+                    handler_->handle(req, res);
+                    if (add_keep_alive_)
+                        res.set_header("connection", "Keep-Alive");
+                }
+                else
+                {
+                    complete_request();
+                }
+            }
+            else
+            {
+                complete_request();
+            }
+        }
+
+        void complete_request()
+        {
+            CROW_LOG_INFO << "Response: " << this << ' ' << req_.raw_url << ' ' << res.code << ' ' << close_connection_;
+
+            if (need_to_call_after_handlers_)
+            {
+                need_to_call_after_handlers_ = false;
+
+                // call all after_handler of middlewares
+                detail::after_handlers_call_helper<
+                    ((int)sizeof...(Middlewares)-1),
+                    decltype(ctx_),
+                    decltype(*middlewares_)> 
+                (*middlewares_, ctx_, req_, res);
+            }
+
+            //auto self = this->shared_from_this();
+            res.complete_request_handler_ = nullptr;
+            
+            if (!adaptor_.is_open())
+            {
+                //CROW_LOG_DEBUG << this << " delete (socket is closed) " << is_reading << ' ' << is_writing;
+                //delete this;
+                return;
+            }
+
+            static std::unordered_map<int, std::string> statusCodes = {
+                {200, "HTTP/1.1 200 OK\r\n"},
+                {201, "HTTP/1.1 201 Created\r\n"},
+                {202, "HTTP/1.1 202 Accepted\r\n"},
+                {204, "HTTP/1.1 204 No Content\r\n"},
+
+                {300, "HTTP/1.1 300 Multiple Choices\r\n"},
+                {301, "HTTP/1.1 301 Moved Permanently\r\n"},
+                {302, "HTTP/1.1 302 Moved Temporarily\r\n"},
+                {304, "HTTP/1.1 304 Not Modified\r\n"},
+
+                {400, "HTTP/1.1 400 Bad Request\r\n"},
+                {401, "HTTP/1.1 401 Unauthorized\r\n"},
+                {403, "HTTP/1.1 403 Forbidden\r\n"},
+                {404, "HTTP/1.1 404 Not Found\r\n"},
+                {413, "HTTP/1.1 413 Payload Too Large\r\n"},
+                {422, "HTTP/1.1 422 Unprocessable Entity\r\n"},
+                {429, "HTTP/1.1 429 Too Many Requests\r\n"},
+
+                {500, "HTTP/1.1 500 Internal Server Error\r\n"},
+                {501, "HTTP/1.1 501 Not Implemented\r\n"},
+                {502, "HTTP/1.1 502 Bad Gateway\r\n"},
+                {503, "HTTP/1.1 503 Service Unavailable\r\n"},
+            };
+
+            static std::string seperator = ": ";
+            static std::string crlf = "\r\n";
+
+            buffers_.clear();
+            buffers_.reserve(4*(res.headers.size()+5)+3);
+
+            if (res.body.empty() && res.json_value.t() == json::type::Object)
+            {
+                res.body = json::dump(res.json_value);
+            }
+
+            if (!statusCodes.count(res.code))
+                res.code = 500;
+            {
+                auto& status = statusCodes.find(res.code)->second;
+                buffers_.emplace_back(status.data(), status.size());
+            }
+
+            if (res.code >= 400 && res.body.empty())
+                res.body = statusCodes[res.code].substr(9);
+
+            for(auto& kv : res.headers)
+            {
+                buffers_.emplace_back(kv.first.data(), kv.first.size());
+                buffers_.emplace_back(seperator.data(), seperator.size());
+                buffers_.emplace_back(kv.second.data(), kv.second.size());
+                buffers_.emplace_back(crlf.data(), crlf.size());
+
+            }
+
+            if (!res.headers.count("content-length"))
+            {
+                content_length_ = std::to_string(res.body.size());
+                static std::string content_length_tag = "Content-Length: ";
+                buffers_.emplace_back(content_length_tag.data(), content_length_tag.size());
+                buffers_.emplace_back(content_length_.data(), content_length_.size());
+                buffers_.emplace_back(crlf.data(), crlf.size());
+            }
+            if (!res.headers.count("server"))
+            {
+                static std::string server_tag = "Server: ";
+                buffers_.emplace_back(server_tag.data(), server_tag.size());
+                buffers_.emplace_back(server_name_.data(), server_name_.size());
+                buffers_.emplace_back(crlf.data(), crlf.size());
+            }
+            if (!res.headers.count("date"))
+            {
+                static std::string date_tag = "Date: ";
+                date_str_ = get_cached_date_str();
+                buffers_.emplace_back(date_tag.data(), date_tag.size());
+                buffers_.emplace_back(date_str_.data(), date_str_.size());
+                buffers_.emplace_back(crlf.data(), crlf.size());
+            }
+            if (add_keep_alive_)
+            {
+                static std::string keep_alive_tag = "Connection: Keep-Alive";
+                buffers_.emplace_back(keep_alive_tag.data(), keep_alive_tag.size());
+                buffers_.emplace_back(crlf.data(), crlf.size());
+            }
+
+            buffers_.emplace_back(crlf.data(), crlf.size());
+            res_body_copy_.swap(res.body);
+            buffers_.emplace_back(res_body_copy_.data(), res_body_copy_.size());
+
+            do_write();
+
+            if (need_to_start_read_after_complete_)
+            {
+                need_to_start_read_after_complete_ = false;
+                start_deadline();
+                do_read();
+            }
+        }
+
+    private:
+        void do_read()
+        {
+            //auto self = this->shared_from_this();
+            is_reading = true;
+            adaptor_.socket().async_read_some(boost::asio::buffer(buffer_), 
+                [this](const boost::system::error_code& ec, std::size_t bytes_transferred)
+                {
+                    bool error_while_reading = true;
+                    if (!ec)
+                    {
+                        bool ret = parser_.feed(buffer_.data(), bytes_transferred);
+                        if (ret && adaptor_.is_open())
+                        {
+                            error_while_reading = false;
+                        }
+                    }
+
+                    if (error_while_reading)
+                    {
+                        cancel_deadline_timer();
+                        parser_.done();
+                        adaptor_.close();
+                        is_reading = false;
+                        CROW_LOG_DEBUG << this << " from read(1)";
+                        check_destroy();
+                    }
+                    else if (close_connection_)
+                    {
+                        cancel_deadline_timer();
+                        parser_.done();
+                        is_reading = false;
+                        check_destroy();
+                        // adaptor will close after write
+                    }
+                    else if (!need_to_call_after_handlers_)
+                    {
+                        start_deadline();
+                        do_read();
+                    }
+                    else
+                    {
+                        // res will be completed later by user
+                        need_to_start_read_after_complete_ = true;
+                    }
+                });
+        }
+
+        void do_write()
+        {
+            //auto self = this->shared_from_this();
+            is_writing = true;
+            boost::asio::async_write(adaptor_.socket(), buffers_, 
+                [&](const boost::system::error_code& ec, std::size_t /*bytes_transferred*/)
+                {
+                    is_writing = false;
+                    res.clear();
+                    res_body_copy_.clear();
+                    if (!ec)
+                    {
+                        if (close_connection_)
+                        {
+                            adaptor_.close();
+                            CROW_LOG_DEBUG << this << " from write(1)";
+                            check_destroy();
+                        }
+                    }
+                    else
+                    {
+                        CROW_LOG_DEBUG << this << " from write(2)";
+                        check_destroy();
+                    }
+                });
+        }
+
+        void check_destroy()
+        {
+            CROW_LOG_DEBUG << this << " is_reading " << is_reading << " is_writing " << is_writing;
+            if (!is_reading && !is_writing)
+            {
+                CROW_LOG_DEBUG << this << " delete (idle) ";
+                delete this;
+            }
+        }
+
+        void cancel_deadline_timer()
+        {
+            CROW_LOG_DEBUG << this << " timer cancelled: " << timer_cancel_key_.first << ' ' << timer_cancel_key_.second;
+            timer_queue.cancel(timer_cancel_key_);
+        }
+
+        void start_deadline(/*int timeout = 5*/)
+        {
+            cancel_deadline_timer();
+            
+            timer_cancel_key_ = timer_queue.add([this]
+            {
+                if (!adaptor_.is_open())
+                {
+                    return;
+                }
+                adaptor_.close();
+            });
+            CROW_LOG_DEBUG << this << " timer added: " << timer_cancel_key_.first << ' ' << timer_cancel_key_.second;
+        }
+
+    private:
+        Adaptor adaptor_;
+        Handler* handler_;
+
+        boost::array<char, 4096> buffer_;
+
+        HTTPParser<Connection> parser_;
+        request req_;
+        response res;
+
+        bool close_connection_ = false;
+
+        const std::string& server_name_;
+        std::vector<boost::asio::const_buffer> buffers_;
+
+        std::string content_length_;
+        std::string date_str_;
+        std::string res_body_copy_;
+
+        //boost::asio::deadline_timer deadline_;
+        detail::dumb_timer_queue::key timer_cancel_key_;
+
+        bool is_reading{};
+        bool is_writing{};
+        bool need_to_call_after_handlers_{};
+        bool need_to_start_read_after_complete_{};
+        bool add_keep_alive_{};
+
+        std::tuple<Middlewares...>* middlewares_;
+        detail::context<Middlewares...> ctx_;
+
+        std::function<std::string()>& get_cached_date_str;
+        detail::dumb_timer_queue& timer_queue;
+    };
+
+}
+
+
+
+#pragma once
+
+#include <chrono>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/asio.hpp>
+#ifdef CROW_ENABLE_SSL
+#include <boost/asio/ssl.hpp>
+#endif
+#include <cstdint>
+#include <atomic>
+#include <future>
+#include <vector>
+
+#include <memory>
+
+
+
+
+
+
+
+
+namespace crow
+{
+    using namespace boost;
+    using tcp = asio::ip::tcp;
+
+    template <typename Handler, typename Adaptor = SocketAdaptor, typename ... Middlewares>
+    class Server
+    {
+    public:
+    Server(Handler* handler, std::string bindaddr, uint16_t port, std::tuple<Middlewares...>* middlewares = nullptr, uint16_t concurrency = 1, typename Adaptor::context* adaptor_ctx = nullptr)
+            : acceptor_(io_service_, tcp::endpoint(boost::asio::ip::address::from_string(bindaddr), port)),
+            signals_(io_service_, SIGINT, SIGTERM),
+            tick_timer_(io_service_),
+            handler_(handler),
+            concurrency_(concurrency),
+            port_(port),
+            bindaddr_(bindaddr),
+            middlewares_(middlewares),
+            adaptor_ctx_(adaptor_ctx)
+        {
+        }
+
+        void set_tick_function(std::chrono::milliseconds d, std::function<void()> f)
+        {
+            tick_interval_ = d;
+            tick_function_ = f;
+        }
+
+        void on_tick()
+        {
+            tick_function_();
+            tick_timer_.expires_from_now(boost::posix_time::milliseconds(tick_interval_.count()));
+            tick_timer_.async_wait([this](const boost::system::error_code& ec)
+                    {
+                        if (ec)
+                            return;
+                        on_tick();
+                    });
+        }
+
+        void run()
+        {
+            if (concurrency_ < 0)
+                concurrency_ = 1;
+
+            for(int i = 0; i < concurrency_;  i++)
+                io_service_pool_.emplace_back(new boost::asio::io_service());
+            get_cached_date_str_pool_.resize(concurrency_);
+            timer_queue_pool_.resize(concurrency_);
+
+            std::vector<std::future<void>> v;
+            std::atomic<int> init_count(0);
+            for(uint16_t i = 0; i < concurrency_; i ++)
+                v.push_back(
+                        std::async(std::launch::async, [this, i, &init_count]{
+
+                            // thread local date string get function
+                            auto last = std::chrono::steady_clock::now();
+
+                            std::string date_str;
+                            auto update_date_str = [&]
+                            {
+                                auto last_time_t = time(0);
+                                tm my_tm;
+
+#ifdef _MSC_VER
+                                gmtime_s(&my_tm, &last_time_t);
+#else
+                                gmtime_r(&last_time_t, &my_tm);
+#endif
+                                date_str.resize(100);
+                                size_t date_str_sz = strftime(&date_str[0], 99, "%a, %d %b %Y %H:%M:%S GMT", &my_tm);
+                                date_str.resize(date_str_sz);
+                            };
+                            update_date_str();
+                            get_cached_date_str_pool_[i] = [&]()->std::string
+                            {
+                                if (std::chrono::steady_clock::now() - last >= std::chrono::seconds(1))
+                                {
+                                    last = std::chrono::steady_clock::now();
+                                    update_date_str();
+                                }
+                                return date_str;
+                            };
+
+                            // initializing timer queue
+                            detail::dumb_timer_queue timer_queue;
+                            timer_queue_pool_[i] = &timer_queue;
+
+                            timer_queue.set_io_service(*io_service_pool_[i]);
+                            boost::asio::deadline_timer timer(*io_service_pool_[i]);
+                            timer.expires_from_now(boost::posix_time::seconds(1));
+
+                            std::function<void(const boost::system::error_code& ec)> handler;
+                            handler = [&](const boost::system::error_code& ec){
+                                if (ec)
+                                    return;
+                                timer_queue.process();
+                                timer.expires_from_now(boost::posix_time::seconds(1));
+                                timer.async_wait(handler);
+                            };
+                            timer.async_wait(handler);
+
+                            init_count ++;
+                            while(1)
+                            {
+                                try 
+                                {
+                                    if (io_service_pool_[i]->run() == 0)
+                                    {
+                                        // when io_service.run returns 0, there are no more works to do.
+                                        break;
+                                    }
+                                } catch(std::exception& e)
+                                {
+                                    CROW_LOG_ERROR << "Worker Crash: An uncaught exception occurred: " << e.what();
+                                }
+                            }
+                        }));
+
+            if (tick_function_ && tick_interval_.count() > 0) 
+            {
+                tick_timer_.expires_from_now(boost::posix_time::milliseconds(tick_interval_.count()));
+                tick_timer_.async_wait([this](const boost::system::error_code& ec)
+                        {
+                            if (ec)
+                                return;
+                            on_tick();
+                        });
+            }
+
+            CROW_LOG_INFO << server_name_ << " server is running at " << bindaddr_ <<":" << port_
+                          << " using " << concurrency_ << " threads";
+            CROW_LOG_INFO << "Call `app.loglevel(crow::LogLevel::Warning)` to hide Info level logs.";
+
+            signals_.async_wait(
+                [&](const boost::system::error_code& /*error*/, int /*signal_number*/){
+                    stop();
+                });
+
+            while(concurrency_ != init_count)
+                std::this_thread::yield();
+
+            do_accept();
+
+            std::thread([this]{
+                io_service_.run();
+                CROW_LOG_INFO << "Exiting.";
+            }).join();
+        }
+
+        void stop()
+        {
+            io_service_.stop();
+            for(auto& io_service:io_service_pool_)
+                io_service->stop();
+        }
+
+    private:
+        asio::io_service& pick_io_service()
+        {
+            // TODO load balancing
+            roundrobin_index_++;
+            if (roundrobin_index_ >= io_service_pool_.size())
+                roundrobin_index_ = 0;
+            return *io_service_pool_[roundrobin_index_];
+        }
+
+        void do_accept()
+        {
+            asio::io_service& is = pick_io_service();
+            auto p = new Connection<Adaptor, Handler, Middlewares...>(
+                is, handler_, server_name_, middlewares_,
+                get_cached_date_str_pool_[roundrobin_index_], *timer_queue_pool_[roundrobin_index_],
+                adaptor_ctx_);
+            acceptor_.async_accept(p->socket(),
+                [this, p, &is](boost::system::error_code ec)
+                {
+                    if (!ec)
+                    {
+                        is.post([p]
+                        {
+                            p->start();
+                        });
+                    }
+                    else
+                    {
+                        delete p;
+                    }
+                    do_accept();
+                });
+        }
+
+    private:
+        asio::io_service io_service_;
+        std::vector<std::unique_ptr<asio::io_service>> io_service_pool_;
+        std::vector<detail::dumb_timer_queue*> timer_queue_pool_;
+        std::vector<std::function<std::string()>> get_cached_date_str_pool_;
+        tcp::acceptor acceptor_;
+        boost::asio::signal_set signals_;
+        boost::asio::deadline_timer tick_timer_;
+
+        Handler* handler_;
+        uint16_t concurrency_{1};
+        std::string server_name_ = "Crow/0.1";
+        uint16_t port_;
+        std::string bindaddr_;
+        unsigned int roundrobin_index_{};
+
+        std::chrono::milliseconds tick_interval_;
+        std::function<void()> tick_function_;
+
+        std::tuple<Middlewares...>* middlewares_;
+
+#ifdef CROW_ENABLE_SSL
+        bool use_ssl_{false};
+        boost::asio::ssl::context ssl_context_{boost::asio::ssl::context::sslv23};
+#endif
+        typename Adaptor::context* adaptor_ctx_;
+    };
+}
+
+
+
+#pragma once
+
 #include <chrono>
 #include <string>
 #include <functional>
@@ -9745,54 +9745,6 @@ namespace crow
 
 
 
-#pragma once
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <html>
 <head>
 <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
@@ -9846,4 +9798,52 @@ $(document).ready(function(){
 </script>
 </body>
 </html>
+
+
+#pragma once
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
