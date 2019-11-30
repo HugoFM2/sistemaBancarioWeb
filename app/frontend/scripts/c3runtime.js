@@ -572,6 +572,8 @@ self.C3_GetObjectRefTable = function () {
 		C3.Plugins.Text.Acts.SetText,
 		C3.Plugins.List.Acts.Select,
 		C3.Plugins.System.Acts.Wait,
+		C3.Plugins.System.Cnds.EveryTick,
+		C3.Plugins.TextBox.Cnds.CompareText,
 		C3.Plugins.Button.Acts.SetChecked,
 		C3.Plugins.Button.Cnds.IsChecked
 	];
