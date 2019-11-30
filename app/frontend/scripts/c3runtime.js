@@ -565,17 +565,19 @@ self.C3_GetObjectRefTable = function () {
 		C3.Plugins.Text.Acts.SetVisible,
 		C3.Plugins.TextBox.Acts.SetVisible,
 		C3.Plugins.TextBox.Acts.SetText,
-		C3.Plugins.Button.Acts.SetVisible,
 		C3.Plugins.List.Cnds.OnDoubleClicked,
 		C3.Plugins.System.Cnds.OnLayoutEnd,
 		C3.Plugins.TextBox.Exps.Text,
+		C3.Plugins.Button.Acts.SetVisible,
 		C3.Plugins.Text.Acts.SetText,
 		C3.Plugins.List.Acts.Select,
 		C3.Plugins.System.Acts.Wait,
+		C3.Plugins.List.Cnds.OnSelectionChanged,
 		C3.Plugins.System.Cnds.EveryTick,
 		C3.Plugins.TextBox.Cnds.CompareText,
 		C3.Plugins.Button.Acts.SetChecked,
-		C3.Plugins.Button.Cnds.IsChecked
+		C3.Plugins.Button.Cnds.IsChecked,
+		C3.Plugins.AJAX.Cnds.OnAnyComplete
 	];
 };
 self.C3_JsPropNameTable = [
@@ -647,6 +649,9 @@ self.C3_JsPropNameTable = [
 	{LimiteContaText: 0},
 	{LimiteContaInput: 0},
 	{LimiteContaInfoText: 0},
+	{List: 0},
+	{specDataSelect: 0},
+	{StatusMovResult: 0},
 	{index: 0},
 	{index2: 0},
 	{host: 0}
@@ -873,11 +878,8 @@ self.C3_JsPropNameTable = [
 			const v7 = p._GetNode(7).GetVar();
 			return () => and(((and(((and(((and("Data: ", n0.ExpObject(and("data.", v1.GetValue()))) + " - ") + "Valor: "), n2.ExpObject(and("valor.", v3.GetValue()))) + " - ") + "Tipo: "), n4.ExpObject(and("tipo.", v5.GetValue()))) + " - ") + "Desc: "), n6.ExpObject(and("desc.", v7.GetValue())));
 		},
+		() => "Não",
 		() => "Credito",
-		() => "PostTransacaoCreditoData",
-		() => "http://",
-		() => "Debito",
-		() => "PostTransacaoDebitoData",
 		() => "PostTransacaoCredito",
 		p => {
 			const v0 = p._GetNode(0).GetVar();
@@ -889,6 +891,7 @@ self.C3_JsPropNameTable = [
 			const n6 = p._GetNode(6);
 			return () => (((((((((v0.GetValue() + "creditarValorConta?idBanco=0") + "&idCliente=") + f1(n2.ExpObject(), "^([0-9])+", "g", 0)) + "&numConta=") + f3(n4.ExpObject(), "([0-9])+", "g", 0)) + "&valor=") + n5.ExpObject()) + "&desc=") + n6.ExpObject());
 		},
+		() => "Debito",
 		() => "PostTransacaoDebito",
 		p => {
 			const v0 = p._GetNode(0).GetVar();
@@ -899,6 +902,33 @@ self.C3_JsPropNameTable = [
 			const n5 = p._GetNode(5);
 			const n6 = p._GetNode(6);
 			return () => (((((((((v0.GetValue() + "debitarValorConta?idBanco=0") + "&idCliente=") + f1(n2.ExpObject(), "^([0-9])+", "g", 0)) + "&numConta=") + f3(n4.ExpObject(), "([0-9])+", "g", 0)) + "&valor=") + n5.ExpObject()) + "&desc=") + n6.ExpObject());
+		},
+		() => "Sim",
+		p => {
+			const v0 = p._GetNode(0).GetVar();
+			const f1 = p._GetNode(1).GetBoundMethod();
+			const n2 = p._GetNode(2);
+			const f3 = p._GetNode(3).GetBoundMethod();
+			const n4 = p._GetNode(4);
+			const n5 = p._GetNode(5);
+			const n6 = p._GetNode(6);
+			const n7 = p._GetNode(7);
+			const n8 = p._GetNode(8);
+			const n9 = p._GetNode(9);
+			return () => (((((((((((((((v0.GetValue() + "creditarValorConta?idBanco=0") + "&idCliente=") + f1(n2.ExpObject(), "^([0-9])+", "g", 0)) + "&numConta=") + f3(n4.ExpObject(), "([0-9])+", "g", 0)) + "&valor=") + n5.ExpObject()) + "&dia=") + n6.ExpObject()) + "&mes=") + n7.ExpObject()) + "&ano=") + n8.ExpObject()) + "&desc=") + n9.ExpObject());
+		},
+		p => {
+			const v0 = p._GetNode(0).GetVar();
+			const f1 = p._GetNode(1).GetBoundMethod();
+			const n2 = p._GetNode(2);
+			const f3 = p._GetNode(3).GetBoundMethod();
+			const n4 = p._GetNode(4);
+			const n5 = p._GetNode(5);
+			const n6 = p._GetNode(6);
+			const n7 = p._GetNode(7);
+			const n8 = p._GetNode(8);
+			const n9 = p._GetNode(9);
+			return () => (((((((((((((((v0.GetValue() + "debitarValorConta?idBanco=0") + "&idCliente=") + f1(n2.ExpObject(), "^([0-9])+", "g", 0)) + "&numConta=") + f3(n4.ExpObject(), "([0-9])+", "g", 0)) + "&valor=") + n5.ExpObject()) + "&dia=") + n6.ExpObject()) + "&mes=") + n7.ExpObject()) + "&ano=") + n8.ExpObject()) + "&desc=") + n9.ExpObject());
 		}
 	];
 }

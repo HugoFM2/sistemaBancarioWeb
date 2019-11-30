@@ -23,11 +23,11 @@ public:
   Conta *getConta(int numConta);
   void NovaConta(Cliente* cliente);
   void NovaConta(Cliente* cliente,int numConta);
-  bool ExisteConta(int numConta);
+  virtual bool ExisteConta(int numConta);
   std::string RemoverConta(int numConta);
   void DepositarConta(int numConta, double valor,Date d);
   void SacarConta(int numConta, double valor,Date d);
-  void TransferirDePara(int contaOrigem,int contaDestino, double valor, Date d);
+  virtual void TransferirDePara(int contaOrigem,int contaDestino, double valor, Date d);
   void CobrarTarifa(Date d);
   void CobrarCPMF();
   double ObterSaldo(int numConta);

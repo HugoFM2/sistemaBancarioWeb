@@ -397,28 +397,53 @@ int main()
   });
   CROW_ROUTE(app, "/TransferirValorConta")
   ([&WebTeste](const crow::request& req){
-      if((req.url_params.get("idBanco") != nullptr) && (std::string(req.url_params.get("idBanco")) != "")  && (std::string(req.url_params.get("idBanco")) != "undefined")) {
-        int idBanco = std::stoi(std::string(req.url_params.get("idBanco")));
-        if((req.url_params.get("idCliente") != nullptr) && (std::string(req.url_params.get("idCliente")) != "")  && (std::string(req.url_params.get("idCliente")) != "undefined"))  {
-          int idCliente = std::stoi(std::string(req.url_params.get("idCliente")));
-          if((req.url_params.get("numConta") != nullptr) && (std::string(req.url_params.get("numConta")) != "undefined") && (std::string(req.url_params.get("numConta")) != "")) {
-            int numConta = std::stoi(std::string(req.url_params.get("numConta")));
-              if((req.url_params.get("valor") != nullptr) && (std::string(req.url_params.get("valor")) != "undefined") && (std::string(req.url_params.get("valor")) != "")) {
-                double valor = std::stod(std::string(req.url_params.get("valor")));
-                std::string desc = "";
-                  if((req.url_params.get("desc") != nullptr) && (std::string(req.url_params.get("desc")) != "undefined")) {
-                    desc = std::string(req.url_params.get("desc"));
+          if((req.url_params.get("numContaOrigem") != nullptr) && (std::string(req.url_params.get("numContaOrigem")) != "undefined") && (std::string(req.url_params.get("numContaOrigem")) != "")) {
+            int numContaOrigem = std::stoi(std::string(req.url_params.get("numContaOrigem")));
+            if(WebTeste.getBanco(0)->ExisteConta(numContaOrigem)){
+              if((req.url_params.get("numContaDestino") != nullptr) && (std::string(req.url_params.get("numContaDestino")) != "undefined") && (std::string(req.url_params.get("numContaDestino")) != "")) {
+                int numContaDestino = std::stoi(std::string(req.url_params.get("numContaDestino")));
+                if(WebTeste.getBanco(0)->ExisteConta(numContaDestino)){
+                  if((req.url_params.get("valor") != nullptr) && (std::string(req.url_params.get("valor")) != "undefined") && (std::string(req.url_params.get("valor")) != "")) {
+                    double valor = std::stod(std::string(req.url_params.get("valor")));
+                    if((req.url_params.get("dia") != nullptr) && (std::string(req.url_params.get("dia")) != "undefined") && (std::string(req.url_params.get("dia")) != "")) {
+                      int dia = std::stoi(std::string(req.url_params.get("dia")));
+                      if((req.url_params.get("mes") != nullptr) && (std::string(req.url_params.get("mes")) != "undefined") && (std::string(req.url_params.get("mes")) != "")) {
+                        int mes = std::stoi(std::string(req.url_params.get("mes")));
+                        if((req.url_params.get("ano") != nullptr) && (std::string(req.url_params.get("ano")) != "undefined") && (std::string(req.url_params.get("ano")) != "")) {
+                          int ano = std::stoi(std::string(req.url_params.get("ano")));
+                          std::string desc = "";
+                          if(WebTeste.getBanco(0)->getConta(numContaOrigem)->getSaldo() + WebTeste.getBanco(0)->getConta(numContaOrigem)->getLimiteConta()  >= valor){
+                            if((req.url_params.get("desc") != nullptr) && (std::string(req.url_params.get("desc")) != "undefined")) {
+                              desc = std::string(req.url_params.get("desc"));
+                            }
+                            Date DataInput(dia,mes,ano);
+                            if(DataInput.DataValida()){
+                              WebTeste.getBanco(0)->TransferirDePara(numContaOrigem,numContaDestino,valor,DataInput);
+                              return "Valor Creditado com a data especificada"; //acrescentado a conta
+                            } else{
+                              return "Data Invalida";
+                            }
+                          }
+                          return "Saldo insuficiente";
+                        }
+                        return "Ano não especificado";
+                      }
+                      return "Mês não especificado";
+                    }
+                    WebTeste.getBanco(0)->TransferirDePara(numContaOrigem,numContaDestino,valor);
+                    return "Valor Creditado com a data de hoje";
                   }
-                WebTeste.getBanco(idBanco)->getConta(numConta)->CreditarValor(valor,desc);
-                return "Valor Creditado"; //acrescentado a conta
+                  return "Faltou Valor a ser creditado";
+                }
+                return "Conta Destino Invalida";
               }
-              return "Faltou Valor a ser creditado";
+              return "Faltou num da conta Destino";
+            }
+            return "Conta Origem invalida";
           }
-          return "Faltou num da Conta";
-        }
-        return "Faltou Selecionar Cliente";
-      }
-      return "Faltou ID Banco";
+          return "Faltou num da conta Origem";
+
+
   });
 
     // simple json response

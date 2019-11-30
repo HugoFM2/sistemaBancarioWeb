@@ -23,6 +23,7 @@ public:
   int getYear();
   void SetDate(int d, int m, int y);
   std::string StringData();
+  bool DataValida();
 };
 
 #endif

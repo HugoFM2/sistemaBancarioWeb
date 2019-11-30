@@ -55,3 +55,26 @@ ContaTP3* BancoTP3::getConta(int numConta){
     }
   }
 }
+bool BancoTP3::ExisteConta(int numConta){
+  for(unsigned int i = 0; i <  getContas().size();i++ ){
+    if(numConta == getContas()[i]->getNumConta()){
+      return true;
+    }
+  }
+  return false;
+}
+
+void BancoTP3::TransferirDePara(int contaOrigem,int contaDestino, double valor, Date d){
+  std::string DescricaoOrigem = "Transferência PARA conta número "+ std::to_string(contaDestino);
+  std::string DescricaoDestino = "Transferência DA conta número " + std::to_string(contaOrigem);
+  getConta(contaOrigem)->DebitarValor(valor, DescricaoOrigem, d);
+  getConta(contaDestino)->CreditarValor(valor, DescricaoDestino, d);
+}
+void BancoTP3::TransferirDePara(int contaOrigem,int contaDestino, double valor){
+  Date *dataHoje = new Date();
+  dataHoje->SetToday();
+  std::string DescricaoOrigem = "Transferência PARA conta número "+ std::to_string(contaDestino);
+  std::string DescricaoDestino = "Transferência DA conta número " + std::to_string(contaOrigem);
+  getConta(contaOrigem)->DebitarValor(valor, DescricaoOrigem, *dataHoje);
+  getConta(contaDestino)->CreditarValor(valor, DescricaoDestino, *dataHoje);
+}
