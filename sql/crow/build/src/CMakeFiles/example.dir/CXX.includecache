@@ -440,10 +440,6 @@ iostream
 Date.h
 /app/src/TP1/Date.h
 
-/app/src/TP3/BancoTP3.cpp
-BancoTP3.h
-/app/src/TP3/BancoTP3.h
-
 /app/src/TP3/BancoTP3.h
 bits/stdc++.h
 -
@@ -460,10 +456,6 @@ bits/stdc++.h
 ../TP1/Cliente.h
 /app/src/TP1/Cliente.h
 
-/app/src/TP3/ContaTP3.cpp
-ContaTP3.h
-/app/src/TP3/ContaTP3.h
-
 /app/src/TP3/ContaTP3.h
 iostream
 -
@@ -477,12 +469,6 @@ ClienteTP3.h
 /app/src/TP1/Movimentacao.h
 ../TP1/Date.h
 /app/src/TP1/Date.h
-
-/app/src/TP3/WebInterface.cpp
-WebInterface.h
-/app/src/TP3/WebInterface.h
-mysql++.h
--
 
 /app/src/TP3/WebInterface.h
 BancoTP3.h

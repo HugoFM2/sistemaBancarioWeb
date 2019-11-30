@@ -576,7 +576,6 @@ self.C3_GetObjectRefTable = function () {
 		C3.Plugins.System.Cnds.EveryTick,
 		C3.Plugins.TextBox.Cnds.CompareText,
 		C3.Plugins.Button.Acts.SetChecked,
-		C3.Plugins.Button.Cnds.IsChecked,
 		C3.Plugins.AJAX.Cnds.OnAnyComplete
 	];
 };
@@ -652,6 +651,7 @@ self.C3_JsPropNameTable = [
 	{List: 0},
 	{specDataSelect: 0},
 	{StatusMovResult: 0},
+	{contaDestinoInput: 0},
 	{index: 0},
 	{index2: 0},
 	{host: 0}
@@ -929,6 +929,25 @@ self.C3_JsPropNameTable = [
 			const n8 = p._GetNode(8);
 			const n9 = p._GetNode(9);
 			return () => (((((((((((((((v0.GetValue() + "debitarValorConta?idBanco=0") + "&idCliente=") + f1(n2.ExpObject(), "^([0-9])+", "g", 0)) + "&numConta=") + f3(n4.ExpObject(), "([0-9])+", "g", 0)) + "&valor=") + n5.ExpObject()) + "&dia=") + n6.ExpObject()) + "&mes=") + n7.ExpObject()) + "&ano=") + n8.ExpObject()) + "&desc=") + n9.ExpObject());
+		},
+		p => {
+			const v0 = p._GetNode(0).GetVar();
+			const f1 = p._GetNode(1).GetBoundMethod();
+			const n2 = p._GetNode(2);
+			const n3 = p._GetNode(3);
+			const n4 = p._GetNode(4);
+			return () => (((((((v0.GetValue() + "TransferirValorConta?") + "&numContaOrigem=") + f1(n2.ExpObject(), "^([0-9])+", "g", 0)) + "&numContaDestino=") + n3.ExpObject()) + "&valor=") + n4.ExpObject());
+		},
+		p => {
+			const v0 = p._GetNode(0).GetVar();
+			const f1 = p._GetNode(1).GetBoundMethod();
+			const n2 = p._GetNode(2);
+			const n3 = p._GetNode(3);
+			const n4 = p._GetNode(4);
+			const n5 = p._GetNode(5);
+			const n6 = p._GetNode(6);
+			const n7 = p._GetNode(7);
+			return () => (((((((((((((v0.GetValue() + "TransferirValorConta?") + "&numContaOrigem=") + f1(n2.ExpObject(), "^([0-9])+", "g", 0)) + "&numContaDestino=") + n3.ExpObject()) + "&valor=") + n4.ExpObject()) + "&dia=") + n5.ExpObject()) + "&mes=") + n6.ExpObject()) + "&ano=") + n7.ExpObject());
 		}
 	];
 }

@@ -299,7 +299,7 @@ int main()
                         }
                       }
                     }
-                    WebTeste.getBanco(idBanco)->getConta(numConta)->CreditarValor(valor,desc);
+                    WebTeste.getBanco(idBanco)->getConta(numConta)->DebitarValor(valor,desc);
                     return "Valor Debitado com o dia de hoje"; // tira da conta
                   }
                   return "Saldo insuficiente para Debitar";
@@ -405,6 +405,7 @@ int main()
                 if(WebTeste.getBanco(0)->ExisteConta(numContaDestino)){
                   if((req.url_params.get("valor") != nullptr) && (std::string(req.url_params.get("valor")) != "undefined") && (std::string(req.url_params.get("valor")) != "")) {
                     double valor = std::stod(std::string(req.url_params.get("valor")));
+                    if(WebTeste.getBanco(0)->getConta(numContaOrigem)->getSaldo() + WebTeste.getBanco(0)->getConta(numContaOrigem)->getLimiteConta()  >= valor){
                     if((req.url_params.get("dia") != nullptr) && (std::string(req.url_params.get("dia")) != "undefined") && (std::string(req.url_params.get("dia")) != "")) {
                       int dia = std::stoi(std::string(req.url_params.get("dia")));
                       if((req.url_params.get("mes") != nullptr) && (std::string(req.url_params.get("mes")) != "undefined") && (std::string(req.url_params.get("mes")) != "")) {
@@ -412,26 +413,25 @@ int main()
                         if((req.url_params.get("ano") != nullptr) && (std::string(req.url_params.get("ano")) != "undefined") && (std::string(req.url_params.get("ano")) != "")) {
                           int ano = std::stoi(std::string(req.url_params.get("ano")));
                           std::string desc = "";
-                          if(WebTeste.getBanco(0)->getConta(numContaOrigem)->getSaldo() + WebTeste.getBanco(0)->getConta(numContaOrigem)->getLimiteConta()  >= valor){
                             if((req.url_params.get("desc") != nullptr) && (std::string(req.url_params.get("desc")) != "undefined")) {
                               desc = std::string(req.url_params.get("desc"));
                             }
                             Date DataInput(dia,mes,ano);
                             if(DataInput.DataValida()){
                               WebTeste.getBanco(0)->TransferirDePara(numContaOrigem,numContaDestino,valor,DataInput);
-                              return "Valor Creditado com a data especificada"; //acrescentado a conta
+                              return "Transferencia realizada com a data especificada"; //acrescentado a conta
                             } else{
                               return "Data Invalida";
                             }
                           }
-                          return "Saldo insuficiente";
+                          return "Ano não especificado";
                         }
-                        return "Ano não especificado";
+                        return "Mês não especificado";
                       }
-                      return "Mês não especificado";
-                    }
                     WebTeste.getBanco(0)->TransferirDePara(numContaOrigem,numContaDestino,valor);
-                    return "Valor Creditado com a data de hoje";
+                    return "Transferencia realizada com a data de hoje";
+                    }
+                    return "Saldo insuficiente";
                   }
                   return "Faltou Valor a ser creditado";
                 }
