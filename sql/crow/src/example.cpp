@@ -7,7 +7,7 @@
 #include <limits>
 // #include <mysql.h>
 
-using namespace mysqlpp;
+// using namespace mysqlpp;
 
 int BancoTP3::ID = -1; // inicializa valor static
 int ClienteTP3::ID = 0; // inicializa valor static
@@ -69,7 +69,7 @@ int main()
         // Connection conn(false);
         // conn.connect("teste", "bd5", "root", "123.456");
 
-        Connection conn(false);
+        mysqlpp::Connection conn(false);
         if (conn.connect("teste", "bd5", "root", "123.456")) {
             // Retrieve a subset of the sample stock table set up by resetdb
             // and display it.
@@ -190,6 +190,7 @@ int main()
   });
 
   // Contas
+
   CROW_ROUTE(app, "/criarConta")
   ([&WebTeste](const crow::request& req){
       if((req.url_params.get("idBanco") != nullptr) && (std::string(req.url_params.get("idBanco")) != "")  && (std::string(req.url_params.get("idBanco")) != "undefined")) {
@@ -256,7 +257,7 @@ int main()
   CROW_ROUTE(app, "/debitarValorConta")
   ([&WebTeste](const crow::request& req){
       if((req.url_params.get("idBanco") != nullptr) && (std::string(req.url_params.get("idBanco")) != "")  && (std::string(req.url_params.get("idBanco")) != "undefined")) {
-        int idBanco = std::stoi(std::string(req.url_params.get("idBanco")));
+        int idBanco = 0;
         if((req.url_params.get("idCliente") != nullptr) && (std::string(req.url_params.get("idCliente")) != "")  && (std::string(req.url_params.get("idCliente")) != "undefined"))  {
           int idCliente = std::stoi(std::string(req.url_params.get("idCliente")));
           if((req.url_params.get("numConta") != nullptr) && (std::string(req.url_params.get("numConta")) != "undefined") && (std::string(req.url_params.get("numConta")) != "")) {
@@ -267,10 +268,39 @@ int main()
                   if((req.url_params.get("desc") != nullptr) && (std::string(req.url_params.get("desc")) != "undefined")) {
                     desc = std::string(req.url_params.get("desc"));
                   }
-                WebTeste.getBanco(0)->getConta(numConta)->DebitarValor(valor,desc);
-                return "Valor Debitado"; //tirado da conta
+                  if((req.url_params.get("dia") != nullptr) && (std::string(req.url_params.get("dia")) != "undefined") && (std::string(req.url_params.get("dia")) != "")) {
+                    int dia = std::stoi(std::string(req.url_params.get("dia")));
+                    if((req.url_params.get("mes") != nullptr) && (std::string(req.url_params.get("mes")) != "undefined") && (std::string(req.url_params.get("mes")) != "")) {
+                      int mes = std::stoi(std::string(req.url_params.get("mes")));
+                      if((req.url_params.get("ano") != nullptr) && (std::string(req.url_params.get("ano")) != "undefined") && (std::string(req.url_params.get("ano")) != "")) {
+                        int ano = std::stoi(std::string(req.url_params.get("ano")));
+                        if (mes <= 12 && mes > 0){
+                          if ( (mes == 1 || mes == 3 || mes == 5 || mes == 7 || mes == 8 || mes == 10 || mes == 12 ) && (dia <= 31)){
+                            Date DataInput(dia,mes,ano);
+                            WebTeste.getBanco(idBanco)->getConta(numConta)->DebitarValor(valor,desc,DataInput);
+                            return "Valor Debitado com a data especificada";
+                          }
+                          else if ( (mes == 4 || mes == 6 || mes == 9 || mes == 11) && (dia <= 30) ) {
+                            Date DataInput(dia,mes,ano);
+                            WebTeste.getBanco(idBanco)->getConta(numConta)->DebitarValor(valor,desc,DataInput);
+                            return "Valor Debitado com a data especificada";
+                          }
+                          else if ( (mes == 2) && (dia <= 28) ){
+                            Date DataInput(dia,mes,ano);
+                            WebTeste.getBanco(idBanco)->getConta(numConta)->DebitarValor(valor,desc,DataInput);
+                            return "Valor Debitado com a data especificada";
+                          }
+                          else {
+                            return "Data invalida";
+                          }
+                        }
+                      }
+                    }
+                  }
+                  WebTeste.getBanco(idBanco)->getConta(numConta)->CreditarValor(valor,desc);
+                  return "Valor Debitado com o dia de hoje"; // acrescentado a conta
               }
-              return "Faltou Valor a ser debitado";
+              return "Faltou Valor a ser Debitado";
           }
           return "Faltou num da Conta";
         }
@@ -278,6 +308,7 @@ int main()
       }
       return "Faltou ID Banco";
   });
+
   CROW_ROUTE(app, "/creditarValorConta")
   ([&WebTeste](const crow::request& req){
       if((req.url_params.get("idBanco") != nullptr) && (std::string(req.url_params.get("idBanco")) != "")  && (std::string(req.url_params.get("idBanco")) != "undefined")) {
@@ -292,8 +323,37 @@ int main()
                   if((req.url_params.get("desc") != nullptr) && (std::string(req.url_params.get("desc")) != "undefined")) {
                     desc = std::string(req.url_params.get("desc"));
                   }
-                WebTeste.getBanco(idBanco)->getConta(numConta)->CreditarValor(valor,desc);
-                return "Valor Creditado"; //acrescentado a conta
+                  if((req.url_params.get("dia") != nullptr) && (std::string(req.url_params.get("dia")) != "undefined") && (std::string(req.url_params.get("dia")) != "")) {
+                    int dia = std::stoi(std::string(req.url_params.get("dia")));
+                    if((req.url_params.get("mes") != nullptr) && (std::string(req.url_params.get("mes")) != "undefined") && (std::string(req.url_params.get("mes")) != "")) {
+                      int mes = std::stoi(std::string(req.url_params.get("mes")));
+                      if((req.url_params.get("ano") != nullptr) && (std::string(req.url_params.get("ano")) != "undefined") && (std::string(req.url_params.get("ano")) != "")) {
+                        int ano = std::stoi(std::string(req.url_params.get("ano")));
+                        if (mes <= 12 && mes > 0){
+                          if ( (mes == 1 || mes == 3 || mes == 5 || mes == 7 || mes == 8 || mes == 10 || mes == 12 ) && (dia <= 31)){
+                            Date DataInput(dia,mes,ano);
+                            WebTeste.getBanco(idBanco)->getConta(numConta)->CreditarValor(valor,desc, DataInput);
+                            return "Valor Creditado com a data especificada";
+                          }
+                          else if ( (mes == 4 || mes == 6 || mes == 9 || mes == 11) && (dia <= 30) ) {
+                            Date DataInput(dia,mes,ano);
+                            WebTeste.getBanco(idBanco)->getConta(numConta)->CreditarValor(valor,desc, DataInput);
+                            return "Valor Creditado com a data especificada";
+                          }
+                          else if ( (mes == 2) && (dia <= 28) ){
+                            Date DataInput(dia,mes,ano);
+                            WebTeste.getBanco(idBanco)->getConta(numConta)->CreditarValor(valor,desc, DataInput);
+                            return "Valor Creditado com a data especificada";
+                          }
+                          else {
+                            return "Data invalida";
+                          }
+                        }
+                      }
+                    }
+                  }
+                  WebTeste.getBanco(idBanco)->getConta(numConta)->CreditarValor(valor,desc);
+                  return "Valor Creditado com o dia de hoje"; // acrescentado a conta
               }
               return "Faltou Valor a ser creditado";
           }

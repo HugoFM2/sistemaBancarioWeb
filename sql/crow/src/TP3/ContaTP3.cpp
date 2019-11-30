@@ -29,7 +29,7 @@ void ContaTP3::DebitarValor(double valor,std::string desc){
 }
 
 void ContaTP3::DebitarValor(double valor,std::string desc,Date d){
-  if (saldo - valor >= limiteCredito){
+  if (saldo - valor >= -limiteCredito){
     saldo = saldo - valor;
     movimentacoes.push_back(Movimentacao(d,desc,'D', valor));
   }
