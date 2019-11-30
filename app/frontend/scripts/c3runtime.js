@@ -575,6 +575,7 @@ self.C3_GetObjectRefTable = function () {
 		C3.Plugins.List.Cnds.OnSelectionChanged,
 		C3.Plugins.System.Cnds.EveryTick,
 		C3.Plugins.TextBox.Cnds.CompareText,
+		C3.Plugins.System.Acts.SetVar,
 		C3.Plugins.Button.Acts.SetChecked,
 		C3.Plugins.AJAX.Cnds.OnAnyComplete
 	];
@@ -654,7 +655,8 @@ self.C3_JsPropNameTable = [
 	{contaDestinoInput: 0},
 	{index: 0},
 	{index2: 0},
-	{host: 0}
+	{host: 0},
+	{contaOrigem: 0}
 ];
 
 "use strict";
@@ -830,6 +832,10 @@ self.C3_JsPropNameTable = [
 			const v1 = p._GetNode(1).GetVar();
 			return () => and("Conta ", n0.ExpObject(and("numConta.", v1.GetValue())));
 		},
+		p => {
+			const n0 = p._GetNode(0);
+			return () => n0.ExpObject();
+		},
 		() => "DadosCliente",
 		p => {
 			const v0 = p._GetNode(0).GetVar();
@@ -936,7 +942,7 @@ self.C3_JsPropNameTable = [
 			const n2 = p._GetNode(2);
 			const n3 = p._GetNode(3);
 			const n4 = p._GetNode(4);
-			return () => (((((((v0.GetValue() + "TransferirValorConta?") + "&numContaOrigem=") + f1(n2.ExpObject(), "^([0-9])+", "g", 0)) + "&numContaDestino=") + n3.ExpObject()) + "&valor=") + n4.ExpObject());
+			return () => (((((((v0.GetValue() + "TransferirValorConta?") + "&numContaOrigem=") + f1(n2.ExpObject(), "([0-9])+", "g", 0)) + "&numContaDestino=") + n3.ExpObject()) + "&valor=") + n4.ExpObject());
 		},
 		p => {
 			const v0 = p._GetNode(0).GetVar();
@@ -947,7 +953,7 @@ self.C3_JsPropNameTable = [
 			const n5 = p._GetNode(5);
 			const n6 = p._GetNode(6);
 			const n7 = p._GetNode(7);
-			return () => (((((((((((((v0.GetValue() + "TransferirValorConta?") + "&numContaOrigem=") + f1(n2.ExpObject(), "^([0-9])+", "g", 0)) + "&numContaDestino=") + n3.ExpObject()) + "&valor=") + n4.ExpObject()) + "&dia=") + n5.ExpObject()) + "&mes=") + n6.ExpObject()) + "&ano=") + n7.ExpObject());
+			return () => (((((((((((((v0.GetValue() + "TransferirValorConta?") + "&numContaOrigem=") + f1(n2.ExpObject(), "([0-9])+", "g", 0)) + "&numContaDestino=") + n3.ExpObject()) + "&valor=") + n4.ExpObject()) + "&dia=") + n5.ExpObject()) + "&mes=") + n6.ExpObject()) + "&ano=") + n7.ExpObject());
 		}
 	];
 }
