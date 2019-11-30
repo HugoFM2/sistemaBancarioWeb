@@ -396,6 +396,10 @@ crow/http_request.h
 crow/TinySHA1.hpp
 ../include/crow/crow/TinySHA1.hpp
 
+/app/src/TP1/Banco.cpp
+Banco.h
+/app/src/TP1/Banco.h
+
 /app/src/TP1/Banco.h
 bits/stdc++.h
 -
@@ -406,9 +410,17 @@ Conta.h
 Date.h
 /app/src/TP1/Date.h
 
+/app/src/TP1/Cliente.cpp
+Cliente.h
+/app/src/TP1/Cliente.h
+
 /app/src/TP1/Cliente.h
 bits/stdc++.h
 -
+
+/app/src/TP1/Conta.cpp
+Conta.h
+/app/src/TP1/Conta.h
 
 /app/src/TP1/Conta.h
 iostream
@@ -419,6 +431,10 @@ Cliente.h
 /app/src/TP1/Cliente.h
 Movimentacao.h
 /app/src/TP1/Movimentacao.h
+Date.h
+/app/src/TP1/Date.h
+
+/app/src/TP1/Date.cpp
 Date.h
 /app/src/TP1/Date.h
 
@@ -434,11 +450,19 @@ iostream
 Banco.h
 /app/src/TP1/Banco.h
 
+/app/src/TP1/Movimentacao.cpp
+Movimentacao.h
+/app/src/TP1/Movimentacao.h
+
 /app/src/TP1/Movimentacao.h
 iostream
 -
 Date.h
 /app/src/TP1/Date.h
+
+/app/src/TP3/BancoTP3.cpp
+BancoTP3.h
+/app/src/TP3/BancoTP3.h
 
 /app/src/TP3/BancoTP3.h
 bits/stdc++.h
@@ -449,6 +473,10 @@ ClienteTP3.h
 /app/src/TP3/ClienteTP3.h
 ContaTP3.h
 /app/src/TP3/ContaTP3.h
+
+/app/src/TP3/ClienteTP3.cpp
+ClienteTP3.h
+/app/src/TP3/ClienteTP3.h
 
 /app/src/TP3/ClienteTP3.h
 bits/stdc++.h
@@ -469,6 +497,12 @@ ClienteTP3.h
 /app/src/TP1/Movimentacao.h
 ../TP1/Date.h
 /app/src/TP1/Date.h
+
+/app/src/TP3/WebInterface.cpp
+WebInterface.h
+/app/src/TP3/WebInterface.h
+mysql++.h
+-
 
 /app/src/TP3/WebInterface.h
 BancoTP3.h
