@@ -42,6 +42,6 @@ void WebInterface::ExcluirCliente(BancoTP3* banco, int idCliente){
   banco->RemoverCliente(idCliente);
 }
 
-void WebInterface::CadastrarConta(BancoTP3* banco, ClienteTP3* cliente, int tipo){
-  banco->NovaConta(cliente, tipo);
-}
+// void WebInterface::CadastrarConta(BancoTP3* banco, ClienteTP3* cliente, int tipo){
+//   banco->NovaConta(cliente, tipo);
+// }

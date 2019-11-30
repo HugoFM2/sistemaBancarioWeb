@@ -19,6 +19,7 @@ public:
   ContaTP3(ClienteTP3* c, int tipo,double lim = 0);
   ~ContaTP3();
   int getTipoConta();
+  double getLimiteConta();
   void DebitarValor(double valor,std::string desc);
   // void CreditarValor(double valor,std::string desc);
   void DebitarValor(double valor,std::string desc,Date d);

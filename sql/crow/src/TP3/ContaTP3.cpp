@@ -16,10 +16,13 @@ ClienteTP3 *ContaTP3::getCliente(){
 int ContaTP3::getTipoConta(){
   return tipoConta;
 }
+double ContaTP3::getLimiteConta(){
+  return limiteCredito;
+}
 void ContaTP3::DebitarValor(double valor,std::string desc){
   Date * data1 = new Date();
   data1->SetToday();
-  if (saldo - valor >= limiteCredito){
+  if (saldo - valor >= -limiteCredito){
     saldo = saldo - valor;
     movimentacoes.push_back(Movimentacao(*data1,desc,'D', valor));
   }

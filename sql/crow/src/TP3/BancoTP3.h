@@ -24,7 +24,7 @@ public:
 
 
 
-  void NovaConta(ClienteTP3* cliente, int tipoConta);
+  void NovaConta(ClienteTP3* cliente, int tipoConta, double limiteCredito = 0);
   std::vector<ContaTP3*> &getContas();
   ContaTP3* getConta(int numConta);
 

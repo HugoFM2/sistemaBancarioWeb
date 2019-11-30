@@ -20,7 +20,7 @@ public:
   void CadastrarCliente(BancoTP3* banco, std::string nomeCliente, std::string cpf_cnpj, std::string endereco, std::string fone);
   void ExcluirCliente(BancoTP3* banco, int idCliente);
 
-  void CadastrarConta(BancoTP3* banco, ClienteTP3* cliente, int tipo);
+  // void CadastrarConta(BancoTP3* banco, ClienteTP3* cliente, int tipo);
   // void ExcluirConta(BancoTP3* banco, ClienteTP3* cliente, int numConta);
 
 };
